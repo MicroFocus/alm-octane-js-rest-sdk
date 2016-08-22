@@ -1,0 +1,36 @@
+{
+  "name": "octane",
+  "version": "0.1.0",
+  "description": "NodeJS wrapper for the HPE ALM Octane API",
+  "main": "lib",
+  "scripts": {
+    "test": "standard && mocha --recursive"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.hpe.com/da-sheng-jian/node-octane.git"
+  },
+  "keywords": [
+    "otcane"
+  ],
+  "author": "DaSheng Jian <da-sheng.jian@hpe.com>",
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "apidoc": "^0.16.1",
+    "jsdoc": "^3.4.0",
+    "mocha": "^3.0.2",
+    "standard": "^7.1.2"
+  },
+  "dependencies": {
+    "cookie": "^0.3.1",
+    "debug": "^2.2.0",
+    "request": "^2.74.0"
+  },
+  "apidoc": {
+    "title": "node-octane",
+    "name": "node-octane",
+    "template": {
+      "withCompare": false
+    }
+  }
+}

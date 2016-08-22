@@ -1,0 +1,101 @@
+{
+	"defines": {
+		"constants": {
+			"name": "Octane",
+			"description": "A Node.JS module which provide an object oriented wrapper for the HPE ALM Octane API",
+			"protocol": "https",
+			"host": "",
+			"port": "443"
+		},
+		"response-headers": [
+            "content-encoding",
+            "content-type",
+            "date",
+            "server",
+            "via"
+		],
+		"params": {
+			"limit": {
+				"type": "Number",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The number of instances to return in each page from the results of the query."
+			},
+			"offset": {
+				"type": "Number",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The first position to return from the results of the query. The default is 0."
+			},
+			"fields": {
+				"type": "String",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The fields to be returned in the results of the query."
+			},
+			"order_by": {
+				"type": "String",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "Sorts the entities returned in the results of the query."
+			},
+			"query": {
+				"type": "String",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "Filter entities returned in the list."
+			}
+		}
+	},
+	"entities": {
+		"get-all": {
+			"url": "/metadata/entities",
+			"method": "GET",
+			"params": {
+				"query": {
+					"type": "String",
+					"required": false,
+					"validation": "",
+					"invalidmsg": "",
+					"description": "Filter entities returned in the list."
+				}
+			},
+			"description": "Entities list"
+		}
+	},
+	"fields": {
+		"get-all": {
+			"url": "/metadata/fields",
+			"method": "GET",
+			"params": {
+				"query": {
+					"type": "String",
+					"required": false,
+					"validation": "",
+					"invalidmsg": "",
+					"description": "Filter fields returned in the list."
+				}
+			},
+			"description": "Fields list"
+		}
+	},
+	"work-items": {
+		"get-all": {
+			"url": "/work_items",
+			"method": "GET",
+			"params": {
+				"$query": null,
+				"$limit": null,
+				"$offset": null,
+				"$fields": null,
+				"$order_by": null
+			},
+			"description": "Work items list"
+		}
+	}
+}

@@ -62,7 +62,7 @@ function createApiDocument (section, funcName, block) {
 
   var documentLines = [
     '/**',
-    ' * @api {' + method + '} ' + url + ' ' + funcName,
+    ' * @api {' + method + '} ' + encodeURI(url) + ' ' + funcName,
     ' * @apiName ' + funcName,
     ' * @apiDescription ' + description,
     ' * @apiGroup ' + section,

@@ -8,7 +8,7 @@ var utils = require('../lib/utils')
 var defines
 var apiDocs
 
-function generate () {
+function generateAPIDoc () {
   var routesPath = path.join(__dirname, '../lib/routes.json')
   var routes = JSON.parse(fs.readFileSync(routesPath, 'utf8'))
 
@@ -113,4 +113,4 @@ function createApiDocument (section, funcName, block) {
   return documentLines.join('\n') + '\n */\n\n'
 }
 
-generate()
+generateAPIDoc()

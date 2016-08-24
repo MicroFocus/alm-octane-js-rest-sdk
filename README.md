@@ -80,7 +80,7 @@ octane.authenticate({
 When updating routes.json, you'll want to update/generate docs:
 
 ```bash
-$ node bin/generate.js
+$ node scripts/generate_apidoc.js
 ```
 
 Dev note for updating apidoc for github pages:

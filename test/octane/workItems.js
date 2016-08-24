@@ -29,7 +29,7 @@ describe('[work_items]', function () {
     })
   })
 
-  it('should successfully execute GET /work_items', function (done) {
+  it('should successfully get all work items list', function (done) {
     client.workItems.getAll({}, function (err, workItems) {
       assert.equal(err, null)
       assert(workItems.meta.total_count > 0)
@@ -37,7 +37,7 @@ describe('[work_items]', function () {
     })
   })
 
-  it('should successfully execute GET /work_items with limit', function (done) {
+  it('should successfully get work items list with limit', function (done) {
     client.workItems.getAll({limit: 10}, function (err, workItems) {
       assert.equal(err, null)
       if (workItems.length === 10) {
@@ -49,7 +49,7 @@ describe('[work_items]', function () {
     })
   })
 
-  it('should successfully execute GET /work_items with filter', function (done) {
+  it('should successfully get work items list with filter', function (done) {
     client.workItems.getAll({query: '"severity EQ {name EQ ^Low^}"'}, function (err, workItems) {
       assert.equal(err, null)
       workItems.forEach(function (workItem) {
@@ -59,7 +59,7 @@ describe('[work_items]', function () {
     })
   })
 
-  it('should successfully execute GET /work_items with order', function (done) {
+  it('should successfully get work items list with order', function (done) {
     client.workItems.getAll({order_by: 'id'}, function (err, workItems) {
       assert.equal(err, null)
       for (var i = 1, l = workItems.length; i < l; i++) {

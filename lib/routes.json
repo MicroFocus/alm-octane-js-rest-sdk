@@ -7,13 +7,6 @@
 			"host": "",
 			"port": "443"
 		},
-		"response-headers": [
-            "content-encoding",
-            "content-type",
-            "date",
-            "server",
-            "via"
-		],
 		"params": {
 			"limit": {
 				"type": "Number",
@@ -49,11 +42,326 @@
 				"validation": "",
 				"invalidmsg": "",
 				"description": "Filter entities returned in the list."
+			},
+			"attachments": {
+				"type": "Multi-Reference",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The attachments references."
+			},
+			"author": {
+				"type": "Reference",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The authro reference."
+			},
+			"closed_on": {
+				"type": "DateTime",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The closed time."
+			},
+			"comments": {
+				"type": "Multi-Reference",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The comments references."
+			},
+			"defect_root_level": {
+				"type": "Reference",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The defect root level references."
+			},
+			"description": {
+				"type": "String",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The description."
+			},
+			"detected_by": {
+				"type": "Reference",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The detected user reference."
+			},
+			"detected_in_build": {
+				"type": "Number",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The detected build."
+			},
+			"detected_in_release": {
+				"type": "Reference",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The detected release reference."
+			},
+			"fixed_in_build": {
+				"type": "Number",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The fixed build."
+			},
+			"fixed_on": {
+				"type": "DateTime",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The fixed time."
+			},
+			"item_origin": {
+				"type": "Reference",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The item origin reference."
+			},
+			"item_type": {
+				"type": "Reference",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The item type reference."
+			},
+			"linked_items1": {
+				"type": "Multi-Reference",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The linked items 1 references."
+			},
+			"linked_items2": {
+				"type": "Multi-Reference",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The linked items 2 references."
+			},
+			"my_new_items_owner": {
+				"type": "Reference",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The my new item owner reference."
+			},
+			"name": {
+				"type": "String",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The name."
+			},
+			"ordering": {
+				"type": "Object",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The ordering."
+			},
+			"owner": {
+				"type": "Reference",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The owner reference."
+			},
+			"parent": {
+				"type": "Reference",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The parent reference."
+			},
+			"phase": {
+				"type": "Reference",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The phase reference."
+			},
+			"priority": {
+				"type": "Reference",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The priority reference."
+			},
+			"product_areas": {
+				"type": "Multi-Reference",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The product areas references."
+			},
+			"qa_owner": {
+				"type": "Reference",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The QA owner reference."
+			},
+			"release": {
+				"type": "Reference",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The release reference."
+			},
+			"run": {
+				"type": "Multi-Reference",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The run reference."
+			},
+			"run_step": {
+				"type": "Multi-Reference",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The run step reference."
+			},
+			"severity": {
+				"type": "Reference",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The severity reference."
+			},
+			"sprint": {
+				"type": "Reference",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The sprint reference."
+			},
+			"story_points": {
+				"type": "Number",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The story points."
+			},
+			"taxonomies": {
+				"type": "Multi-Reference",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The taxonomies references."
+			},
+			"team": {
+				"type": "Multi-Reference",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The team reference."
+			},
+			"user_tags": {
+				"type": "Multi-Reference",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The user tags references."
+			},
+			"defect_id": {
+				"type": "Number",
+				"required": true,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The defect id."
+			},
+			"business_rule_to_phase": {
+				"type": "Multi-Reference",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The business rule to phase."
+			},
+			"entity": {
+				"type": "String",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The entity."
+			},
+			"is_hidden": {
+				"type": "Boolean",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "Is hidden"
+			},
+			"is_start_phase": {
+				"type": "Boolean",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "Is start phase"
+			},
+			"is_system": {
+				"type": "Boolean",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "Is system"
+			},
+			"metaphase": {
+				"type": "Reference",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The metaphase reference."
+			},
+			"test": {
+				"type": "Multi-Reference",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The test references."
+			},
+			"transitions_to_src_phs": {
+				"type": "Multi-Reference",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The transitions to src phs references."
+			},
+			"transitions_to_trgt_phs": {
+				"type": "Multi-Reference",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The transitions to trgt phs references."
+			},
+			"work_item": {
+				"type": "Multi-Reference",
+				"required": false,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The work item references."
+			},
+			"phase_id": {
+				"type": "Number",
+				"required": true,
+				"validation": "",
+				"invalidmsg": "",
+				"description": "The phase id."
 			}
 		}
 	},
-	"entities": {
-		"get-all": {
+	"metadata": {
+		"get-entities": {
 			"url": "/metadata/entities",
 			"method": "GET",
 			"params": {
@@ -65,11 +373,9 @@
 					"description": "Filter entities returned in the list."
 				}
 			},
-			"description": "Entities list"
-		}
-	},
-	"fields": {
-		"get-all": {
+			"description": "Gets entities list"
+		},
+		"get-fields": {
 			"url": "/metadata/fields",
 			"method": "GET",
 			"params": {
@@ -81,7 +387,115 @@
 					"description": "Filter fields returned in the list."
 				}
 			},
-			"description": "Fields list"
+			"description": "Get fields list"
+		}
+	},
+	"list-nodes": {
+		"get-all": {
+			"url": "/list_nodes",
+			"method": "GET",
+			"params": {
+				"$query": null,
+				"$limit": null,
+				"$offset": null,
+				"$fields": null,
+				"$order_by": null
+			},
+			"description": "Gets list nodes list"
+		},
+		"get-severities": {
+			"url": "/list_nodes?query=\"list_root EQ {name EQ ^Severity^}\"&order_by=id",
+			"method": "GET",
+			"params": {},
+			"description": "Gets severities list"
+		},
+		"get-priorities": {
+			"url": "/list_nodes?query=\"list_root EQ {name EQ ^Priority^}\"&order_by=id",
+			"method": "GET",
+			"params": {},
+			"description": "Gets priorities list"
+		}
+	},
+	"phases": {
+		"get-all": {
+			"url": "/phases",
+			"method": "GET",
+			"params": {
+				"$query": null,
+				"$limit": null,
+				"$offset": null,
+				"$fields": null,
+				"$order_by": null
+			},
+			"description": "Gets phases list"
+		},
+		"get-defect-phases": {
+			"url": "/phases?&query=\"entity EQ ^defect^\"&order_by=id",
+			"method": "GET",
+			"params": {},
+			"description": "Gets defect phases list"
+		},
+		"get": {
+			"url": "/phases/:phase_id",
+			"method": "GET",
+			"params": {
+				"$phase_id": null,
+				"$fields": null
+			},
+			"description": "Gets a single phase"
+		},
+		"create": {
+			"url": "/phases",
+			"method": "POST",
+			"params": {
+				"$business_rule_to_phase": null,
+				"$description": null,
+				"$entity": null,
+				"$is_hidden": null,
+				"$is_start_phase": null,
+				"$is_system": null,
+				"$metaphase": null,
+				"name": {
+					"type": "String",
+					"required": true,
+					"validation": "",
+					"invalidmsg": "",
+					"description": "The name."
+				},
+				"$test": null,
+				"$transitions_to_src_phs": null,
+				"$transitions_to_trgt_phs": null,
+				"$work_item": null
+			},
+			"description": "Create a single phase"
+		},
+		"update": {
+			"url": "/phases/:phase_id",
+			"method": "PUT",
+			"params": {
+				"$phase_id": null,
+				"$business_rule_to_phase": null,
+				"$description": null,
+				"$entity": null,
+				"$is_hidden": null,
+				"$is_start_phase": null,
+				"$is_system": null,
+				"$metaphase": null,
+				"$name": null,
+				"$test": null,
+				"$transitions_to_src_phs": null,
+				"$transitions_to_trgt_phs": null,
+				"$work_item": null
+			},
+			"description": "Update a single phase"
+		},
+		"delete": {
+			"url": "/phases/:phase_id",
+			"method": "DELETE",
+			"params": {
+				"$phase_id": null
+			},
+			"description": "Deletes a single phase"
 		}
 	},
 	"work-items": {
@@ -95,7 +509,143 @@
 				"$fields": null,
 				"$order_by": null
 			},
-			"description": "Work items list"
+			"description": "Gets work items list"
+		}
+	},
+	"defects": {
+		"get-all": {
+			"url": "/defects",
+			"method": "GET",
+			"params": {
+				"$query": null,
+				"$limit": null,
+				"$offset": null,
+				"$fields": null,
+				"$order_by": null
+			},
+			"description": "Gets defects list"
+		},
+		"get": {
+			"url": "/defects/:defect_id",
+			"method": "GET",
+			"params": {
+				"$defect_id": null,
+				"$fields": null
+			},
+			"description": "Gets a single defect"
+		},
+		"create": {
+			"url": "/defects",
+			"method": "POST",
+			"params": {
+				"$attachments": null,
+				"$author": null,
+				"$closed_on": null,
+				"$comments": null,
+				"$defect_root_level": null,
+				"$description": null,
+				"$detected_by": null,
+				"$detected_in_build": null,
+				"$detected_in_release": null,
+				"$fixed_in_build": null,
+				"$fixed_on": null,
+				"$item_origin": null,
+				"$item_type": null,
+				"$linked_items1": null,
+				"$linked_items2": null,
+				"$my_new_items_owner": null,
+				"name": {
+					"type": "String",
+					"required": true,
+					"validation": "",
+					"invalidmsg": "",
+					"description": "The name."
+				},
+				"$ordering": null,
+				"$owner": null,
+				"parent": {
+					"type": "Reference",
+					"required": true,
+					"validation": "",
+					"invalidmsg": "",
+					"description": "The parent reference."
+				},
+				"$phase": {
+					"type": "Reference",
+					"required": true,
+					"validation": "",
+					"invalidmsg": "",
+					"description": "The phase reference."
+				},
+				"$priority": null,
+				"$product_areas": null,
+				"$qa_owner": null,
+				"$release": null,
+				"$run": null,
+				"$run_step": null,
+				"severity": {
+					"type": "Reference",
+					"required": true,
+					"validation": "",
+					"invalidmsg": "",
+					"description": "The severity reference."
+				},
+				"$sprint": null,
+				"$story_points": null,
+				"$taxonomies": null,
+				"$team": null,
+				"$user_tags": null
+			},
+			"description": "Create a single defect"
+		},
+		"update": {
+			"url": "/defects/:defect_id",
+			"method": "PUT",
+			"params": {
+				"$defect_id": null,
+				"$attachments": null,
+				"$author": null,
+				"$closed_on": null,
+				"$comments": null,
+				"$defect_root_level": null,
+				"$description": null,
+				"$detected_by": null,
+				"$detected_in_build": null,
+				"$detected_in_release": null,
+				"$fixed_in_build": null,
+				"$fixed_on": null,
+				"$item_origin": null,
+				"$item_type": null,
+				"$linked_items1": null,
+				"$linked_items2": null,
+				"$my_new_items_owner": null,
+				"$name": null,
+				"$ordering": null,
+				"$owner": null,
+				"$parent": null,
+				"$phase": null,
+				"$priority": null,
+				"$product_areas": null,
+				"$qa_owner": null,
+				"$release": null,
+				"$run": null,
+				"$run_step": null,
+				"$severity": null,
+				"$sprint": null,
+				"$story_points": null,
+				"$taxonomies": null,
+				"$team": null,
+				"$user_tags": null
+			},
+			"description": "Update a single defect"
+		},
+		"delete": {
+			"url": "/defects/:defect_id",
+			"method": "DELETE",
+			"params": {
+				"$defect_id": null
+			},
+			"description": "Deletes a single defect"
 		}
 	}
 }

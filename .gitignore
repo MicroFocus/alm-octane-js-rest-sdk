@@ -38,4 +38,4 @@ apidoc
 out
 
 # test auth file
-test.json
+octane.json

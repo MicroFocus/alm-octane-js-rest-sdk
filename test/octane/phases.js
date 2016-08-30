@@ -69,16 +69,6 @@ describe('[phases]', function () {
     })
   })
 
-  it('should successfully get all defect phases', function (done) {
-    client.phases.getDefectPhases({}, function (err, phases) {
-      assert.equal(err, null)
-      phases.forEach(function (phase) {
-        assert.strictEqual(phase.entity, 'defect')
-      })
-      done()
-    })
-  })
-
   it('should successfully create/get/update/delete a phase', function (done) {
     var phase = {
       name: 'phase test 1'

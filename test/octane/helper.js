@@ -14,7 +14,7 @@ exports.initializeOctaneClient = function (callback) {
   try {
     config = JSON.parse(
       fs.readFileSync(
-        path.join(__dirname, '../../test.json'),
+        path.join(__dirname, '../../octane.json'),
         'utf8'
       )
     )

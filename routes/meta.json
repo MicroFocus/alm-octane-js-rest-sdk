@@ -1,0 +1,77 @@
+{
+	"defines": {
+		"constants": {
+			"name": "Octane",
+			"description": "A Node.JS module which provide an object oriented wrapper for the HPE ALM Octane API",
+			"protocol": "https",
+			"host": "",
+			"port": "443"
+		},
+		"params": {
+			"limit": {
+				"type": "integer",
+				"required": false,
+				"description": "The number of instances to return in each page from the results of the query."
+			},
+			"offset": {
+				"type": "integer",
+				"required": false,
+				"description": "The first position to return from the results of the query. The default is 0."
+			},
+			"fields": {
+				"type": "string",
+				"required": false,
+				"description": "The fields to be returned in the results of the query."
+			},
+			"order_by": {
+				"type": "string",
+				"required": false,
+				"description": "Sorts the entities returned in the results of the query."
+			},
+			"query": {
+				"type": "string",
+				"required": false,
+				"description": "Filter entities returned in the results of the query."
+			},
+			"id": {
+				"type": "integer",
+				"required": true,
+				"description": "The id."
+			}
+		}
+	},
+	"metadata": {
+		"get-entities": {
+			"url": "/metadata/entities",
+			"method": "GET",
+			"params": {
+				"$query": null
+			},
+			"description": "Gets entities list"
+		},
+		"get-fields": {
+			"url": "/metadata/fields",
+			"method": "GET",
+			"params": {
+				"$query": null
+			},
+			"description": "Get fields list"
+		}
+	},
+	"severities": {
+		"get-all": {
+			"url": "/list_nodes?query=\"list_root EQ {name EQ ^Severity^}\"&order_by=id",
+			"method": "GET",
+			"params": {},
+			"description": "Gets severities list"
+		}
+	},
+	"priorities": {
+		"get-all": {
+			"url": "/list_nodes?query=\"list_root EQ {name EQ ^Priority^}\"&order_by=id",
+			"method": "GET",
+			"params": {},
+			"description": "Gets priorities list"
+		}
+	}
+}

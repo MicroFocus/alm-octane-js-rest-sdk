@@ -4,31 +4,24 @@ A Node.js wrapper for the HPE ALM Octane API.
 
 ## Installation
 
-Install via [npm](https://www.npmjs.com/package/github)
-
-```bash
-$ npm install github
-```
-
-or
-
 Install via git clone
 
 ```bash
-$ git clone https://github.com/mikedeboer/node-github.git
-$ cd node-github
+$ git clone https://github.hpe.com/da-sheng-jian/node-octane.git
+$ cd node-octane
 $ npm install
 ```
 
 ## Example
 
-Get all work items:
+Get all defects:
 ```javascript
 var Octane = require("octane");
 
 var octane = new Octane({
   protocol: "https",
   host: <HOST>,
+  port: <PORT>,
   shared_space_id: <SHARED_SPACE_ID>,
   workspace_id: <WORKSPACE_ID>
 })
@@ -42,20 +35,20 @@ octane.authenticate({
     return
   }
 
-  otcane.workItems.getAll(function (err, workItems) {
+  otcane.defects.getAll(function (err, defects) {
     if (err) {
       console.log('Error - %s', err.message)
       return
     }
 
-    console.log(workItems)
+    console.log(defects)
   })
 })
 ```
 
 ## Authentication
 
-The Octane API allows to sign in with user credentail or API key.
+The Octane API allows to sign in with user credential or API key.
 
 ```javascript
 // user credential
@@ -75,43 +68,74 @@ octane.authenticate({
 })
 ```
 
-## Update docs
+## Documentation
+Client API: 
 
-When updating routes.json, you'll want to update/generate docs:
+## Update client API
+The HPE ALM Octane REST API is fully metadata-driven. When the Octane REST API is updated, you can update the client API from the metadata.
+
+Create `octane.json` file for updating client API. It defines the Octane server's configuration and user credential.
+
+```bash
+$ cat > octane.json << EOH
+{
+  "config": {
+    "protocol": "http",
+    "host": "<HOST>",
+    "port": <PORT>,
+    "shared_space_id": <SHARED_SPACE_ID>,
+    "workspace_id": <WORKSPACE_ID>
+  },
+  "options": {
+    "username": "<USERNAME>",
+    "password": "<PASSWORD>"
+  }
+}
+EOH
+
+$ node scripts/generate_default_routes.js
+```
+
+> The client API is defined in `routes/default.json` file. When you run this script to update the client API, you actually update the `routes/default.json` file.
+
+> The `routes/meta.json` file defines the minimal client API. It can't be changed or deleted.
+
+## Update client API documentation
+
+When the `routes/default.json` file is updated, you'll want to update API annotation file:
 
 ```bash
 $ mkdir -p doc
-$ node scripts/generate_apidoc.js
+$ node scripts/generate_api_annotations.js
 ```
 
-Dev note for updating apidoc for github pages:
+Then you can create the client API documentation:
 
 ```bash
 $ npm install apidoc
 $ node_modules/.bin/apidoc -f doc/apidoc.js -o apidoc/
 ```
 
-## Test auth file
-
-Create test auth file for running tests.
+## Tests
+Create `octane.json` file for running tests. It defines the Octane server's configuration and user credential.
 
 ```bash
-$ > testAuth.json
+$ cat > octane.json << EOH
 {
-	"config": {
-		"protocol": "https",
-		"host": "<HOST>",
-		"shared_space_id": <SHARED_SPACE_ID>,
-		"workspace_id": <WORKSPACE_ID>
-	},
-	"options": {
-		"username": "<USERNAME>",
-		"password": "<PASSWORD>"
-	}
+  "config": {
+    "protocol": "http",
+    "host": "<HOST>",
+    "port": <PORT>,
+    "shared_space_id": <SHARED_SPACE_ID>,
+    "workspace_id": <WORKSPACE_ID>
+  },
+  "options": {
+    "username": "<USERNAME>",
+    "password": "<PASSWORD>"
+  }
 }
+EOH
 ```
-
-## Tests
 
 Run all tests
 
@@ -122,7 +146,7 @@ $ npm test
 Or run a specific test
 
 ```bash
-$ npm test test/octane/entities.js
+$ npm test test/octane/defects.js
 ```
 
 ## LICENSE

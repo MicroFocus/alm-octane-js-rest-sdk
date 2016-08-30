@@ -58,15 +58,15 @@ describe('[defects]', function () {
       assert(defect.id)
 
       var defectId = defect.id
-      client.defects.get({defect_id: defectId}, function (err, defect) {
+      client.defects.get({id: defectId}, function (err, defect) {
         assert.equal(err, null)
         assert.equal(defect.id, defectId)
 
-        client.defects.update({defect_id: defectId, name: 'defect test 1.1'}, function (err, defect) {
+        client.defects.update({id: defectId, name: 'defect test 1.1'}, function (err, defect) {
           assert.equal(err, null)
           assert.strictEqual(defect.name, 'defect test 1.1')
 
-          client.defects.delete({defect_id: defectId}, function (err, defect) {
+          client.defects.delete({id: defectId}, function (err, defect) {
             assert.equal(err, null)
             assert.equal(defect, null)
 

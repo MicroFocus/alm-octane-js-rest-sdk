@@ -68,24 +68,4 @@ describe('[list_nodes]', function () {
       done()
     })
   })
-
-  it('should successfully get all severities list', function (done) {
-    client.listNodes.getSeverities({}, function (err, severities) {
-      assert.equal(err, null)
-      severities.forEach(function (severity) {
-        assert(severity.logical_name.startsWith('list_node.severity.'))
-      })
-      done()
-    })
-  })
-
-  it('should successfully get all priorities list', function (done) {
-    client.listNodes.getPriorities({}, function (err, priorities) {
-      assert.equal(err, null)
-      priorities.forEach(function (priority) {
-        assert(priority.logical_name.startsWith('list_node.priority.'))
-      })
-      done()
-    })
-  })
 })

@@ -28,10 +28,6 @@ function generateDefaultRoutes () {
       createRoutesFromOctaneMetadata(routes, metadata)
 
       saveRoutesToFile(routes, DEFAULT_ROUTES_FILE)
-
-      // var routes = createDefaultRoutes(metadata)
-
-      // saveDefaultRoutes(routes)
     })
   })
 }
@@ -109,7 +105,9 @@ function createRoutesFromOctaneMetadata (routes, metadata) {
     var route = createRoute(entity, fields)
 
     if (route) {
-      routes[utils.toDisplayName(name, true)] = route
+      var routeName = utils.toDisplayName(name, true)
+      routes[routeName] = routes[routeName] || {}
+      utils.extend(routes[routeName], route, true)
     }
   })
 }

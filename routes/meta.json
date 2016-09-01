@@ -73,5 +73,115 @@
 			"params": {},
 			"description": "Gets priorities list"
 		}
+	},
+	"attachments": {
+		"create": {
+			"url": "/attachments",
+			"method": "POST",
+			"content-type": "multipart/form-data",
+			"params": {
+				"owner_release": {
+					"type": "reference",
+					"required": false,
+					"description": "Owner release",
+					"field_type_data": {
+						"multiple": false,
+						"targets": [
+							{
+								"type": "release"
+							}
+						]
+					}
+				},
+				"owner_work_item": {
+					"type": "reference",
+					"required": false,
+					"description": "Owner work item",
+					"field_type_data": {
+						"multiple": false,
+						"targets": [
+							{
+								"type": "story"
+							},
+							{
+								"type": "quality_story"
+							},
+							{
+								"type": "theme"
+							},
+							{
+								"type": "work_item_root"
+							},
+							{
+								"type": "feature"
+							},
+							{
+								"type": "defect"
+							}
+						]
+					}
+				},
+				"name": {
+					"type": "string",
+					"required": true,
+					"description": "Name",
+					"max_length": 255
+				},
+				"owner_test": {
+					"type": "reference",
+					"required": false,
+					"description": "Owner test",
+					"field_type_data": {
+						"multiple": false,
+						"targets": [
+							{
+								"type": "gherkin_test"
+							},
+							{
+								"type": "test_manual"
+							},
+							{
+								"type": "test_suite"
+							}
+						]
+					}
+				},
+				"description": {
+					"type": "string",
+					"required": false,
+					"description": "Description",
+					"max_length": 2000
+				},
+				"owner_milestone": {
+					"type": "reference",
+					"required": false,
+					"description": "Owner milestone",
+					"field_type_data": {
+						"multiple": false,
+						"targets": [
+							{
+								"type": "milestone"
+							}
+						]
+					}
+				},
+				"file": {
+					"type": "file",
+					"required": true,
+					"description": "The absolute file path"
+
+				}
+			},
+			"description": "Create a single attachment."
+		},
+		"download": {
+			"url": "/attachments/:id",
+			"method": "GET",
+			"accept": "application/octet-stream",
+			"params": {
+				"$id": null
+			},
+			"description": "Downloads a single attachment."
+		}
 	}
 }

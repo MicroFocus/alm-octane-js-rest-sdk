@@ -29,7 +29,7 @@
 				"description": "Sorts the entities returned in the results of the query."
 			},
 			"query": {
-				"type": "string",
+				"type": "query",
 				"required": false,
 				"description": "Filter entities returned in the results of the query."
 			},

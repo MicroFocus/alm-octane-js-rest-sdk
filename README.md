@@ -14,9 +14,8 @@ $ npm install
 
 ## Example
 
-Get all defects:
 ```javascript
-var Octane = require("octane");
+var Octane = require('octane')
 
 var octane = new Octane({
   protocol: "https",
@@ -35,13 +34,53 @@ octane.authenticate({
     return
   }
 
-  otcane.defects.getAll(function (err, defects) {
+  // get all defects
+  otcane.defects.getAll({}, function (err, defects) {
     if (err) {
       console.log('Error - %s', err.message)
       return
     }
 
+    console.log(defects.meta.total_count)
+    defects.forEach(function (defect) {
+      console.log(defect)
+    })
+  })
+
+  // get 10 defects in places 10 – 19
+  otcane.defects.getAll({limit: 10, offset: 10}, function (err, defects) {
     console.log(defects)
+  })
+
+  // get low severity defects
+  var q1 = Query.field('name').equal('Low')
+  var q2 = Query.field('severity').equal(q1)
+  otcane.defects.getAll({query: q2}, function (err, defects) {
+    console.log(defects)
+  })
+
+  // create a defect
+  var defect = {
+    name: 'defect',
+    parent: aWorkItemRoot,
+    severity: aSeverity,
+    phase: aDefectPhase
+  }
+  otcane.defects.create(defect, function (err, defect) {
+    console.log(defect)
+  })
+
+  // get a defect
+  otcane.defects.get({id: 1001}, function (err, defect) {
+    console.log(defect)
+  })
+
+  // delete a defect
+  otcane.defects.delete({id: 1001}, function (err) {
+    if (err) {
+      console.log('Error - %s', err.message)
+      return
+    }
   })
 })
 ```
@@ -66,6 +105,82 @@ octane.authenticate({
 }, function (err) {
   // handle sign in result
 })
+```
+
+## Query
+
+The Octane REST API supports entities query by filtering values of fields. To filter, use a query statement, which is comprised of at least one query phase.
+
+The client API provides the Query module to help you build the query, rather than writing the complex query statement.
+
+```javascript
+var Query = require('octane/query')
+
+// query statement: "id EQ 1005"
+var query = Query.field('id').equal(1005)
+octane.defects.getAll({query: query}, function (err, defect) {
+  console.log(defect)
+})
+
+...
+
+// query statement: "name EQ ^test*^" 
+var query = Query.field('name').equal('test*')
+
+// query statement: "user_tags EQ {id EQ 1001}"
+var query = Query.field('user_tags').equal(Query('id').equal(1001))
+
+// query statement: "user_tags EQ {id EQ 1001||id EQ 2005}"
+var query = Query.field('user_tags').equal(Query.field('id').equal(1001).or(Query.field('id').equal(2005)))
+// or use the shorthand or() method
+var query = Query.field('user_tags').equal(Query.field('id').equal(1001).or().field('id').equal(2005))
+
+// query statement: "user_tags EQ {id EQ 1001;id EQ 3008}"
+var query = Query.field('user_tags').equal(Query.field('id').equal(1001).and(Query.field('id').equal(3008)))
+// or use the shorthand and() method
+var query = Query.field('user_tags').equal(Query.field('id').equal(1001).and().field('id').equal(3008))
+
+// query statement: "user_tags EQ {id EQ 1001};user_tags EQ {id EQ 3008}"
+var query = Query.field('user_tags').equal(Query.field('id').equal(1001)).and(Query.field('user_tags').equal(Query.field('id').equal(3008)))
+// or use the shorthand and() method
+var query = Query.field('user_tags').equal(Query.field('id').equal(1001)).and().field('user_tags').equal(Query.field('id').equal(3008))
+// or use the sub query
+var query1 = Query.field('user_tags').equal(Query.field('id').equal(1001))
+var query2 = Query.field('user_tags').equal(Query.field('id').equal(3008))
+var query = query1.and(query2)
+```
+
+## Attachment
+
+To create an attachment, you must provide the file's absolute path.
+
+```javascript
+...
+var attachment = {
+  name: 'attachment.txt',
+  file: attachmentFile, // the file's absolute path
+  owner_work_item: anWorkItem
+}
+octane.attachments.create(attachment, function (err, attachment) {
+  console.log(attachment)
+})
+...
+```
+
+The attachment has both entity data and binary data. 
+To get the attachment's entity data, call `attachments.get()`; to get its binary data, call `attachments.download()`.
+
+```javascript
+...
+octane.attachments.get({id: attachmentID}, function (err, attachment) {
+  consoloe.log(attachment)
+})
+
+octane.attachments.download({id: attachmentID}, function (err, data) {
+  // data is the stream
+  consoloe.log(data.toString())
+})
+...
 ```
 
 ## Documentation
@@ -117,8 +232,20 @@ $ node_modules/.bin/apidoc -f doc/apidoc.js -o apidoc/
 ```
 
 ## Tests
-Create `octane.json` file for running tests. It defines the Octane server's configuration and user credential.
 
+Run all tests
+
+```bash
+$ npm test
+```
+
+Or run a specific test
+
+```bash
+$ npm test test/query.js
+```
+
+The `octane.json` file is required for running the integration tests. If it doesn't exist, the integration tests will be skipped.
 ```bash
 $ cat > octane.json << EOH
 {
@@ -135,18 +262,8 @@ $ cat > octane.json << EOH
   }
 }
 EOH
-```
 
-Run all tests
-
-```bash
-$ npm test
-```
-
-Or run a specific test
-
-```bash
-$ npm test test/octane/defects.js
+npm test test/integration
 ```
 
 ## LICENSE

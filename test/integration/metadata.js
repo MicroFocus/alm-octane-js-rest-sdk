@@ -4,7 +4,8 @@
 
 var assert = require('assert')
 
-// var Client = require('../../lib')
+var Query = require('../../lib/query')
+
 var initializeOctaneClient = require('./helper').initializeOctaneClient
 
 describe('[metadata/entities]', function () {
@@ -38,7 +39,8 @@ describe('[metadata/entities]', function () {
   })
 
   it('should successfully get entities list with filter', function (done) {
-    client.metadata.getEntities({query: '"name EQ ^defect^"'}, function (err, entities) {
+    var q = Query.field('name').equal('defect')
+    client.metadata.getEntities({query: q}, function (err, entities) {
       assert.equal(err, null)
       assert.strictEqual(entities.meta.total_count, 1)
       done()
@@ -77,7 +79,8 @@ describe('[metadata/fields]', function () {
   })
 
   it('should successfully get fields list with filter', function (done) {
-    client.metadata.getFields({query: '"entity_name EQ ^defect^"'}, function (err, fields) {
+    var q = Query.field('entity_name').equal('defect')
+    client.metadata.getFields({query: q}, function (err, fields) {
       assert.equal(err, null)
       fields.forEach(function (field) {
         assert.strictEqual(field.entity_name, 'defect')

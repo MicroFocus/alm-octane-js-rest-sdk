@@ -26,6 +26,12 @@ describe('query', function () {
     assert.strictEqual(query.build(), expect)
   })
 
+  it('should test "no vlaue"', function () {
+    var expect = 'user_tags EQ {id EQ 1001}||user_tags EQ {null}'
+    var query = Query.field('user_tags').equal(Query.field('id').equal(1001)).or().field('user_tags').equal(Query.NONE)
+    assert.strictEqual(query.build(), expect)
+  })
+
   it('should test complex statement or', function () {
     var now = new Date()
     var expect = 'created_name LT ^' + now.toISOString() + '^||id EQ 5028||id EQ 5015'
@@ -49,10 +55,6 @@ describe('query', function () {
     var expect = '!(id GE 5028);!(name EQ ^test^)'
     var query = Query.field('id').greaterEqual(5028).group().not().and(Query.field('name').equal('test').group().not())
     assert.strictEqual(query.build(), expect)
-
-    // fail
-    // var query2 = Query.field('id').greaterEqual(5028).group().not().and().field('name').equal('test').group().not()
-    // assert.strictEqual(query2.build(), expect)
   })
 
   it('should test complex statement with reference', function () {

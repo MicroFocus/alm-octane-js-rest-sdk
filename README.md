@@ -35,7 +35,7 @@ octane.authenticate({
   }
 
   // get all defects
-  otcane.defects.getAll({}, function (err, defects) {
+  octane.defects.getAll({}, function (err, defects) {
     if (err) {
       console.log('Error - %s', err.message)
       return
@@ -48,14 +48,14 @@ octane.authenticate({
   })
 
   // get 10 defects in places 10 – 19
-  otcane.defects.getAll({limit: 10, offset: 10}, function (err, defects) {
+  octane.defects.getAll({limit: 10, offset: 10}, function (err, defects) {
     console.log(defects)
   })
 
   // get low severity defects
   var q1 = Query.field('name').equal('Low')
   var q2 = Query.field('severity').equal(q1)
-  otcane.defects.getAll({query: q2}, function (err, defects) {
+  octane.defects.getAll({query: q2}, function (err, defects) {
     console.log(defects)
   })
 
@@ -66,17 +66,17 @@ octane.authenticate({
     severity: aSeverity,
     phase: aDefectPhase
   }
-  otcane.defects.create(defect, function (err, defect) {
+  octane.defects.create(defect, function (err, defect) {
     console.log(defect)
   })
 
   // get a defect
-  otcane.defects.get({id: 1001}, function (err, defect) {
+  octane.defects.get({id: 1001}, function (err, defect) {
     console.log(defect)
   })
 
   // delete a defect
-  otcane.defects.delete({id: 1001}, function (err) {
+  octane.defects.delete({id: 1001}, function (err) {
     if (err) {
       console.log('Error - %s', err.message)
       return

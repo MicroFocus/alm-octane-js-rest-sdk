@@ -134,7 +134,8 @@ function createRoute (entity, fields) {
             $limit: null,
             $offset: null,
             $fields: null,
-            $order_by: null
+            $order_by: null,
+            $text_search: null
           },
           description: 'Gets ' + utils.toDisplayName(name, true) + ' list.'
         }

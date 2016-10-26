@@ -8,6 +8,11 @@
 			"port": "443"
 		},
 		"params": {
+			"text_search": {
+				"type": "string",
+				"required": false,
+				"description": "elastic search"
+			},
 			"limit": {
 				"type": "integer",
 				"required": false,

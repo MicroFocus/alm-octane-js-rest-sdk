@@ -8,13 +8,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.hpe.com/da-sheng-jian/node-octane.git"
+    "url": "https://github.hpe.com/ALMOctane-Hackathon/node-octane.git"
   },
   "keywords": [
     "otcane"
   ],
   "author": "DaSheng Jian <da-sheng.jian@hpe.com>",
-  "license": "GPL-3.0",
+  "license": "Apache-2.0",
   "devDependencies": {
     "apidoc": "^0.16.1",
     "jsdoc": "^3.4.0",

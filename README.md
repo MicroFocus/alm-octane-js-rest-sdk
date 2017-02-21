@@ -265,7 +265,3 @@ EOH
 
 npm test test/integration
 ```
-
-## LICENSE
-
-GNU GPLv3 license.

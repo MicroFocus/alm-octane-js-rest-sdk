@@ -1,6 +1,6 @@
 {
   "name": "octane",
-  "version": "0.1.0",
+  "version": "12.53.20",
   "description": "NodeJS wrapper for the HPE ALM Octane API",
   "main": "lib",
   "scripts": {

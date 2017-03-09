@@ -7,7 +7,7 @@ A Node.js wrapper for the HPE ALM Octane API.
 Install via git clone
 
 ```bash
-$ git clone https://github.hpe.com/da-sheng-jian/node-octane.git
+$ git clone https://github.com/HPSoftware/ALMOctaneNodeRESTSDK.git
 $ cd node-octane
 $ npm install
 ```

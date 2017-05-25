@@ -39,3 +39,4 @@ out
 
 # test auth file
 octane.json
+/.npmrc

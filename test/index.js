@@ -1,5 +1,5 @@
 /*!
- * (c) Copyright 2016 Hewlett Packard Enterprise Development LP
+ * (c) 2016-2018 EntIT Software LLC, a Micro Focus company
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

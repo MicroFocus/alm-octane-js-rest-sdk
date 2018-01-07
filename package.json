@@ -1,6 +1,6 @@
 {
   "name": "hpe-alm-octane-js-rest-sdk",
-  "version": "12.53.20",
+  "version": "12.55.9",
   "description": "NodeJS wrapper for the HPE ALM Octane API",
   "main": "lib",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/HPSoftware/alm-octane-js-rest-sdk.git"
+    "url": "https://github.com/MicroFocus/alm-octane-js-rest-sdk.git"
   },
   "keywords": [
     "octane",

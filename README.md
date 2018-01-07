@@ -189,7 +189,7 @@ Client API: https://pages.github.hpe.com/ALMOctane-Hackathon/node-octane/
 ## Update client API
 The HPE ALM Octane REST API is fully metadata-driven. When the Octane REST API is updated, you can update the client API from the metadata.
 
-Create `octane.json` file for updating client API. It defines the Octane server's configuration and user credential.
+Create a configuration file (eg `octane.json`) file for updating client API. It defines the Octane server's configuration and user credentials.
 
 ```bash
 $ cat > octane.json << EOH
@@ -207,8 +207,11 @@ $ cat > octane.json << EOH
   }
 }
 EOH
+```
+Send the path to the created configuration file to `generate_default_routes.js`
 
-$ node scripts/generate_default_routes.js
+```
+$ node scripts/generate_default_routes.js /path/to/octane.json
 ```
 
 > The client API is defined in `routes/default.json` file. When you run this script to update the client API, you actually update the `routes/default.json` file.

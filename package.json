@@ -1,6 +1,6 @@
 {
   "name": "hpe-alm-octane-js-rest-sdk",
-  "version": "12.53.20",
+  "version": "12.55.9",
   "description": "NodeJS wrapper for the HPE ALM Octane API",
   "main": "lib",
   "scripts": {
@@ -26,9 +26,11 @@
     "standard": "7.1.2"
   },
   "dependencies": {
+    "command-line-args": "^4.0.7",
     "cookie": "0.3.1",
     "debug": "2.2.0",
     "pluralize": "3.0.0",
+    "read-config": "^2.0.0",
     "request": "2.74.0"
   },
   "apidoc": {

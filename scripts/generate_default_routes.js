@@ -22,12 +22,34 @@ var path = require('path')
 var Octane = require('../lib')
 var utils = require('../lib/utils')
 
-var OCTANE_CONFIG_FILE = '../octane.json'
 var META_ROUTES_FILE = '../routes/meta.json'
 var DEFAULT_ROUTES_FILE = '../routes/default.json'
 
-function generateDefaultRoutes () {
-  initializeOctaneClient(function (err, client) {
+function generateDefaultRoutes (configurationJSON) {
+  function FileDetails (filename) {
+    if (!(this instanceof FileDetails)) return new FileDetails(filename)
+    this.filename = filename
+    this.exists = fs.existsSync(filename)
+  }
+  function loadConfigurationFromFile () {
+    const commandLineArgs = require('command-line-args')
+    const optionDefinitions = [
+      { name: 'octaneconfig', alias: 'c', type: FileDetails, defaultOption: true }]
+    const options = commandLineArgs(optionDefinitions)
+    if (!options.octaneconfig || !options.octaneconfig.exists) {
+      console.error(new Error('Cannot load octane configuration file!'))
+      process.exit(1)
+    }
+    return JSON.parse(
+      fs.readFileSync(options['octaneconfig']['filename'], 'utf8')
+    )
+  }
+
+  if (configurationJSON === undefined) {
+    configurationJSON = loadConfigurationFromFile()
+  }
+
+  initializeOctaneClient(configurationJSON, function (err, client) {
     if (err) {
       console.error(err)
       process.exit(1)
@@ -48,18 +70,10 @@ function generateDefaultRoutes () {
   })
 }
 
-function initializeOctaneClient (callback) {
+function initializeOctaneClient (configuration, callback) {
   var client
-  var configuration
 
   console.log('loading Ocatne configuration ...')
-  try {
-    configuration = JSON.parse(
-      fs.readFileSync(path.join(__dirname, OCTANE_CONFIG_FILE), 'utf8')
-    )
-  } catch (ex) {
-    return callback(ex)
-  }
 
   console.log('initializing Octane client ...')
   try {
@@ -255,4 +269,7 @@ function saveRoutesToFile (routes, file) {
   }
 }
 
-generateDefaultRoutes()
+if (require.main === module) {
+  generateDefaultRoutes()
+}
+module.exports.generateDefaultRoutes = generateDefaultRoutes

@@ -4,11 +4,12 @@
   "description": "NodeJS wrapper for the HPE ALM Octane API",
   "main": "lib",
   "scripts": {
-    "test": "standard && mocha --recursive"
+    "test": "standard && mocha --recursive",
+    "test-jenkins": "JUNIT_REPORT_PATH=/workspace/report.xml standard && mocha --recursive --colors --reporter mocha-jenkins-reporter"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/HPSoftware/alm-octane-js-rest-sdk.git"
+    "url": "https://github.com/MicroFocus/alm-octane-js-rest-sdk.git"
   },
   "keywords": [
     "octane",
@@ -21,9 +22,10 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "apidoc": "0.16.1",
-    "jsdoc": "3.4.0",
+    "jsdoc": "3.5.5",
     "mocha": "3.0.2",
-    "standard": "7.1.2"
+    "standard": "7.1.2",
+    "mocha-jenkins-reporter": "0.3.10"
   },
   "dependencies": {
     "command-line-args": "^4.0.7",

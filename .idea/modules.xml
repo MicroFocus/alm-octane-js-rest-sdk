@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/alm-octane-js-rest-sdk.iml" filepath="$PROJECT_DIR$/.idea/alm-octane-js-rest-sdk.iml" />
+      <module fileurl="file://$PROJECT_DIR$/alm_octane_js_rest_sdk.iml" filepath="$PROJECT_DIR$/alm_octane_js_rest_sdk.iml" />
     </modules>
   </component>
 </project>

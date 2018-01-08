@@ -22,7 +22,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "apidoc": "0.16.1",
-    "jsdoc": "3.4.0",
+    "jsdoc": "3.5.5",
     "mocha": "3.0.2",
     "standard": "7.1.2",
     "mocha-jenkins-reporter": "0.3.10"

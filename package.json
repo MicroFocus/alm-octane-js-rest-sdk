@@ -28,9 +28,11 @@
     "mocha-jenkins-reporter": "0.3.10"
   },
   "dependencies": {
+    "command-line-args": "^4.0.7",
     "cookie": "0.3.1",
     "debug": "2.2.0",
     "pluralize": "3.0.0",
+    "read-config": "^2.0.0",
     "request": "2.74.0"
   },
   "apidoc": {

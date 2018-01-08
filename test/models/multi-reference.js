@@ -192,8 +192,8 @@ describe('models/multi-reference', function () {
 
   it('should parse the array of entity objects', function () {
     var expect = new MultiReference([
-      new Reference(1043, 'defect'),
-      new Reference(1033, 'defect')
+      new Reference('1043', 'defect'),
+      new Reference('1033', 'defect')
     ])
 
     var refs = MultiReference.parse(defects)
@@ -203,8 +203,8 @@ describe('models/multi-reference', function () {
 
   it('should parse the MultiReference object', function () {
     var expect = new MultiReference([
-      new Reference(1043, 'defect'),
-      new Reference(1033, 'defect')
+      new Reference('1043', 'defect'),
+      new Reference('1033', 'defect')
     ])
 
     var refs = MultiReference.parse(MultiReference.parse(defects))
@@ -213,7 +213,7 @@ describe('models/multi-reference', function () {
   })
 
   it('should output the correct JSON string', function () {
-    var expect = '{"total_count":2,"data":[{"id":1043,"type":"defect"},{"id":1033,"type":"defect"}]}'
+    var expect = '{"total_count":2,"data":[{"id":"1043","type":"defect"},{"id":"1033","type":"defect"}]}'
 
     var refs = MultiReference.parse(defects)
 

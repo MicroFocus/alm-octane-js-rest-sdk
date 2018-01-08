@@ -108,7 +108,7 @@ describe('models/reference', function () {
   }
 
   it('should parse the entity object', function () {
-    var expect = new Reference(1043, 'defect')
+    var expect = new Reference('1043', 'defect')
 
     var ref = Reference.parse(defect)
 
@@ -116,7 +116,7 @@ describe('models/reference', function () {
   })
 
   it('should parse the Reference object', function () {
-    var expect = new Reference(1043, 'defect')
+    var expect = new Reference('1043', 'defect')
 
     var ref = Reference.parse(Reference.parse(defect))
 
@@ -124,7 +124,7 @@ describe('models/reference', function () {
   })
 
   it('should output the correct JSON string', function () {
-    var expect = '{"id":1043,"type":"defect"}'
+    var expect = '{"id":"1043","type":"defect"}'
 
     var ref = Reference.parse(defect)
 

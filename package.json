@@ -5,7 +5,7 @@
   "main": "lib",
   "scripts": {
     "test": "standard && mocha --recursive",
-    "test-jenkins": "JUNIT_REPORT_PATH=/workspace/report.xml standard && mocha --recursive --colors --reporter mocha-jenkins-reporter"
+    "test-jenkins": "JUNIT_REPORT_PATH=report.xml set NODE_ENV=test standard&& NODE_ENV=test mocha --recursive --colors --reporter mocha-jenkins-reporter"
   },
   "repository": {
     "type": "git",

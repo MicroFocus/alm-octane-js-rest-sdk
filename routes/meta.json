@@ -65,7 +65,7 @@
 	},
 	"severities": {
 		"get-all": {
-			"url": "/list_nodes?query=\"list_root EQ {name EQ ^Severity^}\"&order_by=id",
+			"url": "/list_nodes?query=\"list_root EQ {id EQ ^list_node.severity^}\"&order_by=id",
 			"method": "GET",
 			"params": {},
 			"description": "Gets severities list"
@@ -73,7 +73,7 @@
 	},
 	"priorities": {
 		"get-all": {
-			"url": "/list_nodes?query=\"list_root EQ {name EQ ^Priority^}\"&order_by=id",
+			"url": "/list_nodes?query=\"list_root EQ {id EQ ^list_node.priority^}\"&order_by=id",
 			"method": "GET",
 			"params": {},
 			"description": "Gets priorities list"

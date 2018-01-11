@@ -14,10 +14,17 @@
  * limitations under the License.
 */
 
+/**
+ * Note:  This can only be tested if tech preview is *on*  since attachments need tech preview to work
+ * correctly
+ */
+
 /* eslint-env mocha */
 
 'use strict'
 
+var Query = require('../../lib/query')
+var Reference = require('../../lib/models/reference')
 var assert = require('assert')
 
 var fs = require('fs')
@@ -29,7 +36,7 @@ describe('[attachments]', function () {
   this.timeout(60000)
 
   var client
-  var workItem
+  var defectId
   var attachmentID
   var attachmentName = 'attachment.txt'
   var attachmentFile = path.join(__dirname, 'attachment-test.txt')
@@ -48,30 +55,54 @@ describe('[attachments]', function () {
       } else {
         client = aClient
 
-        client.workItems.getAll({limit: 1}, function (err, workItems) {
+        fs.writeFileSync(attachmentFile, attachmentFileContent)
+
+        // create a defect for attachments
+        client.workItemRoots.getAll({limit: 1}, function (err, workItemRoots) {
           assert.equal(err, null)
-          assert.equal(workItems.length, 1)
+          assert.equal(workItemRoots.length, 1)
 
-          workItem = workItems[0]
+          client.severities.getAll({}, function (err, severities) {
+            assert.equal(err, null)
+            assert(severities.length > 0)
 
-          fs.writeFileSync(attachmentFile, attachmentFileContent)
-          done()
+            var q = Query.field('entity').equal('defect')
+            client.phases.getAll({query: q}, function (err, phases) {
+              assert.equal(err, null)
+              assert(phases.length > 0)
+              var defect = {
+                name: 'defectforattachment',
+                parent: workItemRoots[0],
+                severity: severities[0],
+                phase: phases[0]
+              }
+              client.defects.create(defect, function (err, defect) {
+                assert.equal(err, null)
+                assert(defect.id)
+                defectId = defect.id
+                done()
+              })
+            })
+          })
         })
       }
     })
   })
 
-  after('delete the temporary test file', function () {
+  after('delete the temporary test file', function (done) {
     if (fs.existsSync(attachmentFile)) {
       fs.unlinkSync(attachmentFile)
     }
+    client.defects.delete({id: defectId}, function () {
+      done()
+    })
   })
 
   it('should successfully create an attachment', function (done) {
     var attachment = {
       name: attachmentName,
       file: attachmentFile,
-      owner_work_item: workItem
+      owner_work_item: new Reference(defectId, 'work_item')
     }
     client.attachments.create(attachment, function (err, attachment) {
       assert.equal(err, null)
@@ -99,7 +130,7 @@ describe('[attachments]', function () {
   })
 
   it('should successfully get the attachment binary data', function (done) {
-    client.attachments.download({id: attachmentID}, function (err, data) {
+    client.attachments.download({id: attachmentID, filename: attachmentName}, function (err, data) {
       assert.equal(err, null)
       assert.strictEqual(data.toString(), attachmentFileContent)
       done()

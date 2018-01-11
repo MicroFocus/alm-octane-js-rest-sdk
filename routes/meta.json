@@ -42,6 +42,11 @@
 				"type": "integer",
 				"required": true,
 				"description": "The id."
+			},
+			"filename": {
+				"type": "string",
+				"required": true,
+				"description": "Used for attachments when needing to specify the attachment name"
 			}
 		}
 	},
@@ -180,11 +185,12 @@
 			"description": "Create a single attachment."
 		},
 		"download": {
-			"url": "/attachments/:id",
+			"url": "/attachments/:id/:filename",
 			"method": "GET",
 			"accept": "application/octet-stream",
 			"params": {
-				"$id": null
+				"$id": null,
+				"$filename": null
 			},
 			"description": "Downloads a single attachment."
 		}

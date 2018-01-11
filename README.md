@@ -189,7 +189,8 @@ Client API: https://pages.github.hpe.com/ALMOctane-Hackathon/node-octane/
 ## Update client API
 The HPE ALM Octane REST API is fully metadata-driven. When the Octane REST API is updated, you can update the client API from the metadata.
 
-Create a configuration file (eg `octane.json`) file for updating client API. It defines the Octane server's configuration and user credentials.
+Create a configuration file (eg `octane.json`) file for updating client API. It defines the Octane server's configuration and user credentials.  Note that by default the tech preview API is *not* enabled.  To enable it
+(especially when using attachments) use the `tech_preview_API` key as demonstrated below 
 
 ```bash
 $ cat > octane.json << EOH
@@ -199,7 +200,8 @@ $ cat > octane.json << EOH
     "host": "<HOST>",
     "port": <PORT>,
     "shared_space_id": <SHARED_SPACE_ID>,
-    "workspace_id": <WORKSPACE_ID>
+    "workspace_id": <WORKSPACE_ID>,
+    "tech_preview_API": <boolean for whether tech preview api should be enabled>
   },
   "options": {
     "username": "<USERNAME>",
@@ -268,6 +270,9 @@ EOH
 
 npm test test/integration
 ```
+
+**Please Note**
+When running integration tests and these include *attachments* the *tech preview api* needs to be enabled otherwise the attachments will fail
 
 ## Disclaimer
 Certain versions of software accessible here may contain branding from Hewlett-Packard Company (now HP Inc.) and Hewlett Packard Enterprise Company.  As of September 1, 2017, the software is now offered by Micro Focus, a separately owned and operated company.  Any reference to the HP and Hewlett Packard Enterprise/HPE marks is historical in nature, and the HP and Hewlett Packard Enterprise/HPE marks are the property of their respective owners.

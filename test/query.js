@@ -20,6 +20,7 @@
 
 var assert = require('assert')
 
+const AssertionError = assert.AssertionError
 var Query = require('../lib/query')
 
 describe('query', function () {
@@ -80,5 +81,20 @@ describe('query', function () {
 
     var query2 = Query.field('user_tags').equal(Query.field('id').equal(1001)).and().field('user_tags').equal(Query.field('id').equal(50000000))
     assert.strictEqual(query2.build(), expect)
+  })
+
+  it('should test between query (numbers)', function () {
+    var expect = 'id BTW 1...4'
+    var query = Query.field('id').between(1,4)
+    assert.strictEqual(query.build(), expect)
+  })
+
+  it('should test between query (dates)', function () {
+    var now = new Date()
+    var then = new Date()
+    then.setSeconds(now.getSeconds() - 1000)
+    var expect = 'date BTW ^' + then.toISOString() + '^...^' + now.toISOString() + '^'
+    var query = Query.field('date').between(then, now)
+    assert.strictEqual(query.build(), expect)
   })
 })

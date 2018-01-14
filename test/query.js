@@ -97,4 +97,30 @@ describe('query', function () {
     var query = Query.field('date').between(then, now)
     assert.strictEqual(query.build(), expect)
   })
+
+  it('should test inComparison', function () {
+    var expect = 'id IN 1,2,3'
+    var query = Query.field('id').inComparison([1, 2, 3])
+    assert.strictEqual(query.build(), expect)
+  })
+
+  it('should test inComparison (one param)', function () {
+    var now = new Date()
+    var expect = 'id IN ^' + now.toISOString() + '^'
+    var query = Query.field('id').inComparison([now])
+    assert.strictEqual(query.build(), expect)
+  })
+
+  it('should test inComparison (with string not array)', function () {
+    var query = Query.field('id').inComparison('1')
+    var failed = false
+    try {
+      query.build()
+      failed = true
+    } catch (e) {
+    }
+    if (failed) {
+      assert.fail('In Comparison didn\'t work')
+    }
+  })
 })

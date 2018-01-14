@@ -147,6 +147,13 @@ var query = Query.field('user_tags').equal(Query.field('id').equal(1001)).and().
 // or use the sub query
 var query1 = Query.field('user_tags').equal(Query.field('id').equal(1001))
 var query2 = Query.field('user_tags').equal(Query.field('id').equal(3008))
+
+// query statement "id BTW 1..3" - notice that there are two parameters
+var query = Query.field('id').between(1,2)
+
+// query statement "id IN 1,2,3" - the parameter has to be an array
+var query = Query.field('id').inComparison([1,2,3])
+
 var query = query1.and(query2)
 ```
 

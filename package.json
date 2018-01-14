@@ -1,5 +1,5 @@
 {
-  "name": "hpe-alm-octane-js-rest-sdk",
+  "name": "@microfocus/hpe-alm-octane-js-rest-sdk",
   "version": "12.55.9",
   "description": "NodeJS wrapper for the HPE ALM Octane API",
   "main": "lib",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/MicroFocus/alm-octane-js-rest-sdk.git"
+    "url": "git+https://github.com/MicroFocus/alm-octane-js-rest-sdk.git"
   },
   "keywords": [
     "octane",
@@ -18,7 +18,10 @@
     "sdk",
     "rest"
   ],
-  "author": "DaSheng Jian <da-sheng.jian@hpe.com>",
+  "contributors": [
+    "DaSheng Jian <da-sheng.jian@hpe.com>",
+    "Spencer Bruce <spencer.bruce@hpe.com"
+  ],
   "license": "Apache-2.0",
   "devDependencies": {
     "apidoc": "^0.16.1",
@@ -40,5 +43,14 @@
     "template": {
       "withCompare": false
     }
+  },
+  "bugs": {
+    "url": "https://github.com/MicroFocus/alm-octane-js-rest-sdk/issues"
+  },
+  "homepage": "https://github.com/MicroFocus/alm-octane-js-rest-sdk#readme",
+  "directories": {
+    "doc": "doc",
+    "lib": "lib",
+    "test": "test"
   }
 }

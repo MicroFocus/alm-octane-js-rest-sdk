@@ -7,7 +7,7 @@ A Node.js wrapper for the MF ALM Octane API.
 Install via npm
 
 ```bash
-$ npm i hpe-alm-octane-js-rest-sdk
+$ npm i @microfocus/hpe-alm-octane-js-rest-sdk
 ```
 
 ## Example

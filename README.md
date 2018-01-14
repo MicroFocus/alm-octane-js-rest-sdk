@@ -1,21 +1,19 @@
 # Node-Octane
 
-A Node.js wrapper for the HPE ALM Octane API.
+A Node.js wrapper for the MF ALM Octane API.
 
 ## Installation
 
-Install via git clone
+Install via npm
 
 ```bash
-$ git clone https://github.com/HPSoftware/alm-octane-js-rest-sdk.git
-$ cd node-octane
-$ npm install
+$ npm i hpe-alm-octane-js-rest-sdk
 ```
 
 ## Example
 
 ```javascript
-var Octane = require('octane')
+var Octane = require('hpe-alm-octane-js-rest-sdk')
 
 var octane = new Octane({
   protocol: "https",
@@ -114,7 +112,7 @@ The Octane REST API supports entities query by filtering values of fields. To fi
 The client API provides the Query module to help you build the query, rather than writing the complex query statement.
 
 ```javascript
-var Query = require('octane/query')
+var Query = require('hpe-alm-octane-js-rest-sdk/query')
 
 // query statement: "id EQ 1005"
 var query = Query.field('id').equal(1005)
@@ -194,7 +192,7 @@ octane.attachments.download({id: attachmentID}, function (err, data) {
 Client API: https://pages.github.hpe.com/ALMOctane-Hackathon/node-octane/
 
 ## Update client API
-The HPE ALM Octane REST API is fully metadata-driven. When the Octane REST API is updated, you can update the client API from the metadata.
+The MF ALM Octane REST API is fully metadata-driven. When the Octane REST API is updated, you can update the client API from the metadata.
 
 Create a configuration file (eg `octane.json`) file for updating client API. It defines the Octane server's configuration and user credentials.  Note that by default the tech preview API is *not* enabled.  To enable it
 (especially when using attachments) use the `tech_preview_API` key as demonstrated below 

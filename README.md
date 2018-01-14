@@ -188,9 +188,6 @@ octane.attachments.download({id: attachmentID}, function (err, data) {
 ...
 ```
 
-## Documentation
-Client API: https://pages.github.hpe.com/ALMOctane-Hackathon/node-octane/
-
 ## Update client API
 The MF ALM Octane REST API is fully metadata-driven. When the Octane REST API is updated, you can update the client API from the metadata.
 

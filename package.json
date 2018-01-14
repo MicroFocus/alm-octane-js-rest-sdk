@@ -21,11 +21,11 @@
   "author": "DaSheng Jian <da-sheng.jian@hpe.com>",
   "license": "Apache-2.0",
   "devDependencies": {
-    "apidoc": "0.16.1",
+    "apidoc": "^0.16.1",
     "jsdoc": "3.5.5",
     "mocha": "3.0.2",
-    "standard": "7.1.2",
-    "mocha-jenkins-reporter": "0.3.10"
+    "mocha-jenkins-reporter": "0.3.10",
+    "standard": "7.1.2"
   },
   "dependencies": {
     "command-line-args": "^4.0.7",

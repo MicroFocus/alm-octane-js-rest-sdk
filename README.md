@@ -13,7 +13,7 @@ $ npm i @microfocus/hpe-alm-octane-js-rest-sdk
 ## Example
 
 ```javascript
-var Octane = require('hpe-alm-octane-js-rest-sdk')
+var Octane = require('@microfocus/hpe-alm-octane-js-rest-sdk')
 
 var octane = new Octane({
   protocol: "https",
@@ -112,7 +112,7 @@ The Octane REST API supports entities query by filtering values of fields. To fi
 The client API provides the Query module to help you build the query, rather than writing the complex query statement.
 
 ```javascript
-var Query = require('hpe-alm-octane-js-rest-sdk/query')
+var Query = require('@microfocus/hpe-alm-octane-js-rest-sdk/query')
 
 // query statement: "id EQ 1005"
 var query = Query.field('id').equal(1005)

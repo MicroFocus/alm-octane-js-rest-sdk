@@ -153,6 +153,11 @@ var query = Query.field('id').between(1,2)
 var query = Query.field('id').inComparison([1,2,3])
 
 var query = query1.and(query2)
+
+// for null use either Query.NULL for non-reference fields or Query.NULL_REFERENCE for references (Query.NONE still exists for backwards-compatibility
+// and is the same as Query.NULL_REFERENCE) 
+var query1 = Query.field('string_field').equal(Query.NULL)
+var query2 = Query.field('reference_field').equal(Query.NULL_REFERENCE)
 ```
 
 ## Attachment

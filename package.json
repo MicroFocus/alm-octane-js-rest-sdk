@@ -1,6 +1,6 @@
 {
   "name": "@microfocus/hpe-alm-octane-js-rest-sdk",
-  "version": "12.55.9",
+  "version": "12.55.13",
   "description": "NodeJS wrapper for the HPE ALM Octane API",
   "main": "lib",
   "scripts": {

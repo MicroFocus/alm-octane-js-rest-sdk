@@ -20,7 +20,6 @@
 
 var assert = require('assert')
 
-const AssertionError = assert.AssertionError
 var Query = require('../lib/query')
 
 describe('query', function () {
@@ -122,5 +121,17 @@ describe('query', function () {
     if (failed) {
       assert.fail('In Comparison didn\'t work')
     }
+  })
+
+  it('should test null query for string', function () {
+    var expect = 'string EQ null'
+    var query = Query.field('string').equal(Query.NULL)
+    assert.strictEqual(query.build(), expect)
+  })
+
+  it('should test null query for reference', function () {
+    var expect = 'reference EQ {null}'
+    var query = Query.field('reference').equal(Query.NULL_REFERENCE)
+    assert.strictEqual(query.build(), expect)
   })
 })

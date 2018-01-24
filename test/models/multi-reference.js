@@ -219,4 +219,9 @@ describe('models/multi-reference', function () {
 
     assert.strictEqual(JSON.stringify(refs), expect)
   })
+
+  it('should add a new reference', function () {
+    var refs = MultiReference.parse(defects)
+    refs.addReference(new Reference('1', 'type'))
+  })
 })

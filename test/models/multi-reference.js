@@ -221,7 +221,10 @@ describe('models/multi-reference', function () {
   })
 
   it('should add a new reference', function () {
+    var expect = '{"total_count":3,"data":[{"id":"1043","type":"defect"},{"id":"1033","type":"defect"},{"id":"1","type":"defect"}]}'
     var refs = MultiReference.parse(defects)
-    refs.addReference(new Reference('1', 'type'))
+    refs.addReference(new Reference('1', 'defect'))
+
+    assert.strictEqual(JSON.stringify(refs), expect)
   })
 })

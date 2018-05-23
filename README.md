@@ -12,6 +12,8 @@ $ npm i @microfocus/hpe-alm-octane-js-rest-sdk
 
 ## Example
 
+> Please note that for the first time use, you need to do [Update client API](#update-client-api) first.
+
 ```javascript
 var Octane = require('@microfocus/hpe-alm-octane-js-rest-sdk')
 
@@ -20,7 +22,8 @@ var octane = new Octane({
   host: <HOST>,
   port: <PORT>,
   shared_space_id: <SHARED_SPACE_ID>,
-  workspace_id: <WORKSPACE_ID>
+  workspace_id: <WORKSPACE_ID>,
+  routesConfig: <ROUTES_CONFIG_FILE_PATH> | <ROUTES_CONFIG_JSON_OBJECT>
 })
 
 octane.authenticate({
@@ -153,7 +156,7 @@ octane.defects.getAll({query: query}, function (err, defect) {
 
 ...
 
-// query statement: "name EQ ^test*^" 
+// query statement: "name EQ ^test*^"
 var query = Query.field('name').equal('test*')
 
 // query statement: "user_tags EQ {id EQ 1001}"
@@ -186,7 +189,7 @@ var query = Query.field('id').inComparison([1,2,3])
 var query = query1.and(query2)
 
 // for null use either Query.NULL for non-reference fields or Query.NULL_REFERENCE for references (Query.NONE still exists for backwards-compatibility
-// and is the same as Query.NULL_REFERENCE) 
+// and is the same as Query.NULL_REFERENCE)
 var query1 = Query.field('string_field').equal(Query.NULL)
 var query2 = Query.field('reference_field').equal(Query.NULL_REFERENCE)
 ```
@@ -208,7 +211,7 @@ octane.attachments.create(attachment, function (err, attachment) {
 ...
 ```
 
-The attachment has both entity data and binary data. 
+The attachment has both entity data and binary data.
 To get the attachment's entity data, call `attachments.get()`; to get its binary data, call `attachments.download()`.
 
 ```javascript
@@ -228,7 +231,7 @@ octane.attachments.download({id: attachmentID}, function (err, data) {
 The MF ALM Octane REST API is fully metadata-driven. When the Octane REST API is updated, you can update the client API from the metadata.
 
 Create a configuration file (eg `octane.json`) file for updating client API. It defines the Octane server's configuration and user credentials.  Note that by default the tech preview API is *not* enabled.  To enable it
-(especially when using attachments) use the `tech_preview_API` key as demonstrated below 
+(especially when using attachments) use the `tech_preview_API` key as demonstrated below
 
 ```bash
 $ cat > octane.json << EOH
@@ -255,6 +258,8 @@ $ node scripts/generate_default_routes.js /path/to/octane.json
 ```
 
 > The client API is defined in `routes/default.json` file. When you run this script to update the client API, you actually update the `routes/default.json` file.
+
+> You can copy this file to any other places (a place under the control of VCS for example), and pass the file's absolute path to the client constructor to use it, see [Example](#example).
 
 > The `routes/meta.json` file defines the minimal client API. It can't be changed or deleted.
 

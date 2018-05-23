@@ -28,7 +28,7 @@ describe('[defects]', function () {
   this.timeout(60000)
 
   var client
-  var defectID
+  var defectIDs
   var defectName = 'defect test'
   var workItemRoot
   var allSeverities
@@ -62,7 +62,7 @@ describe('[defects]', function () {
     })
   })
 
-  function createFiveDefects(callback) {
+  function createFiveDefects (callback) {
     client.workItemRoots.getAll({limit: 1}, function (err, workItemRoots) {
       assert.equal(err, null)
       assert.equal(workItemRoots.length, 1)
@@ -79,19 +79,22 @@ describe('[defects]', function () {
           assert(phases.length > 0)
           allPhases = phases
 
+          var defects = []
           for (var loop = 0; loop < 5; ++loop) {
-            var defect = {
+            defects[loop] = {
               name: 'defect' + loop,
               parent: workItemRoot,
               severity: allSeverities[loop],
               phase: allPhases[loop]
             }
-            client.defects.create(defect, function (err, defect) {
-              assert.equal(err, null)
-              assert(defect.id)
-            })
           }
-          callback();
+          client.defects.createBulk(defects, function (err, defects) {
+            assert.equal(err, null)
+            assert(defects)
+
+            defectIDs = defects.data.map(defect => defect.id)
+            callback()
+          })
         })
       })
     })
@@ -107,37 +110,55 @@ describe('[defects]', function () {
     client.defects.create(defect, function (err, defect) {
       assert.equal(err, null)
       assert(defect.id)
-
-      defectID = defect.id
       done()
     })
   })
 
   it('should successfully get a defect', function (done) {
-    client.defects.get({id: defectID}, function (err, defect) {
+    client.defects.get({id: defectIDs[0]}, function (err, defect) {
       assert.equal(err, null)
       assert(defect)
-
-      assert.strictEqual(defect.name, defectName)
+      assert(defect.name)
       done()
     })
   })
 
   it('should successfully update a defect', function (done) {
-    var name = 'defect test updated'
-    client.defects.update({id: defectID, name: name}, function (err, defect) {
+    var name = 'defect test updated' + Math.floor((Math.random() * 100) + 1)
+    client.defects.update({id: defectIDs[0], name: name}, function (err, defect) {
       assert.equal(err, null)
       assert(defect)
 
-      client.defects.get({id: defectID, fields: 'name'}, function (err, defect) {
+      client.defects.get({id: defectIDs[0], fields: 'name'}, function (err, defect) {
+        assert.equal(err, null)
         assert.strictEqual(defect.name, name)
         done()
       })
     })
   })
 
+  it('should successfully update two defects', function (done) {
+    var name1 = 'defect1 test updated' + Math.floor((Math.random() * 100) + 1)
+    var name2 = 'defect2 test updated' + Math.floor((Math.random() * 100) + 1)
+    client.defects.updateBulk([{id: defectIDs[0], name: name1}, {id: defectIDs[1], name: name2}], function (err, defect) {
+      assert.equal(err, null)
+      assert(defect)
+
+      client.defects.get({id: defectIDs[0], fields: 'name'}, function (err, defect) {
+        assert.equal(err, null)
+        assert.strictEqual(defect.name, name1)
+
+        client.defects.get({id: defectIDs[1], fields: 'name'}, function (err, defect) {
+          assert.equal(err, null)
+          assert.strictEqual(defect.name, name2)
+          done()
+        })
+      })
+    })
+  })
+
   it('should successfully delete a defect', function (done) {
-    client.defects.delete({id: defectID}, function (err, defect) {
+    client.defects.delete({id: defectIDs[3]}, function (err, defect) {
       assert.equal(err, null)
       done()
     })
@@ -146,7 +167,8 @@ describe('[defects]', function () {
   it('should successfully get all defects list', function (done) {
     client.defects.getAll({}, function (err, defects) {
       assert.equal(err, null)
-      assert(defects.meta.total_count === 5)
+      assert(defects.meta.total_count > 0)
+      assert(defects.length > 0)
       done()
     })
   })
@@ -154,7 +176,7 @@ describe('[defects]', function () {
   it('should successfully get defects list with limit', function (done) {
     client.defects.getAll({limit: 3}, function (err, defects) {
       assert.equal(err, null)
-      assert(defects.meta.total_count === 5)
+      assert(defects.meta.total_count > 0)
       assert(defects.length === 3)
       done()
     })

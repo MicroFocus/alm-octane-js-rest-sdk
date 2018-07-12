@@ -1,7 +1,7 @@
 {
   "name": "@microfocus/hpe-alm-octane-js-rest-sdk",
-  "version": "12.55.25",
-  "description": "NodeJS wrapper for the HPE ALM Octane API",
+  "version": "12.60.4",
+  "description": "NodeJS wrapper for the Micro Focus ALM Octane API",
   "main": "lib",
   "scripts": {
     "test": "standard && mocha --recursive",
@@ -13,14 +13,14 @@
   },
   "keywords": [
     "octane",
-    "hpe",
+    "microfocus",
     "alm",
     "sdk",
     "rest"
   ],
   "contributors": [
-    "DaSheng Jian <da-sheng.jian@hpe.com>",
-    "Spencer Bruce <spencer.bruce@hpe.com"
+    "DaSheng Jian <da-sheng.jian@microfocus.com>",
+    "Spencer Bruce <spencer.bruce@microfocus.com"
   ],
   "license": "Apache-2.0",
   "devDependencies": {

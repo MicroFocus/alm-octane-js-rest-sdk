@@ -1,6 +1,6 @@
 {
   "name": "@microfocus/hpe-alm-octane-js-rest-sdk",
-  "version": "12.55.9-1",
+  "version": "12.55.25",
   "description": "NodeJS wrapper for the HPE ALM Octane API",
   "main": "lib",
   "scripts": {
@@ -24,18 +24,18 @@
   ],
   "license": "Apache-2.0",
   "devDependencies": {
-    "apidoc": "^0.16.1",
+    "apidoc": "^0.17.6",
     "jsdoc": "3.5.5",
-    "mocha": "3.0.2",
-    "mocha-jenkins-reporter": "0.3.10",
+    "mocha": "^5.2.0",
+    "mocha-jenkins-reporter": "0.3.12",
     "standard": "7.1.2"
   },
   "dependencies": {
     "command-line-args": "^4.0.7",
-    "debug": "2.2.0",
+    "debug": "3.1.0",
     "pluralize": "3.0.0",
     "read-config": "^2.0.0",
-    "request": "2.74.0"
+    "request": "2.87.0"
   },
   "apidoc": {
     "title": "node-octane",

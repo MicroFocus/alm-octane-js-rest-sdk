@@ -80,7 +80,7 @@ describe('[attachments]', function () {
                 assert.equal(err, null)
                 assert(defect.id)
                 defectId = defect.id
-                done()
+                createAttachment(done)
               })
             })
           })
@@ -89,16 +89,7 @@ describe('[attachments]', function () {
     })
   })
 
-  after('delete the temporary test file', function (done) {
-    if (fs.existsSync(attachmentFile)) {
-      fs.unlinkSync(attachmentFile)
-    }
-    client.defects.delete({id: defectId}, function () {
-      done()
-    })
-  })
-
-  it('should successfully create an attachment', function (done) {
+  function createAttachment (done) {
     var attachment = {
       name: attachmentName,
       file: attachmentFile,
@@ -109,6 +100,15 @@ describe('[attachments]', function () {
       assert(attachment.id)
 
       attachmentID = attachment.id
+      done()
+    })
+  }
+
+  after('delete the temporary test file', function (done) {
+    if (fs.existsSync(attachmentFile)) {
+      fs.unlinkSync(attachmentFile)
+    }
+    client.defects.delete({id: defectId}, function () {
       done()
     })
   })

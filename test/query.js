@@ -84,7 +84,7 @@ describe('query', function () {
 
   it('should test between query (numbers)', function () {
     var expect = 'id BTW 1...4'
-    var query = Query.field('id').between(1,4)
+    var query = Query.field('id').between(1, 4)
     assert.strictEqual(query.build(), expect)
   })
 

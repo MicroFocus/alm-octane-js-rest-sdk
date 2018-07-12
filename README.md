@@ -70,6 +70,37 @@ octane.authenticate({
   octane.defects.create(defect, function (err, defect) {
     console.log(defect)
   })
+  
+  // create multiple defects
+  var defect1 = {
+    name: 'defect1',
+    parent: aWorkItemRoot,
+    severity: aSeverity,
+    phase: aDefectPhase
+  }
+  
+  var defect2 = {
+      name: 'defect2',
+      parent: aWorkItemRoot,
+      severity: aSeverity,
+      phase: aDefectPhase
+    }
+  octane.defects.createBulk([defect1, defect2], function (err, defect) {
+    console.log(defect)
+  })
+
+  // update a defect
+  var name = 'defect test updated' + Math.floor((Math.random() * 100) + 1)
+  client.defects.update({id: defectIDs[0], name: name}, function (err, defect) {  
+    console.log(defect)
+  })
+  
+  // update multiple defects
+  var name1 = 'defect1 test updated' + Math.floor((Math.random() * 100) + 1)
+  var name2 = 'defect2 test updated' + Math.floor((Math.random() * 100) + 1)
+  client.defects.updateBulk([{id: defectIDs[0], name: name1}, {id: defectIDs[1], name: name2}], function (err, defect) {
+    console.log(defect)
+  }
 
   // get a defect
   octane.defects.get({id: 1001}, function (err, defect) {

@@ -189,6 +189,13 @@ function createRoute (entity, fields) {
           params: params,
           description: 'Create a single ' + utils.toDisplayName(name) + '.'
         }
+
+        route['create-bulk'] = {
+          url: '/' + url,
+          method: 'POST',
+          params: params,
+          description: 'Create multiple ' + utils.toDisplayName(name) + '.'
+        }
       }
 
       if (methods.indexOf('PUT') > -1) {
@@ -199,6 +206,13 @@ function createRoute (entity, fields) {
           method: 'PUT',
           params: params,
           description: 'Update a single ' + utils.toDisplayName(name) + '.'
+        }
+
+        route['update-bulk'] = {
+          url: '/' + url,
+          method: 'PUT',
+          params: params,
+          description: 'Update multiple ' + utils.toDisplayName(name) + '.'
         }
       }
 

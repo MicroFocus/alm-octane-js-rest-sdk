@@ -46,7 +46,7 @@ describe('[severities]', function () {
 
   it('should successfully get all severities list', function (done) {
     client.severities.getAll({}, function (err, severities) {
-      assert.equal(err, null)
+      assert.strictEqual(err, null)
       severities.forEach(function (severity) {
         assert(severity.logical_name.startsWith('list_node.severity.'))
       })

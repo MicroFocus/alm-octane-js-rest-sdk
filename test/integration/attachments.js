@@ -58,17 +58,17 @@ describe('[attachments]', function () {
         fs.writeFileSync(attachmentFile, attachmentFileContent)
 
         // create a defect for attachments
-        client.workItemRoots.getAll({limit: 1}, function (err, workItemRoots) {
-          assert.equal(err, null)
-          assert.equal(workItemRoots.length, 1)
+        client.workItemRoots.getAll({ limit: 1 }, function (err, workItemRoots) {
+          assert.strictEqual(err, null)
+          assert.strictEqual(workItemRoots.length, 1)
 
           client.severities.getAll({}, function (err, severities) {
-            assert.equal(err, null)
+            assert.strictEqual(err, null)
             assert(severities.length > 0)
 
             var q = Query.field('entity').equal('defect')
-            client.phases.getAll({query: q}, function (err, phases) {
-              assert.equal(err, null)
+            client.phases.getAll({ query: q }, function (err, phases) {
+              assert.strictEqual(err, null)
               assert(phases.length > 0)
               var defect = {
                 name: 'defectforattachment',
@@ -77,7 +77,7 @@ describe('[attachments]', function () {
                 phase: phases[0]
               }
               client.defects.create(defect, function (err, defect) {
-                assert.equal(err, null)
+                assert.strictEqual(err, null)
                 assert(defect.id)
                 defectId = defect.id
                 createAttachment(done)
@@ -96,7 +96,7 @@ describe('[attachments]', function () {
       owner_work_item: new Reference(defectId, 'work_item')
     }
     client.attachments.create(attachment, function (err, attachment) {
-      assert.equal(err, null)
+      assert.strictEqual(err, null)
       assert(attachment.id)
 
       attachmentID = attachment.id
@@ -108,38 +108,38 @@ describe('[attachments]', function () {
     if (fs.existsSync(attachmentFile)) {
       fs.unlinkSync(attachmentFile)
     }
-    client.defects.delete({id: defectId}, function () {
+    client.defects.delete({ id: defectId }, function () {
       done()
     })
   })
 
   it('should successfully get all attachments list', function (done) {
     client.attachments.getAll({}, function (err, attachments) {
-      assert.equal(err, null)
+      assert.strictEqual(err, null)
       assert(attachments.meta.total_count > 0)
       done()
     })
   })
 
   it('should successfully get the attachment entity data', function (done) {
-    client.attachments.get({id: attachmentID}, function (err, attachment) {
-      assert.equal(err, null)
+    client.attachments.get({ id: attachmentID }, function (err, attachment) {
+      assert.strictEqual(err, null)
       assert.strictEqual(attachment.name, attachmentName)
       done()
     })
   })
 
   it('should successfully get the attachment binary data', function (done) {
-    client.attachments.download({id: attachmentID, filename: attachmentName}, function (err, data) {
-      assert.equal(err, null)
+    client.attachments.download({ id: attachmentID, filename: attachmentName }, function (err, data) {
+      assert.strictEqual(err, null)
       assert.strictEqual(data.toString(), attachmentFileContent)
       done()
     })
   })
 
   it('should successfully delete the attachment', function (done) {
-    client.attachments.delete({id: attachmentID}, function (err) {
-      assert.equal(err, null)
+    client.attachments.delete({ id: attachmentID }, function (err) {
+      assert.strictEqual(err, null)
       done()
     })
   })

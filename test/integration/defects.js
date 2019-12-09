@@ -100,7 +100,7 @@ describe('[defects]', function () {
     })
   }
 
-  it('should successfully create a defect', function (done) {
+  it('should successfully create and delete a defect', function (done) {
     var defect = {
       name: defectName,
       parent: workItemRoot,
@@ -110,7 +110,10 @@ describe('[defects]', function () {
     client.defects.create(defect, function (err, defect) {
       assert.strictEqual(err, null)
       assert(defect.id)
-      done()
+      client.defects.delete({ id: defect.id }, function (err) {
+        assert.strictEqual(err, null)
+        done()
+      })
     })
   })
 
@@ -140,7 +143,10 @@ describe('[defects]', function () {
   it('should successfully update two defects', function (done) {
     var name1 = 'defect1 test updated' + Math.floor((Math.random() * 100) + 1)
     var name2 = 'defect2 test updated' + Math.floor((Math.random() * 100) + 1)
-    client.defects.updateBulk([{ id: defectIDs[0], name: name1 }, { id: defectIDs[1], name: name2 }], function (err, defect) {
+    client.defects.updateBulk([{ id: defectIDs[0], name: name1 }, {
+      id: defectIDs[1],
+      name: name2
+    }], function (err, defect) {
       assert.strictEqual(err, null)
       assert(defect)
 
@@ -154,13 +160,6 @@ describe('[defects]', function () {
           done()
         })
       })
-    })
-  })
-
-  it('should successfully delete a defect', function (done) {
-    client.defects.delete({ id: defectIDs[3] }, function (err, defect) {
-      assert.strictEqual(err, null)
-      done()
     })
   })
 
@@ -203,13 +202,17 @@ describe('[defects]', function () {
     })
   })
 
-  after('Delete all defects', function (done) {
-    client.defects.getAll({ fields: 'id' }, function (err, defects) {
+  after('Delete all created defects', function (done) {
+    client.defects.getAll({
+      fields: 'id',
+      query: Query.field('id').inComparison(defectIDs)
+    }, function (err, defects) {
       assert.strictEqual(err, null)
       var promises = []
       for (var defect of defects) {
+        const id = defect.id
         promises.push(new Promise(function (resolve) {
-          client.defects.delete({ id: defect.id }, function () {
+          client.defects.delete({ id: id }, function () {
             resolve()
           })
         }))

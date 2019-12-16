@@ -86,9 +86,9 @@ function parseRoutes (routes, defaultParams) {
 }
 
 function generateAPIAnnotation (section, funcName, block, defaultParams) {
-  var url = block['url']
-  var method = block['method'].toLowerCase()
-  var description = block['description']
+  var url = block.url
+  var method = block.method.toLowerCase()
+  var description = block.description
 
   var annotation = [
     '/**',
@@ -99,7 +99,7 @@ function generateAPIAnnotation (section, funcName, block, defaultParams) {
     ' *'
   ]
 
-  var paramsObj = block['params']
+  var paramsObj = block.params
   var paramKeys = Object.keys(paramsObj)
   paramKeys.sort(function (paramA, paramB) {
     var cleanParamA = paramA.replace(/^\$/, '')
@@ -108,8 +108,8 @@ function generateAPIAnnotation (section, funcName, block, defaultParams) {
     var paramInfoA = paramsObj[paramA] || defaultParams[cleanParamA]
     var paramInfoB = paramsObj[paramB] || defaultParams[cleanParamB]
 
-    var paramRequiredA = paramInfoA['required']
-    var paramRequiredB = paramInfoB['required']
+    var paramRequiredA = paramInfoA.required
+    var paramRequiredB = paramInfoB.required
 
     if (paramRequiredA && !paramRequiredB) return -1
     if (!paramRequiredA && paramRequiredB) return 1
@@ -120,9 +120,9 @@ function generateAPIAnnotation (section, funcName, block, defaultParams) {
     var cleanParam = param.replace(/^\$/, '')
     var paramInfo = paramsObj[param] || defaultParams[cleanParam]
 
-    var paramType = paramInfo['type']
-    var paramRequired = paramInfo['required']
-    var paramDescription = paramInfo['description']
+    var paramType = paramInfo.type
+    var paramRequired = paramInfo.required
+    var paramDescription = paramInfo.description
 
     var paramLabel = cleanParam
 
@@ -131,23 +131,23 @@ function generateAPIAnnotation (section, funcName, block, defaultParams) {
     }
 
     if (paramType === 'integer') {
-      if (paramInfo['min_value'] || paramInfo['max_value']) {
+      if (paramInfo.min_value || paramInfo.max_value) {
         paramDescription += ' (min_value: ' +
-          paramInfo['min_value'] +
+          paramInfo.min_value +
           ', max_value: ' +
-          paramInfo['max_value'] +
+          paramInfo.max_value +
           ')'
       }
     } else if (paramType === 'string') {
-      if (paramInfo['max_length']) {
+      if (paramInfo.max_length) {
         paramDescription += ' (max_length: ' +
-          paramInfo['max_length'] +
+          paramInfo.max_length +
           ')'
       }
     } else if (paramType === 'reference') {
-      if (paramInfo['field_type_data']) {
+      if (paramInfo.field_type_data) {
         paramDescription += ' (multiple: ' +
-          paramInfo['field_type_data']['multiple'] +
+          paramInfo.field_type_data.multiple +
           ')'
       }
     }

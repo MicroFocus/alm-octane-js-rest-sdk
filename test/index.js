@@ -30,13 +30,13 @@ describe('Otcane', function () {
       workspace_id: 1002
     })
 
-    assert.notEqual(client, null)
+    assert.notStrictEqual(client, null)
   })
 
   it('should throw exception when the required configurations are not provided', function () {
     assert.throws(function () {
-      var client = new Octane({host: 'octane.microfocus.com'})
-      assert.notEqual(client, null)
+      var client = new Octane({ host: 'octane.microfocus.com' })
+      assert.notStrictEqual(client, null)
     }, Error)
   })
 })

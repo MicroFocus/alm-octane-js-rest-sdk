@@ -46,7 +46,7 @@ describe('[priorities]', function () {
 
   it('should successfully get all priorities list', function (done) {
     client.priorities.getAll({}, function (err, priorities) {
-      assert.equal(err, null)
+      assert.strictEqual(err, null)
       priorities.forEach(function (priority) {
         assert(priority.logical_name.startsWith('list_node.priority.'))
       })

@@ -41,7 +41,7 @@ function generateDefaultRoutes (configurationJSON) {
       process.exit(1)
     }
     return JSON.parse(
-      fs.readFileSync(options['octaneconfig']['filename'], 'utf8')
+      fs.readFileSync(options.octaneconfig.filename, 'utf8')
     )
   }
 
@@ -170,7 +170,7 @@ function createRoute (entity, fields) {
           description: 'Gets ' + utils.toDisplayName(name, true) + ' list.'
         }
 
-        route['get'] = {
+        route.get = {
           url: '/' + url + '/:id',
           method: 'GET',
           params: {
@@ -183,7 +183,7 @@ function createRoute (entity, fields) {
 
       if (methods.indexOf('POST') > -1) {
         params = parseParameters(fields, true)
-        route['create'] = {
+        route.create = {
           url: '/' + url,
           method: 'POST',
           params: params,
@@ -200,8 +200,8 @@ function createRoute (entity, fields) {
 
       if (methods.indexOf('PUT') > -1) {
         params = parseParameters(fields, false)
-        params['$id'] = null
-        route['update'] = {
+        params.$id = null
+        route.update = {
           url: '/' + url + '/:id',
           method: 'PUT',
           params: params,
@@ -217,7 +217,7 @@ function createRoute (entity, fields) {
       }
 
       if (methods.indexOf('DELETE') > -1) {
-        route['delete'] = {
+        route.delete = {
           url: '/' + url + '/:id',
           method: 'DELETE',
           params: {
@@ -258,12 +258,12 @@ function parseParameters (fields, isForCreate) {
     }
 
     if (type === 'integer') {
-      params[name]['min_value'] = field.min_value
-      params[name]['max_value'] = field.max_value
+      params[name].min_value = field.min_value
+      params[name].max_value = field.max_value
     } else if (type === 'string') {
-      params[name]['max_length'] = field.max_length
+      params[name].max_length = field.max_length
     } else if (type === 'reference') {
-      params[name]['field_type_data'] = field.field_type_data
+      params[name].field_type_data = field.field_type_data
     }
   })
 

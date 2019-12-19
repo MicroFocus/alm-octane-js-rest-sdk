@@ -14,16 +14,14 @@
  * limitations under the License.
 */
 
-'use strict'
+const fs = require('fs')
+const path = require('path')
 
-var fs = require('fs')
-var path = require('path')
+const Octane = require('../lib')
+const utils = require('../lib/utils')
 
-var Octane = require('../lib')
-var utils = require('../lib/utils')
-
-var META_ROUTES_FILE = '../routes/meta.json'
-var DEFAULT_ROUTES_FILE = '../routes/default.json'
+const META_ROUTES_FILE = '../routes/meta.json'
+const DEFAULT_ROUTES_FILE = '../routes/default.json'
 
 function generateDefaultRoutes (configurationJSON) {
   function FileDetails (filename) {
@@ -55,13 +53,13 @@ function generateDefaultRoutes (configurationJSON) {
       process.exit(1)
     }
 
-    loadOcatneMetadata(client, function (err, metadata) {
+    loadOctaneMetadata(client, function (err, metadata) {
       if (err) {
         console.error(err)
         process.exit(1)
       }
 
-      var routes = initializeRoutes(META_ROUTES_FILE)
+      const routes = initializeRoutes(META_ROUTES_FILE)
 
       createRoutesFromOctaneMetadata(routes, metadata)
 
@@ -71,7 +69,7 @@ function generateDefaultRoutes (configurationJSON) {
 }
 
 function initializeOctaneClient (configuration, callback) {
-  var client
+  let client
 
   console.log('loading Ocatne configuration ...')
 
@@ -91,8 +89,8 @@ function initializeOctaneClient (configuration, callback) {
   })
 }
 
-function loadOcatneMetadata (client, callback) {
-  var metadata = {}
+function loadOctaneMetadata (client, callback) {
+  const metadata = {}
 
   console.log('loading entity metadata ...')
   client.metadata.getEntities({}, function (err, entities) {
@@ -127,15 +125,15 @@ function initializeRoutes (routesFile) {
 
 function createRoutesFromOctaneMetadata (routes, metadata) {
   metadata.entities.forEach(function (entity) {
-    var name = entity.name
-    var fields = metadata.fields.filter(function (field) {
+    const name = entity.name
+    const fields = metadata.fields.filter(function (field) {
       return field.entity_name === name
     })
 
-    var route = createRoute(entity, fields)
+    const route = createRoute(entity, fields)
 
     if (route) {
-      var routeName = utils.toDisplayName(name, true)
+      const routeName = utils.toDisplayName(name, true)
       routes[routeName] = routes[routeName] || {}
       utils.extend(routes[routeName], route, true)
     }
@@ -143,17 +141,17 @@ function createRoutesFromOctaneMetadata (routes, metadata) {
 }
 
 function createRoute (entity, fields) {
-  var route
-  var name = entity.name
+  const name = entity.name
+  let route
 
   console.log('creating route for ' + name + ' ...')
   entity.features.forEach(function (feature) {
     if (feature.name === 'rest') {
       route = {}
 
-      var url = feature.url
-      var methods = feature.methods
-      var params
+      const url = feature.url
+      const methods = feature.methods
+      let params
 
       if (methods.indexOf('GET') > -1) {
         route['get-all'] = {
@@ -233,16 +231,16 @@ function createRoute (entity, fields) {
 }
 
 function parseParameters (fields, isForCreate) {
-  var params = {}
+  const params = {}
 
   fields.forEach(function (field) {
-    var name = field.name
-    var label = field.label
-    var type = field.field_type
+    const name = field.name
+    const label = field.label
+    const type = field.field_type
 
-    var required = field.required
-    var editable = field.editable
-    var final = field.final
+    const required = field.required
+    const editable = field.editable
+    const final = field.final
 
     if (!editable) {
       return

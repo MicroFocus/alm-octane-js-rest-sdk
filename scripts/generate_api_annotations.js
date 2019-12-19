@@ -14,22 +14,19 @@
  * limitations under the License.
 */
 
-'use strict'
+const fs = require('fs')
+const path = require('path')
 
-var fs = require('fs')
-var path = require('path')
+const utils = require('../lib/utils')
 
-var utils = require('../lib/utils')
-
-var DEFAULT_ROUTES_FILE = '../routes/default.json'
-var API_ANNOTATIONS_FILE = '../doc/apidoc.js'
+const DEFAULT_ROUTES_FILE = '../routes/default.json'
+const API_ANNOTATIONS_FILE = '../doc/apidoc.js'
 
 function generateAPIAnnotations () {
   console.log('generating api annotations ...')
 
-  var routes
-  var defaultParams
-  var apiAnnotations
+  let routes
+  let defaultParams
 
   console.log('loading default routes file ...')
   try {
@@ -46,7 +43,7 @@ function generateAPIAnnotations () {
     process.exit(1)
   }
 
-  apiAnnotations = parseRoutes(routes, defaultParams)
+  const apiAnnotations = parseRoutes(routes, defaultParams)
 
   saveApiAnnotationsToFile(apiAnnotations, API_ANNOTATIONS_FILE)
 }
@@ -54,24 +51,24 @@ function generateAPIAnnotations () {
 function parseRoutes (routes, defaultParams) {
   console.log('parsing default routes ...')
 
-  var apiAnnotations = ''
+  let apiAnnotations = ''
 
   function generateAPI (routes, baseType) {
     baseType = baseType || ''
 
     Object.keys(routes).forEach(function (routePart) {
-      var routeBlock = routes[routePart]
+      const routeBlock = routes[routePart]
       if (!routeBlock) {
         return
       }
 
-      var messageType = baseType + '/' + routePart
+      const messageType = baseType + '/' + routePart
       if (routeBlock.url && routeBlock.params) {
         console.log('generating api annotation for ' + messageType + ' ...')
-        var parts = messageType.split('/')
-        var section = utils.toCamelCase(parts[1].toLowerCase(), true)
+        const parts = messageType.split('/')
+        const section = utils.toCamelCase(parts[1].toLowerCase(), true)
         parts.splice(0, 2)
-        var funcName = utils.toCamelCase(parts.join('-'), true)
+        const funcName = utils.toCamelCase(parts.join('-'), true)
 
         apiAnnotations += generateAPIAnnotation(section, funcName, routeBlock, defaultParams)
       } else {
@@ -86,11 +83,11 @@ function parseRoutes (routes, defaultParams) {
 }
 
 function generateAPIAnnotation (section, funcName, block, defaultParams) {
-  var url = block.url
-  var method = block.method.toLowerCase()
-  var description = block.description
+  const url = block.url
+  const method = block.method.toLowerCase()
+  const description = block.description
 
-  var annotation = [
+  const annotation = [
     '/**',
     ' * @api {' + method + '} ' + encodeURI(url) + ' ' + funcName,
     ' * @apiName ' + funcName,
@@ -99,17 +96,17 @@ function generateAPIAnnotation (section, funcName, block, defaultParams) {
     ' *'
   ]
 
-  var paramsObj = block.params
-  var paramKeys = Object.keys(paramsObj)
+  const paramsObj = block.params
+  const paramKeys = Object.keys(paramsObj)
   paramKeys.sort(function (paramA, paramB) {
-    var cleanParamA = paramA.replace(/^\$/, '')
-    var cleanParamB = paramB.replace(/^\$/, '')
+    const cleanParamA = paramA.replace(/^\$/, '')
+    const cleanParamB = paramB.replace(/^\$/, '')
 
-    var paramInfoA = paramsObj[paramA] || defaultParams[cleanParamA]
-    var paramInfoB = paramsObj[paramB] || defaultParams[cleanParamB]
+    const paramInfoA = paramsObj[paramA] || defaultParams[cleanParamA]
+    const paramInfoB = paramsObj[paramB] || defaultParams[cleanParamB]
 
-    var paramRequiredA = paramInfoA.required
-    var paramRequiredB = paramInfoB.required
+    const paramRequiredA = paramInfoA.required
+    const paramRequiredB = paramInfoB.required
 
     if (paramRequiredA && !paramRequiredB) return -1
     if (!paramRequiredA && paramRequiredB) return 1
@@ -117,14 +114,14 @@ function generateAPIAnnotation (section, funcName, block, defaultParams) {
   })
 
   paramKeys.forEach(function (param) {
-    var cleanParam = param.replace(/^\$/, '')
-    var paramInfo = paramsObj[param] || defaultParams[cleanParam]
+    const cleanParam = param.replace(/^\$/, '')
+    const paramInfo = paramsObj[param] || defaultParams[cleanParam]
 
-    var paramType = paramInfo.type
-    var paramRequired = paramInfo.required
-    var paramDescription = paramInfo.description
+    const paramType = paramInfo.type
+    const paramRequired = paramInfo.required
 
-    var paramLabel = cleanParam
+    let paramDescription = paramInfo.description
+    let paramLabel = cleanParam
 
     if (!paramRequired) {
       paramLabel = '[' + paramLabel + ']'

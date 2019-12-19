@@ -16,25 +16,23 @@
 
 /* eslint-env mocha */
 
-'use strict'
+const assert = require('assert')
 
-var assert = require('assert')
+const Query = require('../../lib/query')
 
-var Query = require('../../lib/query')
-
-var initializeOctaneClient = require('./helper').initializeOctaneClient
+const initializeOctaneClient = require('./helper').initializeOctaneClient
 
 describe('[metadata/entities]', function () {
   this.timeout(60000)
 
-  var client
+  let client
 
   before('initialize the Octane client', function (done) {
-    var self = this
+    const self = this
 
     initializeOctaneClient(function (err, aClient) {
       if (err) {
-        var msg = err.message
+        const msg = err.message
         console.log('Aborted - %s',
           typeof msg === 'string' ? msg : JSON.stringify(msg)
         )
@@ -55,7 +53,7 @@ describe('[metadata/entities]', function () {
   })
 
   it('should successfully get entities list with filter', function (done) {
-    var q = Query.field('name').equal('defect')
+    const q = Query.field('name').equal('defect')
     client.metadata.getEntities({ query: q }, function (err, entities) {
       assert.strictEqual(err, null)
       assert.strictEqual(entities.meta.total_count, 1)
@@ -67,14 +65,14 @@ describe('[metadata/entities]', function () {
 describe('[metadata/fields]', function () {
   this.timeout(60000)
 
-  var client
+  let client
 
   before('initialize the Octane client', function (done) {
-    var self = this
+    const self = this
 
     initializeOctaneClient(function (err, aClient) {
       if (err) {
-        var msg = err.message
+        const msg = err.message
         console.log('Aborted - %s',
           typeof msg === 'string' ? msg : JSON.stringify(msg)
         )
@@ -95,7 +93,7 @@ describe('[metadata/fields]', function () {
   })
 
   it('should successfully get fields list with filter', function (done) {
-    var q = Query.field('entity_name').equal('defect')
+    const q = Query.field('entity_name').equal('defect')
     client.metadata.getFields({ query: q }, function (err, fields) {
       assert.strictEqual(err, null)
       fields.forEach(function (field) {

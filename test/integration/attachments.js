@@ -21,33 +21,31 @@
 
 /* eslint-env mocha */
 
-'use strict'
+const assert = require('assert')
+const fs = require('fs')
+const path = require('path')
 
-var Query = require('../../lib/query')
-var Reference = require('../../lib/models/reference')
-var assert = require('assert')
+const Query = require('../../lib/query')
+const Reference = require('../../lib/models/reference')
 
-var fs = require('fs')
-var path = require('path')
-
-var initializeOctaneClient = require('./helper').initializeOctaneClient
+const initializeOctaneClient = require('./helper').initializeOctaneClient
 
 describe('[attachments]', function () {
   this.timeout(60000)
+  const attachmentName = 'attachment.txt'
+  const attachmentFile = path.join(__dirname, 'attachment-test.txt')
+  const attachmentFileContent = 'This is an attachment test file.'
 
-  var client
-  var defectId
-  var attachmentID
-  var attachmentName = 'attachment.txt'
-  var attachmentFile = path.join(__dirname, 'attachment-test.txt')
-  var attachmentFileContent = 'This is an attachment test file.'
+  let client
+  let defectId
+  let attachmentID
 
   before('initialize the Octane client', function (done) {
-    var self = this
+    const self = this
 
     initializeOctaneClient(function (err, aClient) {
       if (err) {
-        var msg = err.message
+        const msg = err.message
         console.log('Aborted - %s',
           typeof msg === 'string' ? msg : JSON.stringify(msg)
         )
@@ -66,11 +64,11 @@ describe('[attachments]', function () {
             assert.strictEqual(err, null)
             assert(severities.length > 0)
 
-            var q = Query.field('entity').equal('defect')
+            const q = Query.field('entity').equal('defect')
             client.phases.getAll({ query: q }, function (err, phases) {
               assert.strictEqual(err, null)
               assert(phases.length > 0)
-              var defect = {
+              const defect = {
                 name: 'defectforattachment',
                 parent: workItemRoots[0],
                 severity: severities[0],
@@ -90,7 +88,7 @@ describe('[attachments]', function () {
   })
 
   function createAttachment (done) {
-    var attachment = {
+    const attachment = {
       name: attachmentName,
       file: attachmentFile,
       owner_work_item: new Reference(defectId, 'work_item')

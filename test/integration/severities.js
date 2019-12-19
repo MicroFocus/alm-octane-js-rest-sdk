@@ -16,23 +16,21 @@
 
 /* eslint-env mocha */
 
-'use strict'
+const assert = require('assert')
 
-var assert = require('assert')
-
-var initializeOctaneClient = require('./helper').initializeOctaneClient
+const initializeOctaneClient = require('./helper').initializeOctaneClient
 
 describe('[severities]', function () {
   this.timeout(60000)
 
-  var client
+  let client
 
   before('initialize the Octane client', function (done) {
-    var self = this
+    const self = this
 
     initializeOctaneClient(function (err, aClient) {
       if (err) {
-        var msg = err.message
+        const msg = err.message
         console.log('Aborted - %s',
           typeof msg === 'string' ? msg : JSON.stringify(msg)
         )

@@ -16,16 +16,15 @@
 
 /* eslint-env mocha */
 
-'use strict'
 
-var fs = require('fs')
-var path = require('path')
+const fs = require('fs')
+const path = require('path')
 
-var Client = require('../../lib')
+const Client = require('../../lib')
 
 exports.initializeOctaneClient = function (callback) {
-  var client
-  var config
+  let client
+  let config
 
   try {
     config = JSON.parse(

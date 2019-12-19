@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="JavaScriptSettings">
-    <option name="languageLevel" value="JSX" />
+    <option name="languageLevel" value="ES6" />
   </component>
   <component name="OctanePluginState" EXPECTED_COMMIT_MESSAGE="{&quot;value&quot;:&quot;alm-octane-js-rest-sdk-16 Create and update multiple entitiesEnable multiple entitiesFixed testsUpdated version of  SDK&quot;}" />
+  <component name="ProjectRootManager">
+    <output url="file://$PROJECT_DIR$/out" />
+  </component>
 </project>

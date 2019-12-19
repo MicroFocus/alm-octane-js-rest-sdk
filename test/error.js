@@ -16,34 +16,31 @@
 
 /* eslint-env mocha */
 
-'use strict'
-
-var assert = require('assert')
-
-var error = require('../lib/error')
+const assert = require('assert')
+const HttpError = require('../lib/error')
 
 describe('error', function () {
   describe('HttpError', function () {
-    var err
+    let e
 
     beforeEach(function () {
-      err = new error.HttpError('error message', 500, null)
+      e = new HttpError('error message', 500, null)
     })
 
-    it('should create an instance which inherits Error', function () {
-      assert(err instanceof Error)
+    it('should create an instance which inherits Error', () => {
+      assert(e instanceof Error)
     })
 
-    describe('#toString', function () {
-      it('should return the message', function () {
-        assert.strictEqual(String(err), 'error message')
+    describe('#toString', () => {
+      it('should return the message', () => {
+        assert.strictEqual(String(e), 'error message')
       })
     })
 
-    describe('#toJSON', function () {
-      it('should return an object', function () {
+    describe('#toJSON', () => {
+      it('should return an object', () => {
         assert.deepStrictEqual(
-          err.toJSON(),
+          e.toJSON(),
           {
             code: 500,
             status: 'Internal Server Error',
@@ -54,14 +51,14 @@ describe('error', function () {
     })
   })
 
-  describe('BadRequest', function () {
-    it('should create an instance which inherits HttpError', function () {
-      var err = new error.BadRequest()
-      assert(err instanceof error.HttpError)
+  describe('BadRequest', () => {
+    it('should create an instance which inherits HttpError', () => {
+      const err = new HttpError.BadRequest()
+      assert(err instanceof HttpError)
     })
 
-    it('should create an instance with default message', function () {
-      var err = new error.BadRequest()
+    it('should create an instance with default message', () => {
+      const err = new HttpError.BadRequest()
       assert.strictEqual(String(err), '400:Bad Request')
       assert.deepStrictEqual(
         err.toJSON(),
@@ -73,8 +70,8 @@ describe('error', function () {
       )
     })
 
-    it('should create an instance with specified message', function () {
-      var err = new error.BadRequest('Invalid parameter')
+    it('should create an instance with specified message', () => {
+      const err = new HttpError.BadRequest('Invalid parameter')
       assert.strictEqual(String(err), 'Invalid parameter')
       assert.deepStrictEqual(
         err.toJSON(),

@@ -230,9 +230,10 @@ octane.attachments.download({id: attachmentID}, function (err, data) {
 ## Update client API
 The MF ALM Octane REST API is fully metadata-driven. When the Octane REST API is updated, you can update the client API from the metadata.
 
-Create a configuration file (eg `octane.json`) file for updating client API. It defines the Octane server's configuration and user credentials.  Note that by default the tech preview API is *not* enabled.  To enable it
-(especially when using attachments) use the `tech_preview_API` key as demonstrated below
+Create a configuration file (eg `octane.json`) file for updating client API. It defines the Octane server's configuration and user credentials.  
 
+Note that by default headers are *not* enabled.  To enable any header, add the key(s) and value(s) as a value for the "headers" key in the below configuration.
+As a header example, you could use the key `ALM_OCTANE_TECH_PREVIEW` with `true`/`false` as possible values.
 ```bash
 $ cat > octane.json << EOH
 {
@@ -242,7 +243,9 @@ $ cat > octane.json << EOH
     "port": <PORT>,
     "shared_space_id": <SHARED_SPACE_ID>,
     "workspace_id": <WORKSPACE_ID>,
-    "tech_preview_API": <boolean for whether tech preview api should be enabled>
+    "headers: {
+        <key> : <value>
+    }
   },
   "options": {
     "username": "<USERNAME>",

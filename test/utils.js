@@ -1,5 +1,5 @@
 /*!
- * (c) 2016-2018 EntIT Software LLC, a Micro Focus company
+ * (c) Copyright 2020 Micro Focus or one of its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,45 +16,42 @@
 
 /* eslint-env mocha */
 
-'use strict'
+const assert = require('assert')
+const utils = require('../lib/utils')
 
-var assert = require('assert')
-
-var utils = require('../lib/utils')
-
-describe('utils', function () {
-  describe('toCamelCase', function () {
-    it('should transform a string that contains spaces, underscore, or dashes to CamelCase', function () {
+describe('utils', () => {
+  describe('toCamelCase', () => {
+    it('should transform a string that contains spaces, underscore, or dashes to CamelCase', () => {
       assert.strictEqual(utils.toCamelCase('bad-request error'), 'BadRequestError')
       assert.strictEqual(utils.toCamelCase('bad_request error'), 'BadRequestError')
     })
 
-    it("should transform a string to camelCase if 'lower' is set 'true'", function () {
+    it('should transform a string to camelCase if \'lower\' is set \'true\'', () => {
       assert.strictEqual(utils.toCamelCase('get-all'), 'GetAll')
       assert.strictEqual(utils.toCamelCase('get-all', false), 'GetAll')
       assert.strictEqual(utils.toCamelCase('get-all', true), 'getAll')
     })
   })
 
-  describe('toDisplayName', function () {
-    it('should transform a string that underscore to words', function () {
+  describe('toDisplayName', () => {
+    it('should transform a string that underscore to words', () => {
       assert.strictEqual(utils.toDisplayName('ci_job'), 'ci job')
     })
 
-    it("should transform a string to plural words if 'plural' is set 'true'", function () {
+    it('should transform a string to plural words if \'plural\' is set \'true\'', () => {
       assert.strictEqual(utils.toDisplayName('ci_job'), 'ci job')
       assert.strictEqual(utils.toDisplayName('ci_job', false), 'ci job')
       assert.strictEqual(utils.toDisplayName('ci_job', true), 'ci jobs')
     })
   })
 
-  describe('trim', function () {
-    it('should removes whitespace from both ends of a string', function () {
+  describe('trim', () => {
+    it('should removes whitespace from both ends of a string', () => {
       assert.strictEqual(utils.trim(' hello world\n'), 'hello world')
       assert.strictEqual(utils.trim(''), '')
     })
 
-    it('should keep variable if not a string', function () {
+    it('should keep variable if not a string', () => {
       assert.strictEqual(utils.trim(undefined), undefined)
       assert.strictEqual(utils.trim(null), null)
       assert.strictEqual(utils.trim(5), 5)

@@ -1,5 +1,5 @@
 /*!
- * (c) 2016-2018 EntIT Software LLC, a Micro Focus company
+ * (c) Copyright 2020 Micro Focus or one of its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,23 +16,21 @@
 
 /* eslint-env mocha */
 
-'use strict'
+const assert = require('assert')
 
-var assert = require('assert')
-
-var initializeOctaneClient = require('./helper').initializeOctaneClient
+const initializeOctaneClient = require('./helper').initializeOctaneClient
 
 describe('[severities]', function () {
   this.timeout(60000)
 
-  var client
+  let client
 
   before('initialize the Octane client', function (done) {
-    var self = this
+    const self = this
 
     initializeOctaneClient(function (err, aClient) {
       if (err) {
-        var msg = err.message
+        const msg = err.message
         console.log('Aborted - %s',
           typeof msg === 'string' ? msg : JSON.stringify(msg)
         )

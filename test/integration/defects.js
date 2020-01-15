@@ -1,5 +1,5 @@
 /*!
- * (c) 2016-2018 EntIT Software LLC, a Micro Focus company
+ * (c) Copyright 2020 Micro Focus or one of its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,30 +16,29 @@
 
 /* eslint-env mocha */
 
-'use strict'
+const assert = require('assert')
 
-var assert = require('assert')
+const Query = require('../../lib/query')
 
-var Query = require('../../lib/query')
-
-var initializeOctaneClient = require('./helper').initializeOctaneClient
+const initializeOctaneClient = require('./helper').initializeOctaneClient
 
 describe('[defects]', function () {
   this.timeout(60000)
+  const defectName = 'defect test'
 
-  var client
-  var defectIDs
-  var defectName = 'defect test'
-  var workItemRoot
-  var allSeverities
-  var allPhases
+  let client
+  let defectIDs
+  let workItemRoot
+  let allSeverities
+  let allPhases
 
   before('initialize the Octane client', function (done) {
-    var self = this
+    const self = this
+    let msg
 
     initializeOctaneClient(function (err, aClient) {
       if (err) {
-        var msg = err.message
+        msg = err.message
         console.log('Aborted - %s',
           typeof msg === 'string' ? msg : JSON.stringify(msg)
         )
@@ -73,14 +72,14 @@ describe('[defects]', function () {
         assert(severities.length > 0)
         allSeverities = severities
 
-        var q = Query.field('entity').equal('defect')
+        const q = Query.field('entity').equal('defect')
         client.phases.getAll({ query: q }, function (err, phases) {
           assert.strictEqual(err, null)
           assert(phases.length > 0)
           allPhases = phases
 
-          var defects = []
-          for (var loop = 0; loop < 5; ++loop) {
+          const defects = []
+          for (let loop = 0; loop < 5; ++loop) {
             defects[loop] = {
               name: 'defect' + loop,
               parent: workItemRoot,
@@ -101,7 +100,7 @@ describe('[defects]', function () {
   }
 
   it('should successfully create and delete a defect', function (done) {
-    var defect = {
+    const defect = {
       name: defectName,
       parent: workItemRoot,
       severity: allSeverities[0],
@@ -127,7 +126,7 @@ describe('[defects]', function () {
   })
 
   it('should successfully update a defect', function (done) {
-    var name = 'defect test updated' + Math.floor((Math.random() * 100) + 1)
+    const name = 'defect test updated' + Math.floor((Math.random() * 100) + 1)
     client.defects.update({ id: defectIDs[0], name: name }, function (err, defect) {
       assert.strictEqual(err, null)
       assert(defect)
@@ -141,8 +140,8 @@ describe('[defects]', function () {
   })
 
   it('should successfully update two defects', function (done) {
-    var name1 = 'defect1 test updated' + Math.floor((Math.random() * 100) + 1)
-    var name2 = 'defect2 test updated' + Math.floor((Math.random() * 100) + 1)
+    const name1 = 'defect1 test updated' + Math.floor((Math.random() * 100) + 1)
+    const name2 = 'defect2 test updated' + Math.floor((Math.random() * 100) + 1)
     client.defects.updateBulk([{ id: defectIDs[0], name: name1 }, {
       id: defectIDs[1],
       name: name2
@@ -182,7 +181,7 @@ describe('[defects]', function () {
   })
 
   it('should successfully get defects list with filter', function (done) {
-    var q = Query.field('severity').equal(Query.field('id').equal('severity'))
+    const q = Query.field('severity').equal(Query.field('id').equal('severity'))
     client.defects.getAll({ query: q }, function (err, defects) {
       assert.strictEqual(err, null)
       defects.forEach(function (defect) {
@@ -195,7 +194,7 @@ describe('[defects]', function () {
   it('should successfully get defects list with order', function (done) {
     client.defects.getAll({ order_by: 'id' }, function (err, defects) {
       assert.strictEqual(err, null)
-      for (var i = 1, l = defects.length; i < l; i++) {
+      for (let i = 1, l = defects.length; i < l; i++) {
         assert(defects[i - 1].id < defects[i].id)
       }
       done()
@@ -208,8 +207,8 @@ describe('[defects]', function () {
       query: Query.field('id').inComparison(defectIDs)
     }, function (err, defects) {
       assert.strictEqual(err, null)
-      var promises = []
-      for (var defect of defects) {
+      const promises = []
+      for (const defect of defects) {
         const id = defect.id
         promises.push(new Promise(function (resolve) {
           client.defects.delete({ id: id }, function () {

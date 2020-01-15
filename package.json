@@ -24,15 +24,16 @@
   ],
   "license": "Apache-2.0",
   "devDependencies": {
-    "apidoc": "^0.17.6",
-    "jsdoc": "3.5.5",
-    "mocha": "^5.2.0",
+    "apidoc": "0.19.0",
+    "jsdoc": "3.6.3",
+    "mocha": "6.2.2",
     "mocha-jenkins-reporter": "0.4.2",
     "standard": "14.3.1"
   },
   "dependencies": {
-    "command-line-args": "^4.0.7",
+    "command-line-args": "5.1.1",
     "debug": "3.1.0",
+    "http-errors": "1.7.3",
     "pluralize": "3.0.0",
     "request": "2.87.0"
   },

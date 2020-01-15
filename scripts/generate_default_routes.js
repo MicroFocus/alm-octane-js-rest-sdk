@@ -25,7 +25,11 @@ var utils = require('../lib/utils')
 var META_ROUTES_FILE = '../routes/meta.json'
 var DEFAULT_ROUTES_FILE = '../routes/default.json'
 
-function generateDefaultRoutes (configurationJSON) {
+function generateDefaultRoutes (configurationJSON, doNotOverwrite) {
+  if (doNotOverwrite && fs.existsSync(path.join(__dirname, DEFAULT_ROUTES_FILE))) {
+    console.info('The default routes file already exists. The overwrite will not be performed')
+    return
+  }
   function FileDetails (filename) {
     if (!(this instanceof FileDetails)) return new FileDetails(filename)
     this.filename = filename
@@ -37,8 +41,7 @@ function generateDefaultRoutes (configurationJSON) {
       { name: 'octaneconfig', alias: 'c', type: FileDetails, defaultOption: true }]
     const options = commandLineArgs(optionDefinitions)
     if (!options.octaneconfig || !options.octaneconfig.exists) {
-      console.error(new Error('Cannot load octane configuration file!'))
-      process.exit(1)
+      throw new Error('Cannot load octane configuration file!')
     }
     return JSON.parse(
       fs.readFileSync(options.octaneconfig.filename, 'utf8')
@@ -49,23 +52,26 @@ function generateDefaultRoutes (configurationJSON) {
     configurationJSON = loadConfigurationFromFile()
   }
 
-  initializeOctaneClient(configurationJSON, function (err, client) {
-    if (err) {
-      console.error(err)
-      process.exit(1)
-    }
-
-    loadOcatneMetadata(client, function (err, metadata) {
+  return new Promise((resolve) => {
+    initializeOctaneClient(configurationJSON, function (err, client) {
       if (err) {
         console.error(err)
-        process.exit(1)
+        throw err
       }
 
-      var routes = initializeRoutes(META_ROUTES_FILE)
+      loadOctaneMetadata(client, function (err, metadata) {
+        if (err) {
+          console.error(err)
+          throw err
+        }
 
-      createRoutesFromOctaneMetadata(routes, metadata)
+        var routes = initializeRoutes(META_ROUTES_FILE)
 
-      saveRoutesToFile(routes, DEFAULT_ROUTES_FILE)
+        createRoutesFromOctaneMetadata(routes, metadata)
+
+        saveRoutesToFile(routes, DEFAULT_ROUTES_FILE)
+        resolve()
+      })
     })
   })
 }
@@ -73,7 +79,7 @@ function generateDefaultRoutes (configurationJSON) {
 function initializeOctaneClient (configuration, callback) {
   var client
 
-  console.log('loading Ocatne configuration ...')
+  console.log('loading Octane configuration ...')
 
   console.log('initializing Octane client ...')
   try {
@@ -91,7 +97,7 @@ function initializeOctaneClient (configuration, callback) {
   })
 }
 
-function loadOcatneMetadata (client, callback) {
+function loadOctaneMetadata (client, callback) {
   var metadata = {}
 
   console.log('loading entity metadata ...')
@@ -121,7 +127,7 @@ function initializeRoutes (routesFile) {
     )
   } catch (ex) {
     console.error(ex)
-    process.exit(1)
+    throw ex
   }
 }
 
@@ -278,8 +284,8 @@ function saveRoutesToFile (routes, file) {
       JSON.stringify(routes, null, '\t')
     )
   } catch (ex) {
-    console.log(ex)
-    process.exit(1)
+    console.error('Failed to save the default routes file. \n\tError:' + JSON.stringify(ex))
+    throw ex
   }
 }
 

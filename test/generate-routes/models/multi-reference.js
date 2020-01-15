@@ -17,8 +17,8 @@
 /* eslint-env mocha */
 
 const assert = require('assert')
-const Reference = require('../../lib/models/reference')
-const MultiReference = require('../../lib/models/multi-reference')
+const Reference = require('../../../lib/generate-routes/models/reference')
+const MultiReference = require('../../../lib/generate-routes/models/multi-reference')
 
 describe('models/multi-reference', () => {
   const defects = [

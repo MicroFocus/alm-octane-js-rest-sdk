@@ -26,7 +26,7 @@ const fs = require('fs')
 const path = require('path')
 
 const Query = require('../../lib/query')
-const Reference = require('../../lib/models/reference')
+const Reference = require('../../lib/generate-routes/models/reference')
 
 const initializeOctaneClient = require('./helper').initializeOctaneClient
 

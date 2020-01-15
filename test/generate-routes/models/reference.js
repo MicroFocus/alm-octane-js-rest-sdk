@@ -17,7 +17,7 @@
 /* eslint-env mocha */
 
 const assert = require('assert')
-const Reference = require('../../lib/models/reference')
+const Reference = require('../../../lib/generate-routes/models/reference')
 
 describe('models/reference', () => {
   const defect = {

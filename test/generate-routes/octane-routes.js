@@ -17,7 +17,7 @@
 /* eslint-env mocha */
 
 const assert = require('assert')
-const Octane = require('../lib')
+const Octane = require('../../lib/generate-routes/octane-routes')
 
 describe('Otcane', () => {
   it('should create an instance with the required configurations', () => {

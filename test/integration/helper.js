@@ -19,7 +19,7 @@
 const fs = require('fs')
 const path = require('path')
 
-const Client = require('../../lib')
+const Client = require('../../lib/generate-routes/octane-routes')
 
 exports.initializeOctaneClient = function (callback) {
   let client

@@ -17,7 +17,7 @@
 /* eslint-env mocha */
 
 const assert = require('assert')
-const utils = require('../lib/utils')
+const utils = require('../../lib/generate-routes/utils')
 
 describe('utils', () => {
   describe('toCamelCase', () => {

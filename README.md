@@ -14,6 +14,7 @@ A Node.js wrapper for the MF ALM Octane API.
     * [Delete entities](#delete-entities)
     * [Create entities](#create-entities)
     * [Update entities](#update-entities)
+    * [Query](#query)
 1. [Tests](#tests)
 1. [Disclaimer](#disclaimer)
 1. [What's new](#what's-new-:newspaper:)
@@ -141,7 +142,30 @@ to access Octane entities.
 
 #### Delete entities
 
+```javascript
+  //delete defect with id 1001
+  await octane.delete(Octane.entityTypes.defects).at(1001).execute()
+
+  //delete defects with their name equal to 'new defect'
+  await octane.delete(Ocane.entityTypes.defects).query(Query.field('name').equal('new defect')).execute()
+```
+
 #### Create entities
+
+```javascript
+  // create the defect JSON which will be passed for defect creation
+  let defect ={
+    name: 'new defect',
+    description: 'some description here',
+    owner : {
+      type: 'workspace_user',
+      id: '1001'
+    }
+  }
+
+  // send the create request
+  octane.create(Octane.entityTypes.defects, defect).execute()
+```
 
 #### Update entities
 
@@ -157,43 +181,64 @@ to access Octane entities.
   octane.update(Octane.entityTypes.defects, defect).execute()
 ```
 
+## Query
+
+The Octane REST API supports entities query by filtering values of fields. To filter, use a query statement, which is 
+comprised of at least one query phase.
+
+The client API provides the Query module to help you build the query, rather than writing the complex query statement.
+
+```javascript
+const Query = require('@microfocus/alm-octane-js-rest-sdk/query')
+
+// query statement: "id EQ 1005"
+const query = Query.field('id').equal(1005)
+octane.defects.getAll({query: query}, function (err, defect) {
+  console.log(defect)
+})
+
+...
+
+// query statement: "name EQ ^test*^"
+const query = Query.field('name').equal('test*')
+
+// query statement: "user_tags EQ {id EQ 1001}"
+const query = Query.field('user_tags').equal(Query('id').equal(1001))
+
+// query statement: "user_tags EQ {id EQ 1001||id EQ 2005}"
+const query = Query.field('user_tags').equal(Query.field('id').equal(1001).or(Query.field('id').equal(2005)))
+// or use the shorthand or() method
+const query = Query.field('user_tags').equal(Query.field('id').equal(1001).or().field('id').equal(2005))
+
+// query statement: "user_tags EQ {id EQ 1001;id EQ 3008}"
+const query = Query.field('user_tags').equal(Query.field('id').equal(1001).and(Query.field('id').equal(3008)))
+// or use the shorthand and() method
+const query = Query.field('user_tags').equal(Query.field('id').equal(1001).and().field('id').equal(3008))
+
+// query statement: "user_tags EQ {id EQ 1001};user_tags EQ {id EQ 3008}"
+const query = Query.field('user_tags').equal(Query.field('id').equal(1001)).and(Query.field('user_tags').equal(Query.field('id').equal(3008)))
+// or use the shorthand and() method
+const query = Query.field('user_tags').equal(Query.field('id').equal(1001)).and().field('user_tags').equal(Query.field('id').equal(3008))
+// or use the sub query
+const query1 = Query.field('user_tags').equal(Query.field('id').equal(1001))
+const query2 = Query.field('user_tags').equal(Query.field('id').equal(3008))
+
+// query statement "id BTW 1..3" - notice that there are two parameters
+const query = Query.field('id').between(1,2)
+
+// query statement "id IN 1,2,3" - the parameter has to be an array
+const query = Query.field('id').inComparison([1,2,3])
+
+const query = query1.and(query2)
+
+// for null use either Query.NULL for non-reference fields or Query.NULL_REFERENCE for references (Query.NONE still exists for backwards-compatibility
+// and is the same as Query.NULL_REFERENCE)
+const query1 = Query.field('string_field').equal(Query.NULL)
+const query2 = Query.field('reference_field').equal(Query.NULL_REFERENCE)
+```
+
 ## Tests
 
-Run all tests
-
-```bash
-$ npm test
-```
-
-Or run a specific test
-
-```bash
-$ npm test test/query.js
-```
-
-The `octane.json` file is required for running the integration tests. If it doesn't exist, the integration tests will be skipped.
-```bash
-$ cat > octane.json << EOH
-{
-  "config": {
-    "protocol": "http",
-    "host": "<HOST>",
-    "port": <PORT>,
-    "shared_space_id": <SHARED_SPACE_ID>,
-    "workspace_id": <WORKSPACE_ID>
-  },
-  "options": {
-    "username": "<USERNAME>",
-    "password": "<PASSWORD>"
-  }
-}
-EOH
-
-npm test test/integration
-```
-
-**Please Note**
-When running integration tests and these include *attachments* the *tech preview api* needs to be enabled otherwise the attachments will fail
 
 
 ## What's new :newspaper:

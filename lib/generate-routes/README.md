@@ -270,6 +270,44 @@ $ npm install apidoc
 $ node_modules/.bin/apidoc -f doc/apidoc.js -o apidoc/
 ```
 
+## Tests
+
+Run all tests
+
+```bash
+$ npm test
+```
+
+Or run a specific test
+
+```bash
+$ npm test test/query.js
+```
+
+The `octane.json` file is required for running the integration tests. If it doesn't exist, the integration tests will be skipped.
+```bash
+$ cat > octane.json << EOH
+{
+  "config": {
+    "protocol": "http",
+    "host": "<HOST>",
+    "port": <PORT>,
+    "shared_space_id": <SHARED_SPACE_ID>,
+    "workspace_id": <WORKSPACE_ID>
+  },
+  "options": {
+    "username": "<USERNAME>",
+    "password": "<PASSWORD>"
+  }
+}
+EOH
+
+npm test test/integration
+```
+
+**Please Note**
+When running integration tests and these include *attachments* the *tech preview api* needs to be enabled otherwise the attachments will fail
+
 ## Disclaimer
 Certain versions of software accessible here may contain branding from Hewlett-Packard Company (now HP Inc.) and Hewlett Packard Enterprise Company.  As of September 1, 2017, the software is now offered by Micro Focus, a separately owned and operated company.  Any reference to the HP and Hewlett Packard Enterprise/HPE marks is historical in nature, and the HP and Hewlett Packard Enterprise/HPE marks are the property of their respective owners.
 

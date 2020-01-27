@@ -2,12 +2,12 @@
 
 A Node.js wrapper for the MF ALM Octane API.
 
-##Table of contents
+## Table of contents
 1. [Installation](#installation)
 1. [Introduction](#introduction)
 1. [Octane object](#octane-object)
     * [Import](#import)
-    * [Parameters](#octane(params))
+    * [Parameters](#octane-params)
     * [Methods](#methods)
 1. [Usage examples](#usage-examples)
     * [Get entities](#get-entities)
@@ -17,7 +17,7 @@ A Node.js wrapper for the MF ALM Octane API.
     * [Query](#query)
 1. [Tests](#tests)
 1. [Disclaimer](#disclaimer)
-1. [What's new](#what's-new-:newspaper:)
+1. [What's new](#whats-new)
 
 ## Installation
 
@@ -46,7 +46,7 @@ The following sections expose the functionality of the generic version of the SD
 const Octane = require('@microfocus/alm-octane-js-rest-sdk').Octane
 ```
 
-#### Octane(params)
+#### Octane(params) <a name="octane-params"></a>
 
 Params can have the following members:
 
@@ -241,7 +241,7 @@ const query2 = Query.field('reference_field').equal(Query.NULL_REFERENCE)
 
 
 
-## What's new :newspaper:
+## What's new :newspaper: <a name="whats-new"></a>
 * 15.0.20
     * Old functionality is implemented in the `OctaneVanilla` class
     * The documentation for `OctaneVanilla` functionality can be found [here](/lib/generate-routes/README.md)

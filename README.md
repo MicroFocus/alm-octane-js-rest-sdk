@@ -16,8 +16,8 @@ A Node.js wrapper for the MF ALM Octane API.
     * [Update entities](#update-entities)
     * [Query](#query)
 1. [Tests](#tests)
-1. [Disclaimer](#disclaimer)
 1. [What's new](#whats-new)
+1. [Disclaimer](#disclaimer)
 
 ## Installation
 
@@ -238,8 +238,17 @@ const query2 = Query.field('reference_field').equal(Query.NULL_REFERENCE)
 ```
 
 ## Tests
+Run all tests
 
+```bash
+$ npm test
+```
 
+Or run a specific test
+
+```bash
+$ npm test test/query.js
+```
 
 ## What's new :newspaper: <a name="whats-new"></a>
 * 15.0.20

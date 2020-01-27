@@ -1,3 +1,14 @@
+# Node-Octane
+
+A Node.js wrapper for the MF ALM Octane API.
+
+## Installation
+
+Install via npm
+
+```bash
+$ npm i @microfocus/alm-octane-js-rest-sdk
+```
 
 ## Example
 
@@ -269,6 +280,18 @@ Then you can create the client API documentation:
 $ npm install apidoc
 $ node_modules/.bin/apidoc -f doc/apidoc.js -o apidoc/
 ```
+
+This can be done also by using the generateDefaultRoutes function which returns a promise. To wait for the generation use the await keyword when calling the function as seen below.
+
+```javascript
+try {
+  await generateDefaultRoutes(configurationJSON, doNotOverwrite)
+  octane = new Octane(...)
+} catch (error) {
+   //handle error
+}
+```
+
 
 ## Tests
 

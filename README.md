@@ -33,7 +33,7 @@ This SDK contains two use cases: the generic one which can be used out of the bo
 and also the OctaneVanilla object which needs the default.json generated file. 
 
 The recommended way to use this SDK is to use the Octane object as the OctaneVanilla version is error-prone due
-to the fact that it needs regeneration every time the API changes or fields are added. 
+to the fact that it needs regeneration every time the API is changed or fields are added. 
 
 The docs for the original version of the SDK can be found [here](/lib/generate-routes/README.md).
 
@@ -85,7 +85,7 @@ const octane = new Octane({
 ```
 
 #### Methods
-The methods below will not affect directly the Octane data but adding properties for the final URL which will be used
+The methods below will not affect directly the Octane data, but add properties to the final URL which will be used
 for the actual request. Moreover, these methods can be chained
 - ```get(entityName) & delete(entityName)``` - Set the entity name and the request method (GET/DELETE) 
 for the future request. 
@@ -94,10 +94,10 @@ Set the entity name, the body and the request method(POST/PUT) for the future re
 - ```at(id)``` - The request will be performed at entity level, affecting only the entity with the specific id. The URL
 for the request will be similar to this one *.../defects/1001*
 - ```limit(limit)``` - When getting multiple entities, Octane allows users to set a limit of entities 
-to fetch. If only limit is set, the first page with a number of *limit* entities will be fetched. ***Note***: 
+to fetch. If limit is set, the first page with a number of *limit* entities will be fetched. ***Note***: 
 *ALM Octane has a default limit for entity fetching.*
 - ```offset(offset)``` - Set the number of page that will be fetched. (ex: if limit is set to 200 and there 
-are 900 entities, the offset can be set to 3 resulting      in fetching the entities in the  401-600 range) ***Note***:
+are 900 entities, the offset can be set to 3 resulting in fetching the entities in the  401-600 range) ***Note***:
 *The order of the entities can change*
 - ```orderBy(...fieldNames)``` - The entities will be ordered by the field names passed here. If an ascending order is needed,
 the fields can be simply passed by strings and separated by a comma. However, the order can be set to descending by passing
@@ -183,8 +183,8 @@ to access Octane entities.
 
 ## Query
 
-The Octane REST API supports entities query by filtering values of fields. To filter, use a query statement, which is 
-comprised of at least one query phase.
+The Octane REST API supports entities querying by filtering based on field values. To filter, use a query statement, which is 
+comprised of at least one query phrase.
 
 The client API provides the Query module to help you build the query, rather than writing the complex query statement.
 
@@ -252,10 +252,10 @@ $ npm test test/query.js
 
 ## What's new :newspaper: <a name="whats-new"></a>
 * 15.0.20
+    * A generic way to interact with the ALM Octane API has been implemented as `Octane` class
+    * The OctaneVanilla code has moved from ES5 to ES6
     * Old functionality is implemented in the `OctaneVanilla` class
     * The documentation for `OctaneVanilla` functionality can be found [here](/lib/generate-routes/README.md)
-    * The OctaneVanilla code has moved from ES5 to ES6
-    * A generic way to interact with the ALM Octane API has been implemented as `Octane` class
 
 ## Disclaimer
 Certain versions of software accessible here may contain branding from Hewlett-Packard Company (now HP Inc.) and 

@@ -140,7 +140,8 @@ octane.authenticate({
 
 ## Query
 
-The Octane REST API supports entities query by filtering values of fields. To filter, use a query statement, which is comprised of at least one query phase.
+The Octane REST API supports entities querying by filtering based on field values. To filter, use a query statement, which is 
+comprised of at least one query phrase.
 
 The client API provides the Query module to help you build the query, rather than writing the complex query statement.
 
@@ -265,6 +266,17 @@ $ node scripts/generate_default_routes.js /path/to/octane.json
 
 > The `routes/meta.json` file defines the minimal client API. It can't be changed or deleted.
 
+This can be done also by using the generateDefaultRoutes function which returns a promise. To wait for the generation use the await keyword when calling the function as seen below.
+
+```javascript
+try {
+  await generateDefaultRoutes(configurationJSON, doNotOverwrite)
+  octane = new Octane(...)
+} catch (error) {
+   //handle error
+}
+```
+
 ## Update client API documentation
 
 When the `routes/default.json` file is updated, you'll want to update API annotation file:
@@ -280,18 +292,6 @@ Then you can create the client API documentation:
 $ npm install apidoc
 $ node_modules/.bin/apidoc -f doc/apidoc.js -o apidoc/
 ```
-
-This can be done also by using the generateDefaultRoutes function which returns a promise. To wait for the generation use the await keyword when calling the function as seen below.
-
-```javascript
-try {
-  await generateDefaultRoutes(configurationJSON, doNotOverwrite)
-  octane = new Octane(...)
-} catch (error) {
-   //handle error
-}
-```
-
 
 ## Tests
 

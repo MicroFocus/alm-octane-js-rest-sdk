@@ -147,7 +147,7 @@ to access Octane entities.
   await octane.delete(Octane.entityTypes.defects).at(1001).execute()
 
   //delete defects with their name equal to 'new defect'
-  await octane.delete(Ocane.entityTypes.defects).query(Query.field('name').equal('new defect')).execute()
+  await octane.delete(Ocane.entityTypes.defects).query(Query.field('name').equal('new defect').build()).execute()
 ```
 
 #### Create entities
@@ -186,18 +186,17 @@ to access Octane entities.
 The Octane REST API supports entities querying by filtering based on field values. To filter, use a query statement, which is 
 comprised of at least one query phrase.
 
-The client API provides the Query module to help you build the query, rather than writing the complex query statement.
+The client API provides the Query module to help you build the query, rather than writing the complex query statement. To pass
+these queries to the SDK, use the `build()` method after the query is fully built.
 
 ```javascript
 const Query = require('@microfocus/alm-octane-js-rest-sdk/query')
 
 // query statement: "id EQ 1005"
 const query = Query.field('id').equal(1005)
-octane.defects.getAll({query: query}, function (err, defect) {
-  console.log(defect)
-})
-
-...
+// get defects with with ids in the 1001-1050 range
+// the build() method is used when passing the query, as mentioned above
+const queryDefect = await octane.get(Octane.entityTypes.defects).query(Query.field('id').between(1001, 1050).build()).execute()
 
 // query statement: "name EQ ^test*^"
 const query = Query.field('name').equal('test*')

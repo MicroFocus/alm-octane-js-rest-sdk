@@ -20,7 +20,9 @@
   ],
   "contributors": [
     "DaSheng Jian <da-sheng.jian@microfocus.com>",
-    "Spencer Bruce <spencer.bruce@microfocus.com"
+    "Spencer Bruce <spencer.bruce@microfocus.com",
+    "Laura Andrada Buzas <laura-andrada.buzas@microfocus.com>",
+    "Alexander Stanciu <alexander.stanciu@microfocus.com>"
   ],
   "license": "Apache-2.0",
   "devDependencies": {
@@ -28,6 +30,7 @@
     "jsdoc": "3.6.3",
     "mocha": "6.2.2",
     "mocha-jenkins-reporter": "0.4.2",
+    "nock": "11.7.2",
     "standard": "14.3.1"
   },
   "dependencies": {

@@ -9,11 +9,19 @@ A Node.js wrapper for the MF ALM Octane API.
     * [Import](#import)
     * [Parameters](#octane-params)
     * [Methods](#methods)
+        * [create](#create)
+        * [get](#get)
+        * [update](#update)
+        * [updateBulk](#updateBulk)
+        * [delete](#delete)
+        * [signOut](#signOut)
 1. [Usage examples](#usage-examples)
+    * [Get metadata](#get-metadata)
     * [Get entities](#get-entities)
     * [Delete entities](#delete-entities)
     * [Create entities](#create-entities)
     * [Update entities](#update-entities)
+    * [Octane.entityTypes](#octane-entity-types)
     * [Query](#query)
 1. [Tests](#tests)
 1. [What's new](#whats-new)
@@ -85,40 +93,121 @@ const octane = new Octane({
 ```
 
 #### Methods
-The methods below will not affect directly the Octane data, but add properties to the final URL which will be used
-for the actual request. Moreover, these methods can be chained
-- ```get(entityName) & delete(entityName)``` - Set the entity name and the request method (GET/DELETE) 
-for the future request. 
-- ```create(entityName, body) & update(entityName, body) & updateBulk(entityName, body)``` - 
-Set the entity name, the body and the request method(POST/PUT) for the future request.
-- ```at(id)``` - The request will be performed at entity level, affecting only the entity with the specific id. The URL
-for the request will be similar to this one *.../defects/1001*
-- ```limit(limit)``` - When getting multiple entities, Octane allows users to set a limit of entities 
-to fetch. If limit is set, the first page with a number of *limit* entities will be fetched. ***Note***: 
-*ALM Octane has a default limit for entity fetching.*
-- ```offset(offset)``` - Set the number of page that will be fetched. (ex: if limit is set to 200 and there 
-are 900 entities, the offset can be set to 3 resulting in fetching the entities in the  401-600 range) ***Note***:
-*The order of the entities can change*
-- ```orderBy(...fieldNames)``` - The entities will be ordered by the field names passed here. If an ascending order is needed,
-the fields can be simply passed by strings and separated by a comma. However, the order can be set to descending by passing
-the fields with a minus. Example: ```'-id'``` - the entities will be fetched sorted descending by the *id* field. 
-- ```fields(...fieldNames)``` - These fields will be passed in the *fields* query parameter in the URL. This can be useful,
- for example, when fetching entities to request the fields needed *i.e. name, description* or any other field. 
-- ```query(query)``` - Any query can be passed in order to filter the entities. The  query can be built using the 
-```Query``` class available in the SDK.
-- ```script()``` - *This is specific for tests and cannot be used for aot.* The request URL will look similar to this: *.../tests/1001/scripts*.
-This will result (after the request is executed) in fetching the test's script.
 
-These methods are sending actual requests:
-- ```execute()``` - Fires the request after building the request URL.
-- ```signOut()``` - A sign out request is sent to ALM Octane. 
+The method which actually fires a request is the `execute()` method. This means, only when the `execute()` method is called, the Octane data can be affected or retrieved. The other methods are used solely to set up the request. Please see the [examples](#usage-examples) for a better understanding.
 
-#### Octane.entityTypes
+Besides `execute()`, the `signOut()` can be used to send a sign out request to Octane. 
+
+The rest of the methods will not affect directly the Octane data, but add properties to the final URL which will be used for the actual request. Moreover, some of the methods can be chained.
+
+- ```create(entityName, body)``` <a name="create"></a>
+    
+    *Parameters* : 
+    - **entityName** - Contains the name of the affected Octane entity. The recommended way to use the entity names is to use the [Octane.entityTypes](#octane-entity-types) entries. 
+    - **body** - A JSON containing *field name* and *field value* pairs which will be used to crate the entity. Field names can be obtained by querying the field metadata of Octane. More information about the Octane field metadata can be found [here](https://admhelp.microfocus.com/octane/en/15.0.20/Online/Content/API/MetadataFields.htm). Examples on how to retrieve metadata using the SDK can be found [here](#get-metadata).
+        
+    *Behavior*:
+    
+    This method does not fire the request but builds up to the final URL and defines the request method.
+    
+    The method will set the next request to take action on the entity type defined by *entityName*. When the request will be executed, the created entities will have the type provided by *entityName* and the attributes defined in the *body* JSON.
+    
+    *Methods which can be chained*:
+    
+    The only chaining allowed is with the `execute()` method, resulting in firing a request to Octane and thus creating the entity defined in the *body* JSON.
+    
+         
+- ```get(entityName)``` <a name="get"></a>
+
+    *Parameters* : 
+    - **entityName** - Contains the name of the Octane entity which will be fetched. The recommended way to use the entity names is to use the [Octane.entityTypes](#octane-entity-types) entries. 
+    
+    *Behavior*
+   
+   This method does not fire the request but builds up to the final request URL and defines the request method. When the get request will be executed, the returned entities will have the type provided by entityName.
+   
+   *Methods which can be chained*
+   - `execute()` - Will fire the request to create all the defined entities.
+   - `at(id)` - Defines which entity will be targeted for the next request. The input for this method is the id of the targeted entity.
+   - `fields(fields)` - The fields parameter represents an array with names of fields relevant for the entity which will be affected by the request. When the request will be fired, the entities affected will contain the listed fields. Please inspect the field metadata before passing field names to this method.
+   - `orderBy(fields)` - The fields parameter represent an array with names of fields which is relevant for the order in which the entities will be processed. Adding a '-' at the beginning of any field name will fetch the entities in a descending order (ex: [id, '-name']). Please inspect the field metadata before passing field names to this method.
+   - `query(query)` - Defines an Octane-specific filter. When the request will be executed, only the entities filtered by the query will be gathered.
+   - `limit(limit)` - When a query returns a large set of data, the results are returned in a series of pages. There is a default limit set for the entities fetched in a page. However, the user can set a custom limit by providing an integer greater that 0.
+   - `offset(offset)` - When a query returns a large set of data, the results are returned in a series of pages. There is a default limit set for the entities fetched in a page. Based on that limit, multiple pages are formed. To select the desired range of entities, the offset must be provided as a number which sets the index of the entity which will be fetched first. If the offset is not provided, 0 is used instead.
+    
+- ```update(entityName, body)``` <a name="update"></a>
+     
+    *Parameters* : 
+    - **entityName** - Contains the name of the affected Octane entity. The recommended way to use the entity names is to use the [Octane.entityTypes](#octane-entity-types) entries. 
+    - **body** - A JSON containing *field name* and *field value* pairs which will be used to update the entity. Field names can be obtained by querying the field metadata of Octane. More information about the Octane field metadata can be found [here](https://admhelp.microfocus.com/octane/en/15.0.20/Online/Content/API/MetadataFields.htm). Examples on how to retrieve metadata using the SDK can be found [here](#get-metadata).
+        
+    *Behavior*:
+    
+    This method does not fire the request but builds up to the final URL and defines the request method. When the request will be executed, the updated entity will have the type provided by entityName and the attributes defined in the body JSON.
+    > This method affects a single entity. To target an entity for update the id must be provided and this can be done in the following two ways:
+    > - provide the id in the body JSON
+    > - provide the at(id) method, available in this class, with the desired id. The at(id) method can be chained to update method.
+    
+    *Methods which can be chained*
+     - `execute()` - Will fire the request to update the entity for the built query.
+     - `at(id)` - Defines which entity will be targeted for the next request. The input for this method is the id of the targeted entity. If this is chained to the `update` method, the id field in the body of the JSON is not mandatory.
+    
+- ```updateBulk(entityName, body)``` <a name="updateBulk"></a>
+     
+    *Parameters* : 
+     - **entityName** - Contains the name of the affected Octane entity. The recommended way to use the entity names is to use the [Octane.entityTypes](#octane-entity-types) entries. 
+     - **body** - A JSON containing *field name* and *field value* pairs which will be used to update the entity. Field names can be obtained by querying the field metadata of Octane. More information about the Octane field metadata can be found [here](https://admhelp.microfocus.com/octane/en/15.0.20/Online/Content/API/MetadataFields.htm). Examples on how to retrieve metadata using the SDK can be found [here](#get-metadata).
+    
+    *Behavior*:
+    
+    This method does not fire the request but builds up to the final URL and defines the request method. When the request will be executed, the updated entities will have the type provided by entityName and the attributes defined in the body JSON. Every entity in the body JSON must have an existing id to target existing entities in Octane. This method affects multiple entities.
+    
+    *Methods which can be chained*
+    - `execute()` - Will fire the request to update all the entities for the built query.
+    - `query(query)` - Defines an Octane-specific filter. When the request will be executed, only the entities filtered by the query will be affected. In this case the body of the request does not have to contain ids for the entities.
+     
+- ```delete(entityName)``` <a name="delete"></a>
+    
+    *Parameters* : 
+    - **entityName** - Contains the name of the Octane entity which will be fetched. The recommended way to use the entity names is to use the [Octane.entityTypes](#octane-entity-types) entries. 
+        
+    *Behavior*
+       
+    This method does not fire the request but builds up to the final request URL and defines the request method. When the delete request will be executed, all the selected entities will be deleted.
+    > This method must be chained with `query()` or `at()`, which are described below.
+    
+   *Methods which can be chained*
+   - `execute()` - Will fire the request to delete all the entities which were selected using a query or an id.
+   - `at(id)` - Defines which entity will be targeted for the next request. The input for this method is the id of the targeted entity.
+   - `query(query)` - Defines an Octane-specific filter. When the request will be executed, only the entities filtered by the query will be deleted.
+
+- ```signOut()``` <a name="signOut"></a>
+
+     *Behavior*
+     
+     Fires a sign out request to Octane. After this request is fulfilled any further operation wll need to requthenticate.
+
+##### Octane.entityTypes <a name="octane-entity-types"></a>
 
 The Octane.entityTypes JSON contains all the entities present in the public API of ALM Octane. This can be used in order
 to access Octane entities.
 
 ## Usage examples
+
+#### Get metadata
+
+```javascript
+  const octane = new Octane(...)
+  
+  //get all entities metadata
+  const entitiesMetadata = await octane.get(Octane.entityTypes.entitiesMetadata).execute()
+
+  //get all fields metadata
+  const fieldsMetadata = await octane.get(Octane.entityTypes.fieldsMetadata).execute()
+
+  //get all user defined fields
+  const udfMetadata = await octane.get(octane.entityTypes.fieldsMetadata).query(Query.field('is_user_defined').equal(true).build()).execute()
+```
 
 #### Get entities
 ```javascript

@@ -19,7 +19,7 @@
 const fs = require('fs')
 const path = require('path')
 
-const Client = require('../../lib/generate-routes/octane-routes')
+const Client = require('../../../lib/generate-routes/octane-routes')
 
 exports.initializeOctaneClient = function (callback) {
   let client
@@ -28,7 +28,7 @@ exports.initializeOctaneClient = function (callback) {
   try {
     config = JSON.parse(
       fs.readFileSync(
-        path.join(__dirname, '../../octane.json'),
+        path.join(__dirname, '../../../octane.json'),
         'utf8'
       )
     )

@@ -14,14 +14,17 @@ A Node.js wrapper for the MF ALM Octane API.
         * [update](#update)
         * [updateBulk](#updateBulk)
         * [delete](#delete)
+        * [getAttachmentContent](#getAttachmentContent)
+        * [uploadAttachment](#uploadAttachment)
         * [signOut](#signOut)
+    * [Octane.entityTypes](#octane-entity-types)
 1. [Usage examples](#usage-examples)
     * [Get metadata](#get-metadata)
     * [Get entities](#get-entities)
     * [Delete entities](#delete-entities)
     * [Create entities](#create-entities)
     * [Update entities](#update-entities)
-    * [Octane.entityTypes](#octane-entity-types)
+    * [Attachments](#attachments)
     * [Query](#query)
 1. [Tests](#tests)
 1. [What's new](#whats-new)
@@ -181,13 +184,41 @@ The rest of the methods will not affect directly the Octane data, but add proper
    - `at(id)` - Defines which entity will be targeted for the next request. The input for this method is the id of the targeted entity.
    - `query(query)` - Defines an Octane-specific filter. When the request will be executed, only the entities filtered by the query will be deleted.
 
+- ```getAttachmentContent()``` <a name="getAttachmentContent"></a>
+    
+    *Behavior*
+    
+    This method does not fire the request but builds up to the final request URL and defines the request method. When the get request will be executed it will return the attachment content. Information about requests which involve attachments can be found [here](https://admhelp.microfocus.com/octane/en/15.0.20/Online/Content/API/Attachments_HowTo.htm)
+    
+    > This method must be chained with `at()` to fetch the correct data.                                                                                                                                                                                      
+    *Methods which can be chained*
+     - `execute()` - Will fire the request to get the content of the attachment which was selected using an id.
+     - `at(id)` - Defines which entity will be targeted for the next request. The input for this method is the id of the targeted entity.
+
+- ```uploadAttachment(attachmentName, attachmentData, ownerName, ownerReference)``` <a name="uploadAttachment"></a>
+    
+    *Parameters*
+    - **attachmentName** - The name which will be used for attachment creation.
+    - **attachmentData** - The content of the attachment which will be uploaded later.
+    - **ownerName** - The name of the entity where the attachment will be uploaded, like "owner_release". The possible owner fields can be found in the field metadata of attachments.
+     - **ownerReference** - The reference of the entity where the attachment will be uploaded. This can be an id of entity, or a JSON with the type and id of the entity.
+    
+    *Behavior*
+    
+    This method does not fire the request but builds up to the final URL and defines the request method.
+    
+    When the request will be executed, the created attachment will have the name provided by attachmentName, the content defined by attachmentData and it will be under the entity provided by ownerName and ownerReference.  Information about requests which involve attachments can be found [here](https://admhelp.microfocus.com/octane/en/15.0.20/Online/Content/API/Attachments_HowTo.htm)
+       
+    *Methods which can be chained*
+     - `execute()` - Will fire the request to create the attachment defined by attachmentData and it will be under the entity provided by ownerName and ownerReference.
+
 - ```signOut()``` <a name="signOut"></a>
 
      *Behavior*
      
-     Fires a sign out request to Octane. After this request is fulfilled any further operation wll need to requthenticate.
+     Fires a sign out request to Octane. After this request is fulfilled any further operation wll need to reauthenticate.
 
-##### Octane.entityTypes <a name="octane-entity-types"></a>
+#### Octane.entityTypes <a name="octane-entity-types"></a>
 
 The Octane.entityTypes JSON contains all the entities present in the public API of ALM Octane. This can be used in order
 to access Octane entities.
@@ -270,7 +301,18 @@ to access Octane entities.
   octane.update(Octane.entityTypes.defects, defect).execute()
 ```
 
-## Query
+#### Attachments
+
+```javascript
+    // get the content of the attachment with id 1001
+    let attachmentContent = await octane.getAttachmentContent(Octane.entityTypes.attachments).at(1001).execute()
+
+    // an attachment will be uploaded for defect with id 1001
+    let attachment = await octane.uploadAttachment('newAttachment.txt', 'This will be the content of the txt file', 'owner_work_item', 1001).execute()
+
+```
+
+#### Query
 
 The Octane REST API supports entities querying by filtering based on field values. To filter, use a query statement, which is 
 comprised of at least one query phrase.

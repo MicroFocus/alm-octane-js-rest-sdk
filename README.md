@@ -190,7 +190,8 @@ The rest of the methods will not affect directly the Octane data, but add proper
     
     This method does not fire the request but builds up to the final request URL and defines the request method. When the get request will be executed it will return the attachment content. Information about requests which involve attachments can be found [here](https://admhelp.microfocus.com/octane/en/15.0.20/Online/Content/API/Attachments_HowTo.htm)
     
-    > This method must be chained with `at()` to fetch the correct data.                                                                                                                                                                                      
+    > This method must be chained with `at()` to fetch the correct data.  
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
     *Methods which can be chained*
      - `execute()` - Will fire the request to get the content of the attachment which was selected using an id.
      - `at(id)` - Defines which entity will be targeted for the next request. The input for this method is the id of the targeted entity.

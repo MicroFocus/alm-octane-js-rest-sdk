@@ -16,24 +16,37 @@
 
 /* eslint-env mocha */
 
-const assert = require('assert')
-const Octane = require('../lib')
+const fs = require('fs')
+const path = require('path')
 
-describe('Otcane', () => {
-  it('should create an instance with the required configurations', () => {
-    const client = new Octane({
-      host: 'octane.microfocus.com',
-      shared_space_id: 1001,
-      workspace_id: 1002
-    })
+const Client = require('../../../lib/generate-routes/octane-routes')
 
-    assert.notStrictEqual(client, null)
+exports.initializeOctaneClient = function (callback) {
+  let client
+  let config
+
+  try {
+    config = JSON.parse(
+      fs.readFileSync(
+        path.join(__dirname, '../../../octane.json'),
+        'utf8'
+      )
+    )
+  } catch (ex) {
+    return callback(ex)
+  }
+
+  try {
+    client = new Client(config.config)
+  } catch (ex) {
+    return callback(ex)
+  }
+
+  client.authenticate(config.options, function (err) {
+    if (err) {
+      return callback(err)
+    }
+
+    callback(null, client)
   })
-
-  it('should throw exception when the required configurations are not provided', () => {
-    assert.throws(() => {
-      const client = new Octane({ host: 'octane.microfocus.com' })
-      assert.notStrictEqual(client, null)
-    }, Error)
-  })
-})
+}

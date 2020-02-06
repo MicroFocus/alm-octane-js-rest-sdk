@@ -25,13 +25,14 @@ const assert = require('assert')
 const fs = require('fs')
 const path = require('path')
 
-const Query = require('../../lib/query')
-const Reference = require('../../lib/models/reference')
+const Query = require('../../../lib/query')
+const Reference = require('../../../lib/generate-routes/models/reference')
 
 const initializeOctaneClient = require('./helper').initializeOctaneClient
 
 describe('[attachments]', function () {
   this.timeout(60000)
+  this.slow(250)
   const attachmentName = 'attachment.txt'
   const attachmentFile = path.join(__dirname, 'attachment-test.txt')
   const attachmentFileContent = 'This is an attachment test file.'

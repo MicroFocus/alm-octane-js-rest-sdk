@@ -1,6 +1,6 @@
 {
   "name": "@microfocus/alm-octane-js-rest-sdk",
-  "version": "12.60.10",
+  "version": "15.0.20",
   "description": "NodeJS wrapper for the Micro Focus ALM Octane API",
   "main": "lib",
   "scripts": {
@@ -20,7 +20,9 @@
   ],
   "contributors": [
     "DaSheng Jian <da-sheng.jian@microfocus.com>",
-    "Spencer Bruce <spencer.bruce@microfocus.com"
+    "Spencer Bruce <spencer.bruce@microfocus.com",
+    "Laura Andrada Buzas <laura-andrada.buzas@microfocus.com>",
+    "Alexander Stanciu <alexander.stanciu@microfocus.com>"
   ],
   "license": "Apache-2.0",
   "devDependencies": {
@@ -28,14 +30,18 @@
     "jsdoc": "3.6.3",
     "mocha": "6.2.2",
     "mocha-jenkins-reporter": "0.4.2",
+    "nock": "11.7.2",
     "standard": "14.3.1"
   },
   "dependencies": {
+    "async-mutex": "0.1.4",
     "command-line-args": "5.1.1",
     "debug": "3.1.0",
     "http-errors": "1.7.3",
+    "log4js": "6.1.0",
     "pluralize": "3.0.0",
-    "request": "2.87.0"
+    "request": "2.87.0",
+    "request-promise-native": "1.0.8"
   },
   "apidoc": {
     "title": "node-octane",

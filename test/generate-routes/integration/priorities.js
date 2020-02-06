@@ -20,8 +20,9 @@ const assert = require('assert')
 
 const initializeOctaneClient = require('./helper').initializeOctaneClient
 
-describe('[severities]', function () {
+describe('[priorities]', function () {
   this.timeout(60000)
+  this.slow(200)
 
   let client
 
@@ -42,11 +43,11 @@ describe('[severities]', function () {
     })
   })
 
-  it('should successfully get all severities list', function (done) {
-    client.severities.getAll({}, function (err, severities) {
+  it('should successfully get all priorities list', function (done) {
+    client.priorities.getAll({}, function (err, priorities) {
       assert.strictEqual(err, null)
-      severities.forEach(function (severity) {
-        assert(severity.logical_name.startsWith('list_node.severity.'))
+      priorities.forEach(function (priority) {
+        assert(priority.logical_name.startsWith('list_node.priority.'))
       })
       done()
     })

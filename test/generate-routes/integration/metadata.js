@@ -18,12 +18,13 @@
 
 const assert = require('assert')
 
-const Query = require('../../lib/query')
+const Query = require('../../../lib/query')
 
 const initializeOctaneClient = require('./helper').initializeOctaneClient
 
 describe('[metadata/entities]', function () {
   this.timeout(60000)
+  this.slow(550)
 
   let client
 
@@ -64,6 +65,7 @@ describe('[metadata/entities]', function () {
 
 describe('[metadata/fields]', function () {
   this.timeout(60000)
+  this.slow(1000)
 
   let client
 

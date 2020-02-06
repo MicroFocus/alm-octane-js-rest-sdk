@@ -18,12 +18,13 @@
 
 const assert = require('assert')
 
-const Query = require('../../lib/query')
+const Query = require('../../../lib/query')
 
 const initializeOctaneClient = require('./helper').initializeOctaneClient
 
 describe('[defects]', function () {
   this.timeout(60000)
+  this.slow(400)
   const defectName = 'defect test'
 
   let client
@@ -114,7 +115,7 @@ describe('[defects]', function () {
         done()
       })
     })
-  })
+  }).slow(800)
 
   it('should successfully get a defect', function (done) {
     client.defects.get({ id: defectIDs[0] }, function (err, defect) {

@@ -25,7 +25,7 @@ const assert = require('assert')
 const Octane = require('../../../lib/root/octane')
 const convertToRootConfig = require('./octaneConfigConverter').convertToRootConfig
 
-describe('[attachments]', function () {
+describe('[attachments - generic SDK]', function () {
   this.timeout(60000)
   this.slow(250)
   const attachmentName = 'attachment.txt'
@@ -39,11 +39,11 @@ describe('[attachments]', function () {
     const configObject = convertToRootConfig()
     octane = new Octane(configObject)
 
-    let defect = await octane.create(Octane.entityTypes.defects, { name: 'testDefect' }).execute()
+    const defect = await octane.create(Octane.entityTypes.defects, { name: 'testDefect' }).execute()
     defectId = parseInt(defect.data[0].id)
     assert(defectId)
 
-    let attachment = await octane.uploadAttachment(attachmentName, attachmentFileContent, 'owner_work_item', defectId).execute()
+    const attachment = await octane.uploadAttachment(attachmentName, attachmentFileContent, 'owner_work_item', defectId).execute()
     attachmentId = parseInt(attachment.data[0].id)
     assert(attachmentId)
   })
@@ -53,23 +53,23 @@ describe('[attachments]', function () {
   })
 
   it('should successfully get all attachments list', async function () {
-    let attachments = await octane.get(Octane.entityTypes.attachments).execute()
+    const attachments = await octane.get(Octane.entityTypes.attachments).execute()
     assert(attachments.total_count >= 1)
   })
 
   it('should successfully get the attachment entity data', async function () {
-    let attachment = await octane.get(Octane.entityTypes.attachments).at(attachmentId).execute()
+    const attachment = await octane.get(Octane.entityTypes.attachments).at(attachmentId).execute()
     assert.strictEqual(attachment.name, attachmentName)
   })
 
   it('should successfully get the attachment data', async function () {
-    let attachment = await octane.getAttachmentContent(Octane.entityTypes.attachments).at(attachmentId).execute()
+    const attachment = await octane.getAttachmentContent(Octane.entityTypes.attachments).at(attachmentId).execute()
     assert.strictEqual(attachment, attachmentFileContent)
   })
 
   it('should successfully delete the attachment', async function () {
-    let attachment = await octane.uploadAttachment(attachmentName, attachmentFileContent, 'owner_work_item', defectId).execute()
-    let currentAttachmentId = parseInt(attachment.data[0].id)
+    const attachment = await octane.uploadAttachment(attachmentName, attachmentFileContent, 'owner_work_item', defectId).execute()
+    const currentAttachmentId = parseInt(attachment.data[0].id)
     assert(currentAttachmentId)
 
     await octane.delete(Octane.entityTypes.attachments).at(currentAttachmentId).execute()

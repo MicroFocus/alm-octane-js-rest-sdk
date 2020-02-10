@@ -30,7 +30,7 @@ const Reference = require('../../../lib/generate-routes/models/reference')
 
 const initializeOctaneClient = require('./helper').initializeOctaneClient
 
-describe('[attachments]', function () {
+describe('[attachments - vanilla]', function () {
   this.timeout(60000)
   this.slow(250)
   const attachmentName = 'attachment.txt'

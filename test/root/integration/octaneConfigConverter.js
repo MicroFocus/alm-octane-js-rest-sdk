@@ -39,7 +39,7 @@ exports.convertToRootConfig = function () {
     rootConfig.headers = generateRoutesConfig.config.headers
   }
   if (generateRoutesConfig.config.tech_preview_API) {
-    rootConfig.headers = { ...rootConfig.headers, HPECLIENTTYPE: 'HPE_REST_API_TECH_PREVIEW' }
+    rootConfig.headers = { ...rootConfig.headers, 'ALM-OCTANE-TECH-PREVIEW': true }
   }
   rootConfig.sharedSpace = generateRoutesConfig.config.shared_space_id
   rootConfig.workspace = generateRoutesConfig.config.workspace_id

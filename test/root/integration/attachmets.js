@@ -29,7 +29,7 @@ describe('[attachments - generic SDK]', function () {
   this.timeout(60000)
   this.slow(250)
   const attachmentName = 'attachment.txt'
-  const attachmentFileContent = 'This is an attachment test file.'
+  const attachmentFileContent = Buffer.from('This is an attachment test file.')
 
   let defectId
   let attachmentId
@@ -64,7 +64,7 @@ describe('[attachments - generic SDK]', function () {
 
   it('should successfully get the attachment data', async function () {
     const attachment = await octane.getAttachmentContent(Octane.entityTypes.attachments).at(attachmentId).execute()
-    assert.strictEqual(attachment, attachmentFileContent)
+    assert.strictEqual(JSON.stringify(attachment), JSON.stringify(attachmentFileContent))
   })
 
   it('should successfully delete the attachment', async function () {

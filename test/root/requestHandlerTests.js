@@ -324,7 +324,6 @@ describe('requestHandler', function () {
   })
 
   class BuildServerResponses {
-
     constructor (requester) {
       this.scope = new MockAdapter(requester)
       this.authenticatedCookie = 'Authenticated'

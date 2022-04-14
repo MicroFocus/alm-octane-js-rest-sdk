@@ -28,6 +28,9 @@ exports.convertToRootConfig = function () {
   if (generateRoutesConfig.config.port) {
     rootConfig.server += ':' + generateRoutesConfig.config.port
   }
+  if (generateRoutesConfig.config.pathPrefix) {
+    rootConfig.server += generateRoutesConfig.config.pathPrefix
+  }
   if (generateRoutesConfig.options.username && generateRoutesConfig.options.password) {
     rootConfig.user = generateRoutesConfig.options.username
     rootConfig.password = generateRoutesConfig.options.password

@@ -121,7 +121,7 @@ describe('[attachments - vanilla]', function () {
   })
 
   it('should successfully get the attachment entity data', function (done) {
-    client.attachments.get({ id: attachmentID }, function (err, attachment) {
+    client.attachments.get({ id: attachmentID, fields: 'name' }, function (err, attachment) {
       assert.strictEqual(err, null)
       assert.strictEqual(attachment.name, attachmentName)
       done()

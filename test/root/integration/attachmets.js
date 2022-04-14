@@ -58,7 +58,7 @@ describe('[attachments - generic SDK]', function () {
   })
 
   it('should successfully get the attachment entity data', async function () {
-    const attachment = await octane.get(Octane.entityTypes.attachments).at(attachmentId).execute()
+    const attachment = await octane.get(Octane.entityTypes.attachments).fields('name').at(attachmentId).execute()
     assert.strictEqual(attachment.name, attachmentName)
   })
 
@@ -74,6 +74,6 @@ describe('[attachments - generic SDK]', function () {
 
     await octane.delete(Octane.entityTypes.attachments).at(currentAttachmentId).execute()
 
-    await octane.get(Octane.entityTypes.attachments).at(currentAttachmentId).execute().catch(err => assert(err.statusCode === 404))
+    await octane.get(Octane.entityTypes.attachments).at(currentAttachmentId).execute().catch(err => assert(err.response.status === 404))
   })
 })

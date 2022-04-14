@@ -118,7 +118,7 @@ describe('[defects]', function () {
   }).slow(800)
 
   it('should successfully get a defect', function (done) {
-    client.defects.get({ id: defectIDs[0] }, function (err, defect) {
+    client.defects.get({ id: defectIDs[0], fields: 'name' }, function (err, defect) {
       assert.strictEqual(err, null)
       assert(defect)
       assert(defect.name)
@@ -196,7 +196,7 @@ describe('[defects]', function () {
     client.defects.getAll({ order_by: 'id' }, function (err, defects) {
       assert.strictEqual(err, null)
       for (let i = 1, l = defects.length; i < l; i++) {
-        assert(defects[i - 1].id < defects[i].id)
+        assert(parseInt(defects[i - 1].id) < parseInt(defects[i].id))
       }
       done()
     })

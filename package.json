@@ -1,6 +1,6 @@
 {
   "name": "@microfocus/alm-octane-js-rest-sdk",
-  "version": "16.0.300",
+  "version": "16.0.400",
   "description": "NodeJS wrapper for the Micro Focus ALM Octane API",
   "main": "lib",
   "scripts": {

@@ -16,8 +16,11 @@ A Node.js wrapper for the MF ALM Octane API.
         * [delete](#delete)
         * [getAttachmentContent](#getAttachmentContent)
         * [uploadAttachment](#uploadAttachment)
+        * [executeCustomRequest](#executeCustomRequest)
+        * [authenticate](#authenticate)
         * [signOut](#signOut)
     * [Octane.entityTypes](#octane-entity-types)
+    * [Octane.operationTypes](#octane-operation-types)
 1. [Usage examples](#usage-examples)
     * [Get metadata](#get-metadata)
     * [Get entities](#get-entities)
@@ -213,6 +216,24 @@ The rest of the methods will not affect directly the Octane data, but add proper
     *Methods which can be chained*
      - `execute()` - Will fire the request to create the attachment defined by attachmentData and it will be under the entity provided by ownerName and ownerReference.
 
+- ```executeCustomRequest (customUrl, operation, body, headers)``` <a name="executeCustomRequest"></a>
+
+  *Parameters*
+    - **customUrl** - The url to which the request will be sent to.
+    - **operation** - The type of operation that will be executed by the requester. The recommended way to use the entity names is to use the [Octane.operationTypes](#octane-operation-types) entries.
+    - **body** - The body of the custom request. This is an optional parameter and it will default to undefined.
+    - **headers** - Custom headers object. This must be a JSON where the key: value pairs represent the headers. This is an optional parameter and it will default to undefined.
+
+  *Behaviour*
+  This method fires the request and **does not** need any additional call to `execute()`.
+  If the request executes successfully it returns the body of the response.
+
+- ```authenticate()``` <a name="authenticate"></a>
+
+  *Behavior*
+
+  Fires an authenticate request to Octane. After this request is fulfilled any further operation wll not require to reauthenticate.
+
 - ```signOut()``` <a name="signOut"></a>
 
      *Behavior*
@@ -223,6 +244,11 @@ The rest of the methods will not affect directly the Octane data, but add proper
 
 The Octane.entityTypes JSON contains all the entities present in the public API of ALM Octane. This can be used in order
 to access Octane entities.
+
+#### Octane.operationTypes <a name="octane-operation-types"></a>
+
+The Octane.operationTypes JSON contains all the operations that can be executed via the public API of ALM Octane. This can be used in order
+to generate custom requests.
 
 ## Usage examples
 
@@ -313,6 +339,16 @@ to access Octane entities.
 
 ```
 
+#### Custom Requests
+
+```javascript
+    let url = 'https://myOctane:8080/api/shared_spaces/1001/users'
+    //get the users from the shared space with id 1001 using the tech preview header
+    let users = await octane.executeCustomRequest(url, Octane.operationTypes.get, undefined, { 'ALM-OCTANE-TECH-PREVIEW': true })
+    //create user in octane
+    let user = await octane.executeCustomRequest(url, Octane.operationTypes.create, { email: 'example@example.com', password: 'examplePassword' })
+```
+
 #### Query
 
 The Octane REST API supports entities querying by filtering based on field values. To filter, use a query statement, which is 
@@ -382,6 +418,11 @@ $ npm test test/query.js
 ```
 
 ## What's new :newspaper: <a name="whats-new"></a>
+* 16.0.400
+    * Changed HTTP library from `request-promise-native` to `axios`
+    * Added `authenticate()` method to `Octane` class
+    * Added `executeCustomRequest()` method to `Octane` class which allows user to send requests to custom URLs
+
 * 15.0.20
     * A generic way to interact with the ALM Octane API has been implemented as `Octane` class
     * The OctaneVanilla code has moved from ES5 to ES6

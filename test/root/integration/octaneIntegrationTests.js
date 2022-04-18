@@ -25,8 +25,9 @@ const convertToRootConfig = require('./octaneConfigConverter').convertToRootConf
 describe('octane', function () {
   this.slow(350)
   let octane
+  let configObject
   before(function adaptGenerateRoutesConfigFileToRootConfigFile () {
-    const configObject = convertToRootConfig()
+    configObject = convertToRootConfig()
     octane = new Octane(configObject)
   })
   describe('makes successful CRUD operations', () => {
@@ -198,6 +199,17 @@ describe('octane', function () {
       it('deletes multiple defects', async function () {
         this.timeout(10000).slow(4000)
         await deleteDefectsWithIds(defectIds)
+      })
+    })
+
+    describe('custom operation', () => {
+      it('sends request for users with custom header', async () => {
+        const url = configObject.server + '/api/shared_spaces/' + configObject.sharedSpace + '/users'
+        await assert.doesNotReject(octane.executeCustomRequest(url, Octane.operationTypes.get, undefined, { 'ALM-OCTANE-TECH-PREVIEW': true }))
+      })
+      it('fails on not supported operation', async () => {
+        const url = configObject.server + '/api/shared_spaces/' + configObject.sharedSpace + '/users'
+        await assert.rejects(octane.executeCustomRequest(url, 'someRandomOp', undefined, { 'ALM-OCTANE-TECH-PREVIEW': true }), new Error('Operation is not supported'))
       })
     })
   })

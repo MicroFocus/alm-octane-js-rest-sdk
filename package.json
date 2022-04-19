@@ -41,7 +41,7 @@
     "command-line-args": "5.1.1",
     "debug": "3.1.0",
     "http-errors": "1.7.3",
-    "log4js": "6.1.0",
+    "log4js": "6.4.5",
     "pluralize": "3.0.0",
     "request": "2.87.0",
     "tough-cookie": "4.0.0"

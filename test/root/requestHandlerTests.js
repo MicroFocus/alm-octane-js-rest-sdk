@@ -17,171 +17,183 @@
 /* eslint-env mocha */
 
 const assert = require('assert')
+const MockAdapter = require('axios-mock-adapter')
 const RequestHandler = require('../../lib/root/requestHandler')
-const nock = require('nock')
-const nockServerUrl = 'https://myNockServer.com'
+const testServerUrl = ''
 const uri = '/some/uri'
 const user = 'MyUser'
 const password = 'MyPassword'
+
 const UNAUTHORIZED_ERROR = {
-  name: 'StatusCodeError',
-  statusCode: 401
+  name: 'Error',
+  response: {
+    status: 401
+  }
 }
 
 describe('requestHandler', function () {
   this.slow(350)
   let requestHandler
   beforeEach(() => {
-    const requestHandlerInitialization = { user: user, password: password, server: nockServerUrl }
+    const requestHandlerInitialization = { user: user, password: password, server: testServerUrl }
     requestHandler = new RequestHandler(requestHandlerInitialization)
   })
 
   async function throwsUnauthorizedException (promise) {
-    await throwsException(promise, UNAUTHORIZED_ERROR)
+    await throwsException(promise, 401, undefined)
   }
-  async function throwsException (promise, exception) {
-    await assert.rejects(promise, exception)
-  }
-  function wrapInErrorMessage (message) {
-    return { message: 'Error: ' + message }
+
+  async function throwsException (promise, statusCode, errorBody) {
+    try {
+      await promise
+      assert.fail()
+    } catch (e) {
+      if (errorBody) {
+        assert.strictEqual(JSON.stringify(e.response.data), JSON.stringify(errorBody))
+      }
+      if (statusCode) {
+        assert.strictEqual(e.response.status, statusCode)
+      }
+    }
   }
 
   describe('#authenticate', () => {
     it('makes a successful authentication request with the given username and password', async () => {
-      const scope = BuildServerResponses()
+      const scope = new BuildServerResponses(requestHandler._requestor)
         .withSuccessfulAuthentication(user, password)
         .build()
       const shouldBeUndefined = await requestHandler.authenticate()
-      await assert.strictEqual(shouldBeUndefined, undefined)
-      scope.done()
+      await assert.strictEqual(shouldBeUndefined.data, undefined)
+      scope.reset()
     })
     it('throws an error after failed authentication', async () => {
-      const scope = BuildServerResponses()
+      const scope = new BuildServerResponses(requestHandler._requestor)
         .withUnsuccessfulAuthentication()
         .build()
       await throwsUnauthorizedException(requestHandler.authenticate())
-      scope.done()
+      scope.reset()
     })
   })
+
   describe('#get', () => {
     it('throws an error in case of an error response different from 401', async () => {
-      const errorMessage = 'Failed as intended'
-      const scope = BuildServerResponses()
-        .withUnsuccessfulGetRequest(uri, errorMessage)
+      const error = { error: 'Failed as intended' }
+      const scope = new BuildServerResponses(requestHandler._requestor)
+        .withUnsuccessfulGetRequest(uri, error)
         .build()
-      await throwsException(requestHandler.get(uri), wrapInErrorMessage(errorMessage))
-      scope.done()
+      await throwsException(requestHandler.get(uri), 400, error)
+      scope.reset()
     })
     it('throws an error if request was answered with status code 401 two times', async () => {
-      const scope = BuildServerResponses()
+      const scope = new BuildServerResponses(requestHandler._requestor)
         .withUnauthorizedGetRequest(uri)
         .withSuccessfulAuthentication()
         .withUnauthorizedGetRequest(uri)
         .build()
       await throwsUnauthorizedException(requestHandler.get(uri))
-      scope.done()
+      scope.reset()
     })
     it('throws an error if request was answered with status code 401 and authentication fails', async () => {
-      const scope = BuildServerResponses()
+      const scope = new BuildServerResponses(requestHandler._requestor)
         .withUnauthorizedGetRequest(uri)
         .withUnsuccessfulAuthentication()
         .build()
       await throwsUnauthorizedException(requestHandler.get(uri))
-      scope.done()
+      scope.reset()
     })
     it('returns the data even if the 1st request was with the status code 401', async function () {
       const objectToGet = 'Request was successful'
-      const scope = BuildServerResponses()
+      const scope = new BuildServerResponses(requestHandler._requestor)
         .withUnauthorizedGetRequest(uri)
         .withSuccessfulAuthentication()
         .withGetRequest(uri, 200, objectToGet)
         .build()
       const objectGot = await requestHandler.get(uri)
-      assert.strictEqual(objectGot, objectToGet)
-      scope.done()
+      assert.strictEqual(objectGot.data, objectToGet)
+      scope.reset()
     })
     it('makes a successful get request', async function () {
       const objectToGet = 'Request was successful'
-      const scope = BuildServerResponses()
+      const scope = new BuildServerResponses(requestHandler._requestor)
         .withGetRequest(uri, 200, objectToGet)
         .build()
       const objectGot = await requestHandler.get(uri)
-      assert.strictEqual(objectGot, objectToGet)
-      scope.done()
+      assert.strictEqual(objectGot.data, objectToGet)
+      scope.reset()
     })
   })
 
   describe('#delete', () => {
     it('throws an error in case of an error response different from 401', async () => {
-      const errorMessage = 'Failed as intended'
-      const scope = BuildServerResponses()
-        .withUnsuccessfulDeleteRequest(uri, errorMessage)
+      const error = { error: 'Failed as intended' }
+      const scope = new BuildServerResponses(requestHandler._requestor)
+        .withUnsuccessfulDeleteRequest(uri, error)
         .build()
-      await throwsException(requestHandler.delete(uri), wrapInErrorMessage(errorMessage))
-      scope.done()
+      await throwsException(requestHandler.delete(uri), 400, error)
+      scope.reset()
     })
     it('throws an error if request was answered with status code 401 two times', async function () {
-      const scope = BuildServerResponses()
+      const scope = new BuildServerResponses(requestHandler._requestor)
         .withUnauthorizedDeleteRequest(uri)
         .withSuccessfulAuthentication()
         .withUnauthorizedDeleteRequest(uri)
         .build()
       await throwsUnauthorizedException(requestHandler.delete(uri))
-      scope.done()
+      scope.reset()
     })
     it('throws an error if request was answered with status code 401 and authentication fails', async () => {
-      const scope = BuildServerResponses()
+      const scope = new BuildServerResponses(requestHandler._requestor)
         .withUnauthorizedDeleteRequest(uri)
         .withUnsuccessfulAuthentication()
         .build()
       await throwsUnauthorizedException(requestHandler.delete(uri))
-      scope.done()
+      scope.reset()
     })
     it('request is made even if 1st request was with the status code 401', async function () {
-      const scope = BuildServerResponses()
+      const scope = new BuildServerResponses(requestHandler._requestor)
         .withUnauthorizedDeleteRequest(uri)
         .withSuccessfulAuthentication()
         .withDeleteRequest(uri, 200)
         .build()
       const shouldBeUndefined = await requestHandler.delete(uri)
-      assert.strictEqual(shouldBeUndefined, undefined)
-      scope.done()
+      assert.strictEqual(shouldBeUndefined.data, undefined)
+      scope.reset()
     })
     it('makes a successful delete request', async function () {
-      const scope = BuildServerResponses()
+      const scope = new BuildServerResponses(requestHandler._requestor)
         .withDeleteRequest(uri, 200)
         .build()
       const shouldBeUndefined = await requestHandler.delete(uri)
-      assert.strictEqual(shouldBeUndefined, undefined)
-      scope.done()
+      assert.strictEqual(shouldBeUndefined.data, undefined)
+      scope.reset()
     })
   })
 
   describe('#update', () => {
     it('throws an error in case of an error response different from 401', async () => {
-      const error = 'Failed as intended!'
-      const scope = BuildServerResponses()
+      const error = { error: 'Failed as intended' }
+      const scope = new BuildServerResponses(requestHandler._requestor)
         .withUnsuccessfulUpdateRequest(uri, error)
         .build()
-      await throwsException(requestHandler.update(uri), wrapInErrorMessage(error))
-      scope.done()
+      await throwsException(requestHandler.update(uri), 400, error)
+      scope.reset()
     })
     it('throws an error if request was answered with status code 401 two times', async function () {
-      const scope = BuildServerResponses()
+      const scope = new BuildServerResponses(requestHandler._requestor)
         .withUnauthorizedUpdateRequest(uri)
         .withSuccessfulAuthentication()
         .withUnauthorizedUpdateRequest(uri)
         .build()
       await throwsUnauthorizedException(requestHandler.update(uri))
-      scope.done()
+      scope.reset()
     })
     it('throws an error if request was answered with status code 401 and authentication fails', async () => {
-      const scope = BuildServerResponses()
+      const scope = new BuildServerResponses(requestHandler._requestor)
         .withUnauthorizedUpdateRequest(uri)
         .withUnsuccessfulAuthentication()
         .build()
       await throwsUnauthorizedException(requestHandler.update(uri))
-      scope.done()
+      scope.reset()
     })
     it('request is made even if 1st request was with the status code 401', async function () {
       const updatedObject = 'Success'
@@ -189,14 +201,16 @@ describe('requestHandler', function () {
         parameter1: 'para 1',
         parameter2: 2
       }
-      const scope = BuildServerResponses()
-        .withUnauthorizedUpdateRequest(uri)
+      const scope = new BuildServerResponses(requestHandler._requestor)
+        .withUnauthorizedUpdateRequest(uri, updateBody, updatedObject)
         .withSuccessfulAuthentication()
         .withUpdateRequest(uri, 200, updateBody, updatedObject)
         .build()
+
       const responseObject = await requestHandler.update(uri, updateBody)
-      assert.strictEqual(responseObject, updatedObject)
-      scope.done()
+      assert.strictEqual(responseObject.data, updatedObject)
+
+      scope.reset()
     })
     it('makes a successful update request', async function () {
       const updatedObject = 'Success'
@@ -204,39 +218,40 @@ describe('requestHandler', function () {
         parameter1: 'para 1',
         parameter2: 2
       }
-      const scope = BuildServerResponses()
+      const scope = new BuildServerResponses(requestHandler._requestor)
         .withUpdateRequest(uri, 200, updateBody, updatedObject)
         .build()
       const responseObject = await requestHandler.update(uri, updateBody)
-      assert.strictEqual(responseObject, updatedObject)
-      scope.done()
+      assert.strictEqual(responseObject.data, updatedObject)
+      scope.reset()
     })
   })
+
   describe('#create', () => {
     it('throws an error in case of an error response different from 401', async () => {
-      const error = 'Failed as intended!'
-      const scope = BuildServerResponses()
+      const error = { error: 'Failed as intended' }
+      const scope = new BuildServerResponses(requestHandler._requestor)
         .withUnsuccessfulCreateRequest(uri, error)
         .build()
-      await throwsException(requestHandler.create(uri), wrapInErrorMessage(error))
-      scope.done()
+      await throwsException(requestHandler.create(uri), 400, error)
+      scope.reset()
     })
     it('throws an error if request was answered with status code 401 two times', async function () {
-      const scope = BuildServerResponses()
+      const scope = new BuildServerResponses(requestHandler._requestor)
         .withUnauthorizedCreateRequest(uri)
         .withSuccessfulAuthentication()
         .withUnauthorizedCreateRequest(uri)
         .build()
       await throwsUnauthorizedException(requestHandler.create(uri))
-      scope.done()
+      scope.reset()
     })
     it('throws an error if request was answered with status code 401 and authentication fails', async () => {
-      const scope = BuildServerResponses()
+      const scope = new BuildServerResponses(requestHandler._requestor)
         .withUnauthorizedCreateRequest(uri)
         .withUnsuccessfulAuthentication()
         .build()
       await throwsUnauthorizedException(requestHandler.create(uri))
-      scope.done()
+      scope.reset()
     })
     it('request is made even if 1st request was with the status code 401', async function () {
       const createObject = 'Success'
@@ -244,151 +259,163 @@ describe('requestHandler', function () {
         parameter1: 'para 1',
         parameter2: 2
       }
-      const scope = BuildServerResponses()
-        .withUnauthorizedCreateRequest(uri)
+      const scope = new BuildServerResponses(requestHandler._requestor)
+        .withUnauthorizedCreateRequest(uri, createBody, createObject)
         .withSuccessfulAuthentication()
         .withCreateRequest(uri, 200, createBody, createObject)
         .build()
       const responseObject = await requestHandler.create(uri, createBody)
-      assert.strictEqual(responseObject, createObject)
-      scope.done()
-    }).timeout(200000)
+      assert.strictEqual(responseObject.data, createObject)
+      scope.reset()
+    })
     it('makes a successful update request', async function () {
-      const createObject = 'Success'
+      const createObject = { data: 'Success' }
       const createBody = {
         parameter1: 'para 1',
         parameter2: 2
       }
-      const scope = BuildServerResponses()
+      const scope = new BuildServerResponses(requestHandler._requestor)
         .withCreateRequest(uri, 200, createBody, createObject)
         .build()
       const responseObject = await requestHandler.create(uri, createBody)
-      assert.strictEqual(responseObject, createObject)
-      scope.done()
+      assert.strictEqual(JSON.stringify(responseObject.data), JSON.stringify(createObject))
+      scope.reset()
     })
   })
+
   describe('#reauthenicate', () => {
     it('throws the error given if it does not have the status code 401', async () => {
-      const errorWithoutStatusCode = new Error('My Simple Error')
-      const errorWithStatusCode = new Error('My Status Code Error')
-      errorWithStatusCode.statusCode = 404
-      await throwsException(requestHandler._reauthenticate(errorWithoutStatusCode), errorWithoutStatusCode)
-      await throwsException(requestHandler._reauthenticate(errorWithStatusCode), errorWithStatusCode)
+      const scope = new BuildServerResponses(requestHandler._requestor).withUnsuccessfulAuthentication().build()
+      const errorWithoutStatusCode = { response: { data: 'Error' } }
+      const errorWithStatusCode = { response: { status: 400, data: 'Error' } }
+      await throwsException(requestHandler._reauthenticate(errorWithoutStatusCode), undefined, errorWithoutStatusCode.response.data)
+      await throwsException(requestHandler._reauthenticate(errorWithStatusCode), 400, errorWithStatusCode.response.data)
+      scope.reset()
     })
     it('throws an error if the error received has status code 401 and the authentication fails ', async function () {
-      const scope = BuildServerResponses().withUnsuccessfulAuthentication().build()
+      const scope = new BuildServerResponses(requestHandler._requestor).withUnsuccessfulAuthentication().build()
       await throwsUnauthorizedException(requestHandler._reauthenticate(UNAUTHORIZED_ERROR))
-      scope.done()
+      scope.reset()
     })
     it('authenticates again if the received error has the status code 401', async function () {
-      const scope = BuildServerResponses().withSuccessfulAuthentication().build()
+      const scope = new BuildServerResponses(requestHandler._requestor).withSuccessfulAuthentication().build()
       const shouldBeUndefined = await requestHandler._reauthenticate(UNAUTHORIZED_ERROR)
-      assert.strictEqual(shouldBeUndefined, undefined)
-      scope.done()
+      assert.strictEqual(shouldBeUndefined.data, undefined)
+      scope.reset()
     })
   })
+
   describe('#signOut', () => {
     it('throws an error if the request fails', async function () {
-      const scope = BuildServerResponses()
+      const scope = new BuildServerResponses(requestHandler._requestor)
         .withUnsuccessfulSignOut()
         .build()
       await throwsUnauthorizedException(requestHandler.signOut())
-      scope.done()
+      scope.reset()
     })
     it('throws an error if the request fails', async function () {
-      const scope = BuildServerResponses()
+      const scope = new BuildServerResponses(requestHandler._requestor)
         .withSuccessfulSignOut()
         .build()
       const shouldBeUndefined = await requestHandler.signOut()
-      assert.strictEqual(shouldBeUndefined, undefined)
-      scope.done()
+      assert.strictEqual(shouldBeUndefined.data, undefined)
+      scope.reset()
     })
   })
-  afterEach(() => {
-    nock.cleanAll()
-  })
 
-  function BuildServerResponses () {
-    const scope = nock(nockServerUrl)
-    const authenticatedCookie = 'Authenticated'
-    const loginCookieName = 'LWSSO_COOKIE_KEY'
-    const serverDelay = 100
-    return {
-      withSuccessfulAuthentication: function (user, password) {
-        scope.post('/authentication/sign_in', body => {
-          if (user) { assert.strictEqual(body.user, user) }
-          if (password) { assert.strictEqual(body.password, password) }
+  class BuildServerResponses {
+    constructor (requester) {
+      this.scope = new MockAdapter(requester)
+      this.authenticatedCookie = 'Authenticated'
+      this.loginCookieName = 'LWSSO_COOKIE_KEY'
+    }
+
+    withSuccessfulAuthentication (user, password) {
+      this.scope.onPost('/authentication/sign_in', {
+        asymmetricMatch (actual) {
+          if (user) { assert.strictEqual(actual.user, user) }
+          if (password) { assert.strictEqual(actual.password, password) }
           return true
-        })
-          .delayConnection(serverDelay)
-          .reply(200, '', { 'Set-Cookie': loginCookieName + '=' + authenticatedCookie })
-        return this
-      },
-      withUnsuccessfulAuthentication: function () {
-        scope.post('/authentication/sign_in')
-          .delayConnection(serverDelay)
-          .reply(401, '', { 'Set-Cookie': loginCookieName + '=' })
-        return this
-      },
-      withUnsuccessfulGetRequest: function (uri, errorMessage) {
-        scope.get(uri).delayConnection(serverDelay).replyWithError(errorMessage)
-        return this
-      },
-      withUnsuccessfulDeleteRequest: function (uri, errorMessage) {
-        scope.delete(uri).delayConnection(serverDelay).replyWithError(errorMessage)
-        return this
-      },
-      withUnsuccessfulUpdateRequest: function (uri, errorMessage) {
-        scope.put(uri).delayConnection(serverDelay).replyWithError(errorMessage)
-        return this
-      },
-      withUnsuccessfulCreateRequest: function (uri, errormessage) {
-        scope.post(uri).delayConnection(serverDelay).replyWithError(errormessage)
-        return this
-      },
-      withGetRequest: function (uri, statusCode, replyData) {
-        scope.get(uri).delayConnection(serverDelay).reply(statusCode, replyData)
-        return this
-      },
-      withDeleteRequest: function (uri, statusCode) {
-        scope.delete(uri).delayConnection(serverDelay).reply(statusCode)
-        return this
-      },
-      withUpdateRequest: function (uri, statusCode, body, replyData) {
-        scope.put(uri, body).delayConnection(serverDelay).reply(statusCode, replyData)
-        return this
-      },
-      withCreateRequest: function (uri, statusCode, body, replyData) {
-        scope.post(uri, body).delayConnection(serverDelay).reply(statusCode, replyData)
-        return this
-      },
-      withUnauthorizedUpdateRequest: function (uri) {
-        return this.withUpdateRequest(uri, 401)
-      },
-      withUnauthorizedGetRequest: function (uri) {
-        return this.withGetRequest(uri, 401)
-      },
-      withUnauthorizedDeleteRequest: function (uri) {
-        return this.withDeleteRequest(uri, 401)
-      },
-      withUnauthorizedCreateRequest: function (uri) {
-        return this.withCreateRequest(uri, 401)
-      },
-      withSuccessfulSignOut: function () {
-        scope.post('/authentication/sign_out')
-          .delayConnection(serverDelay)
-          .reply(200, '', { 'Set-Cookie': loginCookieName + '=' })
-        return this
-      },
-      withUnsuccessfulSignOut: function () {
-        scope.post('/authentication/sign_out')
-          .delayConnection(serverDelay)
-          .reply(401, '', { 'Set-Cookie': 'LWSSO_COOKIE_KEY=' })
-        return this
-      },
-      build: function () {
-        return scope
-      }
+        }
+      }).reply(200, undefined, { 'Set-Cookie': this.loginCookieName + '=' + this.authenticatedCookie })
+      return this
+    }
+
+    withUnsuccessfulAuthentication () {
+      this.scope.onPost('/authentication/sign_in').reply(401, undefined, { 'Set-Cookie': this.loginCookieName + '=' })
+      return this
+    }
+
+    withUnsuccessfulGetRequest (uri, errorBody) {
+      this.scope.onGet(uri).reply(400, errorBody)
+      return this
+    }
+
+    withUnsuccessfulDeleteRequest (uri, errorBody) {
+      this.scope.onDelete(uri).reply(400, errorBody)
+      return this
+    }
+
+    withUnsuccessfulUpdateRequest (uri, errorBody) {
+      this.scope.onPut(uri).reply(400, errorBody)
+      return this
+    }
+
+    withUnsuccessfulCreateRequest (uri, errorBody) {
+      this.scope.onPost(uri).reply(400, errorBody)
+      return this
+    }
+
+    withGetRequest (uri, statusCode, replyData) {
+      this.scope.onGet(uri).reply(statusCode, replyData)
+      return this
+    }
+
+    withDeleteRequest (uri, statusCode) {
+      this.scope.onDelete(uri).reply(statusCode)
+      return this
+    }
+
+    withUpdateRequest (uri, statusCode, body, replyData) {
+      this.scope.onPut(uri, body).reply(statusCode, replyData)
+      return this
+    }
+
+    withCreateRequest (uri, statusCode, body, replyData) {
+      this.scope.onPost(uri, body).reply(statusCode, replyData)
+      return this
+    }
+
+    withUnauthorizedUpdateRequest (uri, body, replyData) {
+      return this.withUpdateRequest(uri, 401, body, replyData)
+    }
+
+    withUnauthorizedGetRequest (uri) {
+      return this.withGetRequest(uri, 401)
+    }
+
+    withUnauthorizedDeleteRequest (uri) {
+      return this.withDeleteRequest(uri, 401)
+    }
+
+    withUnauthorizedCreateRequest (uri, body, replyData) {
+      return this.withCreateRequest(uri, 401, body, replyData)
+    }
+
+    withSuccessfulSignOut () {
+      this.scope.onPost('/authentication/sign_out')
+        .reply(200, undefined, { 'Set-Cookie': this.loginCookieName + '=' })
+      return this
+    }
+
+    withUnsuccessfulSignOut () {
+      this.scope.onPost('/authentication/sign_out')
+        .reply(401, undefined, { 'Set-Cookie': 'LWSSO_COOKIE_KEY=' })
+      return this
+    }
+
+    build () {
+      return this.scope
     }
   }
 })

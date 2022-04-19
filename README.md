@@ -219,7 +219,7 @@ The rest of the methods will not affect directly the Octane data, but add proper
 - ```executeCustomRequest (customUrl, operation, body, headers)``` <a name="executeCustomRequest"></a>
 
   *Parameters*
-    - **customUrl** - The url to which the request will be sent to.
+    - **customUrl** - The url to which the request will be sent to. The URL should exclude the server and point to the desired resource.
     - **operation** - The type of operation that will be executed by the requester. The recommended way to use the entity names is to use the [Octane.operationTypes](#octane-operation-types) entries.
     - **body** - The body of the custom request. This is an optional parameter and it will default to undefined.
     - **headers** - Custom headers object. This must be a JSON where the key: value pairs represent the headers. This is an optional parameter and it will default to undefined.
@@ -342,7 +342,7 @@ to generate custom requests.
 #### Custom Requests
 
 ```javascript
-    let url = 'https://myOctane:8080/api/shared_spaces/1001/users'
+    let url = '/api/shared_spaces/1001/users'
     //get the users from the shared space with id 1001 using the tech preview header
     let users = await octane.executeCustomRequest(url, Octane.operationTypes.get, undefined, { 'ALM-OCTANE-TECH-PREVIEW': true })
     //create user in octane

@@ -204,11 +204,13 @@ describe('octane', function () {
 
     describe('custom operation', () => {
       it('sends request for users with custom header', async () => {
-        const url = configObject.server + '/api/shared_spaces/' + configObject.sharedSpace + '/users'
+        const url = '/api/shared_spaces/' + configObject.sharedSpace + '/users'
         await assert.doesNotReject(octane.executeCustomRequest(url, Octane.operationTypes.get, undefined, { 'ALM-OCTANE-TECH-PREVIEW': true }))
+        const users = await octane.executeCustomRequest(url, Octane.operationTypes.get, undefined, { 'ALM-OCTANE-TECH-PREVIEW': true })
+        assert.ok(users.data.length > 0)
       })
       it('fails on not supported operation', async () => {
-        const url = configObject.server + '/api/shared_spaces/' + configObject.sharedSpace + '/users'
+        const url = '/api/shared_spaces/' + configObject.sharedSpace + '/users'
         await assert.rejects(octane.executeCustomRequest(url, 'someRandomOp', undefined, { 'ALM-OCTANE-TECH-PREVIEW': true }), new Error('Operation is not supported'))
       })
     })

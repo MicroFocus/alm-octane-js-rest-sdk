@@ -223,9 +223,9 @@ The rest of the methods will not affect directly the Octane data, but add proper
     - **operation** - The type of operation that will be executed by the requester. The recommended way to use the entity names is to use the [Octane.operationTypes](#octane-operation-types) entries.
     - **body** - The body of the custom request. This is an optional parameter and it will default to undefined.
     - **headers** - Custom headers object. This must be a JSON where the key: value pairs represent the headers. This is an optional parameter and it will default to undefined.
-    
+  
   *Behavior*
-- 
+
   This method fires the request and **does not** need any additional call to `execute()`.
   If the request executes successfully it returns the body of the response.
 

@@ -203,14 +203,24 @@ describe('octane', function () {
     })
 
     describe('custom operation', () => {
-      it('sends request for users with custom header', async () => {
-        const url = '/api/shared_spaces/' + configObject.sharedSpace + '/users'
+      const defectIds = []
+      let defectSingleId
+      let defects
+
+      before(async () => {
+        defects = await createDefects(numberOfCreatedDefects)
+        defects.map(defect => defectIds.push(defect.id))
+        defectSingleId = defectIds[0]
+      })
+
+      it('sends request for defect with custom header', async () => {
+        const url = '/api/shared_spaces/' + configObject.sharedSpace + '/workspaces/' + configObject.workspace + '/defects/' + defectSingleId
         await assert.doesNotReject(octane.executeCustomRequest(url, Octane.operationTypes.get, undefined, { 'ALM-OCTANE-TECH-PREVIEW': true }))
-        const users = await octane.executeCustomRequest(url, Octane.operationTypes.get, undefined, { 'ALM-OCTANE-TECH-PREVIEW': true })
-        assert.ok(users.data.length > 0)
+        const gotSingleDefect = await octane.executeCustomRequest(url, Octane.operationTypes.get, undefined, { 'ALM-OCTANE-TECH-PREVIEW': true })
+        assert.strictEqual(gotSingleDefect.id, defectSingleId)
       })
       it('fails on not supported operation', async () => {
-        const url = '/api/shared_spaces/' + configObject.sharedSpace + '/users'
+        const url = '/api/shared_spaces/' + configObject.sharedSpace + '/workspaces/' + configObject.workspace + '/defects/' + defectSingleId
         await assert.rejects(octane.executeCustomRequest(url, 'someRandomOp', undefined, { 'ALM-OCTANE-TECH-PREVIEW': true }), new Error('Operation is not supported'))
       })
     })

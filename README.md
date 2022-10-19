@@ -420,7 +420,7 @@ $ npm test test/query.js
 ```
 
 ## What's new :newspaper: <a name="whats-new"></a>
-* 16.0.401 
+* 16.1.100 
     * Added autocomplete feature
 
 * 16.0.400

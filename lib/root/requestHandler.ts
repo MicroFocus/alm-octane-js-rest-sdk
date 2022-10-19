@@ -1,27 +1,36 @@
 /*!
-* (c) Copyright 2020 - 2022 Micro Focus or one of its affiliates.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * (c) Copyright 2020 - 2022 Micro Focus or one of its affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-const axios = require('axios')
-const { wrapper } = require('axios-cookiejar-support')
-const { CookieJar } = require('tough-cookie')
-const log4js = require('log4js')
-const Mutex = require('async-mutex').Mutex
+import { Params } from './octane';
 
-const logger = log4js.getLogger()
-logger.level = 'debug'
+import axios, {
+  AxiosError,
+  AxiosInstance,
+  AxiosProxyConfig,
+  AxiosRequestConfig,
+  AxiosRequestHeaders,
+  ResponseType,
+} from 'axios';
+import { wrapper } from 'axios-cookiejar-support';
+import { CookieJar } from 'tough-cookie';
+import log4js from 'log4js';
+const Mutex = require('async-mutex').Mutex;
+
+const logger = log4js.getLogger();
+logger.level = 'debug';
 
 /**
  * @class
@@ -34,27 +43,43 @@ logger.level = 'debug'
  * @param {Object} [params.headers] - JSON containing headers which will be used for all the requests
  */
 class RequestHandler {
-  constructor (params) {
-    this._user = params.user
-    this._password = params.password
+  private _user: string;
+  private _password: string;
+  private _mutex: typeof Mutex;
+  private _options: {
+    baseURL: string;
+    responseType?: ResponseType;
+    jar: CookieJar;
+    proxy?: AxiosProxyConfig;
+    headers?: AxiosRequestHeaders;
+  };
+  private _requestor: AxiosInstance;
+  private _needsAuthenication: boolean;
+  constructor(params: Params) {
+    this._user = params.user;
+    this._password = params.password;
+    this._needsAuthenication = false;
 
-    this._mutex = new Mutex()
+    this._mutex = new Mutex();
 
     this._options = {
       baseURL: params.server,
       responseType: 'json',
-      jar: new CookieJar()
-    }
+      jar: new CookieJar(),
+    };
 
     if (params.proxy) {
-      this._options.proxy = params.proxy
+      this._options.proxy = {
+        host: params.proxy.split(':')[0],
+        port: Number.parseInt(params.proxy.split(':')[1]),
+      };
     }
 
     if (params.headers) {
-      this._options.headers = params.headers
+      this._options.headers = params.headers;
     }
 
-    this._requestor = wrapper(axios.create(this._options))
+    this._requestor = wrapper(axios).create(this._options);
   }
 
   /**
@@ -65,11 +90,11 @@ class RequestHandler {
    * @returns - The result of the operation returned by the server.
    * @throws - The error returned by the server if the request fails.
    */
-  async get (url, config = undefined) {
-    return this._requestor.get(url, config).catch(async err => {
-      await this._reauthenticate(err)
-      return this._requestor.get(url, config)
-    })
+  async get(url: string, config?: AxiosRequestConfig) {
+    return this._requestor.get(url, config).catch(async (err) => {
+      await this._reauthenticate(err);
+      return this._requestor.get(url, config);
+    });
   }
 
   /**
@@ -80,11 +105,11 @@ class RequestHandler {
    * @returns - The result of the operation returned by the server.
    * @throws - The error returned by the server if the request fails.
    */
-  async delete (url, config = undefined) {
-    return this._requestor.delete(url, config).catch(async err => {
-      await this._reauthenticate(err)
-      return this._requestor.delete(url)
-    })
+  async delete(url: string, config?: AxiosRequestConfig) {
+    return this._requestor.delete(url, config).catch(async (err) => {
+      await this._reauthenticate(err);
+      return this._requestor.delete(url);
+    });
   }
 
   /**
@@ -96,11 +121,11 @@ class RequestHandler {
    * @returns - The result of the operation returned by the server.
    * @throws - The error returned by the server if the request fails.
    */
-  async update (url, body, config = undefined) {
-    return this._requestor.put(url, body, config).catch(async err => {
-      await this._reauthenticate(err)
-      return this._requestor.put(url, body, config)
-    })
+  async update(url: string, body?: object, config?: AxiosRequestConfig) {
+    return this._requestor.put(url, body, config).catch(async (err) => {
+      await this._reauthenticate(err);
+      return this._requestor.put(url, body, config);
+    });
   }
 
   /**
@@ -112,11 +137,11 @@ class RequestHandler {
    * @returns - The result of the operation returned by the server.
    * @throws - The error returned by the server if the request fails.
    */
-  async create (url, body, config = undefined) {
-    return this._requestor.post(url, body, config).catch(async err => {
-      await this._reauthenticate(err)
-      return this._requestor.post(url, body, config)
-    })
+  async create(url: string, body?: object, config?: AxiosRequestConfig) {
+    return this._requestor.post(url, body, config).catch(async (err) => {
+      await this._reauthenticate(err);
+      return this._requestor.post(url, body, config);
+    });
   }
 
   /**
@@ -124,20 +149,23 @@ class RequestHandler {
    *
    * @throws - The error returned by the server if the request fails.
    */
-  async authenticate () {
+  async authenticate() {
     const authOptions = {
       url: '/authentication/sign_in',
       body: {
         user: this._user,
-        password: this._password
-      }
-    }
+        password: this._password,
+      },
+    };
 
-    logger.debug('Signing in...')
-    const request = await this._requestor.post(authOptions.url, authOptions.body)
-    logger.debug('Signed in.')
+    logger.debug('Signing in...');
+    const request = await this._requestor.post(
+      authOptions.url,
+      authOptions.body
+    );
+    logger.debug('Signed in.');
 
-    return request
+    return request;
   }
 
   /**
@@ -148,13 +176,26 @@ class RequestHandler {
    * @returns - The result of the operation returned by the server. The result is the content of the targeted attachment.
    * @throws - The error returned by the server if the request fails.
    */
-  async getAttachmentContent (url, config = undefined) {
-    const attachmentConfig = { headers: { accept: 'application/octet-stream' }, responseType: 'arraybuffer' }
-    const configHeaders = config === undefined ? undefined : config.headers
-    return this._requestor.get(url, { ...config, ...attachmentConfig, headers: { ...configHeaders, ...attachmentConfig.headers } }).catch(async err => {
-      await this._reauthenticate(err)
-      return this._requestor.get(url, { ...config, ...attachmentConfig, headers: { ...configHeaders, ...attachmentConfig.headers } })
-    })
+  async getAttachmentContent(url: string, config?: AxiosRequestConfig) {
+    const attachmentConfig: AxiosRequestConfig = {
+      headers: { accept: 'application/octet-stream' },
+      responseType: 'arraybuffer',
+    };
+    const configHeaders = config?.headers;
+    return this._requestor
+      .get(url, {
+        ...config,
+        ...attachmentConfig,
+        headers: { ...configHeaders, ...attachmentConfig.headers },
+      })
+      .catch(async (err) => {
+        await this._reauthenticate(err);
+        return this._requestor.get(url, {
+          ...config,
+          ...attachmentConfig,
+          headers: { ...configHeaders, ...attachmentConfig.headers },
+        });
+      });
   }
 
   /**
@@ -166,13 +207,29 @@ class RequestHandler {
    * @returns - The result of the operation returned by the server.
    * @throws - The error returned by the server if the request fails.
    */
-  async uploadAttachment (url, body, config = undefined) {
-    const attachmentConfig = { headers: { 'content-type': 'application/octet-stream' } }
-    const configHeaders = config === undefined ? undefined : config.headers
-    return this._requestor.post(url, body, { ...config, ...attachmentConfig, headers: { ...configHeaders, ...attachmentConfig.headers } }).catch(async err => {
-      await this._reauthenticate(err)
-      return this._requestor.post(url, body, { ...config, ...attachmentConfig, headers: { ...configHeaders, ...attachmentConfig.headers } })
-    })
+  async uploadAttachment(
+    url: string,
+    body: object,
+    config: AxiosRequestConfig
+  ) {
+    const attachmentConfig = {
+      headers: { 'content-type': 'application/octet-stream' },
+    };
+    const configHeaders = config === undefined ? undefined : config.headers;
+    return this._requestor
+      .post(url, body, {
+        ...config,
+        ...attachmentConfig,
+        headers: { ...configHeaders, ...attachmentConfig.headers },
+      })
+      .catch(async (err) => {
+        await this._reauthenticate(err);
+        return this._requestor.post(url, body, {
+          ...config,
+          ...attachmentConfig,
+          headers: { ...configHeaders, ...attachmentConfig.headers },
+        });
+      });
   }
 
   /**
@@ -180,12 +237,12 @@ class RequestHandler {
    *
    * @throws - The error returned by the server if the request fails.
    */
-  async signOut () {
-    logger.debug('Signing out...')
-    const request = await this._requestor.post('/authentication/sign_out')
-    logger.debug('Signed out.')
+  async signOut() {
+    logger.debug('Signing out...');
+    const request = await this._requestor.post('/authentication/sign_out');
+    logger.debug('Signed out.');
 
-    return request
+    return request;
   }
 
   /**
@@ -195,22 +252,30 @@ class RequestHandler {
    * @throws - The error returned by the server if the request fails.
    * @private
    */
-  async _reauthenticate (err) {
-    this._needsAuthenication = true
+  private async _reauthenticate(
+    err:
+      | AxiosError
+      | { name?: string; response: { status?: number; data?: any } }
+  ) {
+    this._needsAuthenication = true;
 
     return this._mutex.runExclusive(async () => {
       if (err.response && err.response.status === 401) {
-        if (!this._needsAuthenication) { return }
-        logger.debug('The received error had status code 401. Trying to authenticate...')
-        const request = await this.authenticate()
-        this._needsAuthenication = false
+        if (!this._needsAuthenication) {
+          return;
+        }
+        logger.debug(
+          'The received error had status code 401. Trying to authenticate...'
+        );
+        const request = await this.authenticate();
+        this._needsAuthenication = false;
 
-        return request
+        return request;
       } else {
-        throw err
+        throw err;
       }
-    })
+    });
   }
 }
 
-module.exports = RequestHandler
+export default RequestHandler;

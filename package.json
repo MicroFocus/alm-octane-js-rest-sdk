@@ -2,10 +2,13 @@
   "name": "@microfocus/alm-octane-js-rest-sdk",
   "version": "16.0.400",
   "description": "NodeJS wrapper for the Micro Focus ALM Octane API",
-  "main": "lib",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "test": "standard && mocha --recursive",
-    "test-jenkins": "JUNIT_REPORT_PATH=report.xml set NODE_ENV=test standard&& NODE_ENV=test mocha --recursive --colors --reporter mocha-jenkins-reporter"
+    "build": "tsc && npm run copy-files",
+    "copy-files": "copyfiles routes/* octane.json ./dist/",
+    "test": "npm run build && cd dist && mocha --recursive",
+    "test-jenkins": "npm run build && cd dist && set JUNIT_REPORT_PATH=report.xml && set NODE_ENV=test && mocha --recursive --colors --reporter mocha-jenkins-reporter"
   },
   "repository": {
     "type": "git",
@@ -27,12 +30,20 @@
   ],
   "license": "Apache-2.0",
   "devDependencies": {
+    "@types/http-errors": "^1.8.2",
+    "@types/jest": "^29.1.2",
+    "@types/mocha": "^10.0.0",
+    "@types/node": "^18.11.0",
+    "@types/pluralize": "^0.0.29",
+    "@types/request": "^2.48.8",
+    "@types/tough-cookie": "^4.0.2",
     "apidoc": "0.19.0",
     "axios-mock-adapter": "1.20.0",
+    "copyfiles": "^2.4.1",
     "jsdoc": "3.6.3",
     "mocha": "6.2.2",
     "mocha-jenkins-reporter": "0.4.2",
-    "standard": "14.3.1"
+    "typescript": "^4.8.4"
   },
   "dependencies": {
     "async-mutex": "0.1.4",

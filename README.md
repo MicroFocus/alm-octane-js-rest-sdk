@@ -57,7 +57,7 @@ The following sections expose the functionality of the generic version of the SD
 #### Import
 
 ```javascript
-import { Octane } from '@microfocus/alm-octane-js-rest-sdk');
+import { Octane } from '@microfocus/alm-octane-js-rest-sdk';
 
 ```
 

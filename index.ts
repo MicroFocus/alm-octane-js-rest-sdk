@@ -14,7 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
  */
 
-module.exports = {
-  Octane: require('./lib/root/octane'),
-  OctaneVanilla: require('./lib/generate-routes/octane-routes')
+import Octane from './lib/root/octane';
+import OctaneVanilla from './lib/generate-routes/octane-routes';
+
+export {
+  Octane,
+  OctaneVanilla
 }

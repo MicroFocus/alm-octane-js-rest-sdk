@@ -57,7 +57,8 @@ The following sections expose the functionality of the generic version of the SD
 #### Import
 
 ```javascript
-const Octane = require('@microfocus/alm-octane-js-rest-sdk').Octane
+import { Octane } from '@microfocus/alm-octane-js-rest-sdk';
+
 ```
 
 #### Octane(params) <a name="octane-params"></a>
@@ -359,7 +360,7 @@ The client API provides the Query module to help you build the query, rather tha
 these queries to the SDK, use the `build()` method after the query is fully built.
 
 ```javascript
-const Query = require('@microfocus/alm-octane-js-rest-sdk/lib/query')
+const Query = require('@microfocus/alm-octane-js-rest-sdk/dist/lib/query')
 
 // query statement: "id EQ 1005"
 const query = Query.field('id').equal(1005)
@@ -419,6 +420,9 @@ $ npm test test/query.js
 ```
 
 ## What's new :newspaper: <a name="whats-new"></a>
+* 16.1.100 
+    * Added autocomplete feature
+
 * 16.0.400
     * Changed HTTP library from `request-promise-native` to `axios`
     * Added `authenticate()` method to `Octane` class

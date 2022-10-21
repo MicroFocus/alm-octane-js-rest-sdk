@@ -1,25 +1,35 @@
 /*!
-* (c) Copyright 2020 - 2022 Micro Focus or one of its affiliates.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * (c) Copyright 2020 - 2022 Micro Focus or one of its affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-const log4js = require('log4js')
-const UrlBuilder = require('./urlBuilder')
-const RequestHandler = require('./requestHandler')
+import log4js from 'log4js';
+import UrlBuilder from './urlBuilder';
+import RequestHandler from './requestHandler';
 
-const logger = log4js.getLogger()
-logger.level = 'debug'
+const logger = log4js.getLogger();
+logger.level = 'debug';
+
+export interface Params {
+  server: string;
+  sharedSpace: number;
+  workspace: number;
+  user: string;
+  password: string;
+  proxy?: string;
+  headers?: Record<string, string | number | boolean>;
+}
 
 /**
  * @class
@@ -34,11 +44,150 @@ logger.level = 'debug'
  * @param {Object} [params.headers] - JSON containing headers which will be used for all the requests
  */
 class Octane {
-  constructor (params) {
-    this._urlBuilder = new UrlBuilder(params.sharedSpace, params.workspace)
-    this._requestMethod = null
+  /**
+   *  Types of operations that can be executed through REST API
+   */
+  static operationTypes: {
+    create: string;
+    get: string;
+    update: string;
+    delete: string;
+    getAttachmentContent: string;
+    uploadAttachment: string;
+  } = {
+    create: 'create',
+    get: 'get',
+    update: 'update',
+    delete: 'delete',
+    getAttachmentContent: 'getAttachmentContent',
+    uploadAttachment: 'uploadAttachment',
+  };
 
-    this._requestHandler = new RequestHandler(params)
+  /**
+   * Entities which can be accessed through REST API
+   */
+  static entityTypes: {
+    applicationModules: string;
+    attachments: string;
+    automatedRuns: string;
+    ciBuilds: string;
+    comments: string;
+    defects: string;
+    epics: string;
+    features: string;
+    gherkinTests: string;
+    listNodes: string;
+    manualRuns: string;
+    manualTests: string;
+    metaphases: string;
+    milestones: string;
+    phases: string;
+    pipelineNodes: string;
+    pipelineRuns: string;
+    previousRuns: string;
+    programs: string;
+    releases: string;
+    requirementDocuments: string;
+    requirementFolders: string;
+    requirementRoots: string;
+    requirements: string;
+    roles: string;
+    runSteps: string;
+    runs: string;
+    scmCommits: string;
+    sprints: string;
+    stories: string;
+    suiteRun: string;
+    tasks: string;
+    taxonomyCategoryNodes: string;
+    taxonomyItemNodes: string;
+    taxonomyNodes: string;
+    teamSprints: string;
+    teams: string;
+    testSuiteLinkToAutomatedTests: string;
+    testSuiteLinkToGherkinTests: string;
+    testSuiteLinkToManualTests: string;
+    testSuiteLinkToTests: string;
+    testSuites: string;
+    tests: string;
+    transitions: string;
+    userItems: string;
+    userTags: string;
+    users: string;
+    workItemRoots: string;
+    workItems: string;
+    workspaceRoles: string;
+    workspaceUsers: string;
+    qualityStories: string;
+    fieldsMetadata: string;
+    entitiesMetadata: string;
+  } = {
+    applicationModules: 'application_modules',
+    attachments: 'attachments',
+    automatedRuns: 'automated_runs',
+    ciBuilds: 'ci_builds',
+    comments: 'comments',
+    defects: 'defects',
+    epics: 'epics',
+    features: 'features',
+    gherkinTests: 'gherkin_tests',
+    listNodes: 'list_nodes',
+    manualRuns: 'manual_runs',
+    manualTests: 'manualTests',
+    metaphases: 'metaphases',
+    milestones: 'milestones',
+    phases: 'phases',
+    pipelineNodes: 'pipeline_nodes',
+    pipelineRuns: 'pipeline_runs',
+    previousRuns: 'previous_runs',
+    programs: 'programs',
+    releases: 'releases',
+    requirementDocuments: 'requirement_documents',
+    requirementFolders: 'requirement_folders',
+    requirementRoots: 'requirement_roots',
+    requirements: 'requirements',
+    roles: 'roles',
+    runSteps: 'run_steps',
+    runs: 'runs',
+    scmCommits: 'scm_commits',
+    sprints: 'sprints',
+    stories: 'stories',
+    suiteRun: 'suite_run',
+    tasks: 'tasks',
+    taxonomyCategoryNodes: 'taxonomy_category_nodes',
+    taxonomyItemNodes: 'taxonomy_item_nodes',
+    taxonomyNodes: 'taxonomy_nodes',
+    teamSprints: 'team_sprints',
+    teams: 'teams',
+    testSuiteLinkToAutomatedTests: 'test_suite_link_to_automated_tests',
+    testSuiteLinkToGherkinTests: 'test_suite_link_to_gherkin_tests',
+    testSuiteLinkToManualTests: 'test_suite_link_to_manual_tests',
+    testSuiteLinkToTests: 'test_suite_link_to_tests',
+    testSuites: 'test_suites',
+    tests: 'tests',
+    transitions: 'transitions',
+    userItems: 'user_items',
+    userTags: 'user_tags',
+    users: 'users',
+    workItemRoots: 'work_item_roots',
+    workItems: 'work_items',
+    workspaceRoles: 'workspace_roles',
+    workspaceUsers: 'workspace_users',
+    qualityStories: 'quality_stories',
+    fieldsMetadata: 'metadata/fields',
+    entitiesMetadata: 'metadata/entities',
+  };
+  private _urlBuilder: UrlBuilder;
+  private _requestMethod: string | null;
+  private _requestHandler: RequestHandler | any;
+  private _requestBody: object | null;
+
+  constructor(params: Params) {
+    this._urlBuilder = new UrlBuilder(params.sharedSpace, params.workspace);
+    this._requestMethod = null;
+    this._requestBody = null;
+
+    this._requestHandler = new RequestHandler(params);
   }
 
   /**
@@ -46,17 +195,17 @@ class Octane {
    *
    * @param limit - An integer which defines how many entities wll be fetched in a page.
    */
-  limit (limit) {
-    this._urlBuilder.limit(limit)
-    return this
+  limit(limit: number) {
+    this._urlBuilder.limit(limit);
+    return this;
   }
 
   /**
    * @param id - A number which defines which entity will be targeted for the next request.
    */
-  at (id) {
-    this._urlBuilder.at(id)
-    return this
+  at(id: number) {
+    this._urlBuilder.at(id);
+    return this;
   }
 
   /**
@@ -64,9 +213,9 @@ class Octane {
    *
    * @param offset - A number which defines the index of the element where the page will start.
    */
-  offset (offset) {
-    this._urlBuilder.offset(offset)
-    return this
+  offset(offset: number) {
+    this._urlBuilder.offset(offset);
+    return this;
   }
 
   /**
@@ -75,35 +224,35 @@ class Octane {
    *
    * Please inspect the field metadata before passing field names to this method.
    */
-  orderBy (...fieldNames) {
-    this._urlBuilder.orderBy(fieldNames)
-    return this
+  orderBy(...fieldNames: string[]) {
+    this._urlBuilder.orderBy(fieldNames);
+    return this;
   }
 
   /**
    * @param fieldNames - An array with names of fields relevant for the entity which will be affected by the request. When the request will be fired, the entities affected will contain the listed fields.
    * Please inspect the field metadata before passing field names to this method.
    */
-  fields (...fieldNames) {
-    this._urlBuilder.fields(fieldNames)
-    return this
+  fields(...fieldNames: string[]) {
+    this._urlBuilder.fields(fieldNames);
+    return this;
   }
 
   /**
    * @param query - A string which defines an Octane-specific filter. When the request will be executed, only the entities filtered by the query will be affected or gathered.
    */
-  query (query) {
-    this._urlBuilder.query(query)
-    return this
+  query(query: string) {
+    this._urlBuilder.query(query);
+    return this;
   }
 
   /**
    * Builds to the final URL so the request will return the script of the test when it will be fired.
    * This will take effect if the 'tests' entityName is passed for the request. Otherwise, it is simply ignored.
    */
-  script () {
-    this._urlBuilder.script()
-    return this
+  script() {
+    this._urlBuilder.script();
+    return this;
   }
 
   /**
@@ -112,9 +261,9 @@ class Octane {
    *
    * @param entityName - The name of the Octane entity resource. The value of the entityName should be among Octane.entityTypes.
    */
-  get (entityName) {
-    this._prepareRequest(Octane.operationTypes.get, entityName)
-    return this
+  get(entityName: string) {
+    this._prepareRequest(Octane.operationTypes.get, entityName);
+    return this;
   }
 
   /**
@@ -123,9 +272,9 @@ class Octane {
    *
    * @param entityName - The name of the Octane entity resource. The value of the entityName should be among Octane.entityTypes.
    */
-  delete (entityName) {
-    this._prepareRequest(Octane.operationTypes.delete, entityName)
-    return this
+  delete(entityName: string) {
+    this._prepareRequest(Octane.operationTypes.delete, entityName);
+    return this;
   }
 
   /**
@@ -135,9 +284,13 @@ class Octane {
    * @param entityName - The name of the Octane entity resource. The value of the entityName should be among Octane.entityTypes.
    * @param body - A JSON which contains the relevant fields names and field values for the entity which will be created. Please inspect the field metadata to create valid objects.
    */
-  create (entityName, body) {
-    this._prepareRequest(Octane.operationTypes.create, entityName, this._wrapBody(body))
-    return this
+  create(entityName: string, body: object) {
+    this._prepareRequest(
+      Octane.operationTypes.create,
+      entityName,
+      this._wrapBody(body)
+    );
+    return this;
   }
 
   /**
@@ -150,12 +303,12 @@ class Octane {
    * @param entityName - The name of the Octane entity resource. The value of the entityName should be among Octane.entityTypes.
    * @param body - A JSON which contains the relevant fields names and field values for the entity which will be created. Please inspect the field metadata to update the entities correctly.
    */
-  update (entityName, body) {
+  update(entityName: string, body: any) {
     if (body.id) {
-      this.at(body.id)
+      this.at(body.id);
     }
-    this._prepareRequest(Octane.operationTypes.update, entityName, body)
-    return this
+    this._prepareRequest(Octane.operationTypes.update, entityName, body);
+    return this;
   }
 
   /**
@@ -165,18 +318,25 @@ class Octane {
    * @param entityName - The name of the Octane entity resource. The value of the entityName should be among Octane.entityTypes.
    * @param body - A JSON which contains the relevant fields names and field values for the entity which will be created. Please inspect the field metadata to update entities correctly.
    */
-  updateBulk (entityName, body) {
-    this._prepareRequest(Octane.operationTypes.update, entityName, this._wrapBody(body))
-    return this
+  updateBulk(entityName: string, body: object) {
+    this._prepareRequest(
+      Octane.operationTypes.update,
+      entityName,
+      this._wrapBody(body)
+    );
+    return this;
   }
 
   /**
    * This method does not fire the request but builds up to the final request URL and defines the request method.
    * When the get request will be executed it will return the attachment content.
    */
-  getAttachmentContent () {
-    this._prepareRequest(Octane.operationTypes.getAttachmentContent, Octane.entityTypes.attachments)
-    return this
+  getAttachmentContent() {
+    this._prepareRequest(
+      Octane.operationTypes.getAttachmentContent,
+      Octane.entityTypes.attachments
+    );
+    return this;
   }
 
   /**
@@ -188,31 +348,36 @@ class Octane {
    * @param ownerName - The name of the entity where the attachment will be uploaded, like "owner_release". The possible owner fields can be found in the field metadata of attachments.
    * @param ownerReference - The reference of the entity where the attachment will be uploaded. This can be an id of entity, or a JSON with the type and id of the entity.
    */
-  uploadAttachment (attachmentName, attachmentData, ownerName, ownerReference) {
-    this._requestMethod = Octane.operationTypes.uploadAttachment
-    this._requestBody = attachmentData
+  uploadAttachment(
+    attachmentName: string,
+    attachmentData: any,
+    ownerName: string,
+    ownerReference: object
+  ) {
+    this._requestMethod = Octane.operationTypes.uploadAttachment;
+    this._requestBody = attachmentData;
 
-    this._urlBuilder.setEntityUrl(Octane.entityTypes.attachments)
-    this._urlBuilder.queryParameter('name', attachmentName)
-    this._urlBuilder.queryParameter(ownerName, JSON.stringify(ownerReference))
+    this._urlBuilder.setEntityUrl(Octane.entityTypes.attachments);
+    this._urlBuilder.queryParameter('name', attachmentName);
+    this._urlBuilder.queryParameter(ownerName, JSON.stringify(ownerReference));
 
-    return this
+    return this;
   }
 
   /**
    * Sends an authenticate request to the requestHandler
    */
-  async authenticate () {
-    const response = await this._requestHandler.authenticate()
-    return this._getResponseBody(response)
+  async authenticate() {
+    const response = await this._requestHandler.authenticate();
+    return this._getResponseBody(response);
   }
 
   /**
    * Sends a sign out request to the requestHandler
    */
-  async signOut () {
-    const response = await this._requestHandler.signOut()
-    return this._getResponseBody(response)
+  async signOut() {
+    const response = await this._requestHandler.signOut();
+    return this._getResponseBody(response);
   }
 
   /**
@@ -224,25 +389,30 @@ class Octane {
    * @return - The server's response
    * @throws - The error returned by the server if the request fails or if the operation is not supported.
    */
-  async executeCustomRequest (customUrl, operation, body = undefined, headers = undefined) {
-    let response
-    let config
+  async executeCustomRequest(
+    customUrl: string,
+    operation: string,
+    body?: object,
+    headers?: object
+  ) {
+    let response;
+    let config;
 
     if (!Object.values(Octane.operationTypes).includes(operation)) {
-      throw new Error('Operation is not supported')
+      throw new Error('Operation is not supported');
     }
 
     if (headers && typeof headers === 'object') {
-      config = { headers }
+      config = { headers };
     }
 
     if (body) {
-      response = await this._requestHandler[operation](customUrl, body, config)
+      response = await this._requestHandler[operation](customUrl, body, config);
     } else {
-      response = await this._requestHandler[operation](customUrl, config)
+      response = await this._requestHandler[operation](customUrl, config);
     }
 
-    return this._getResponseBody(response)
+    return this._getResponseBody(response);
   }
 
   /**
@@ -252,17 +422,26 @@ class Octane {
    * @return - The server's response.
    * @throws - The error returned by the server if the request fails.
    */
-  async execute () {
-    let response
-
-    if (this._requestBody) {
-      response = await this._requestHandler[this._requestMethod](this._urlBuilder.build(), this._requestBody)
-      this._requestBody = null
-    } else {
-      response = await this._requestHandler[this._requestMethod](this._urlBuilder.build())
+  async execute() {
+    if (!this._requestMethod) {
+      throw Error('Request method cannot be null!');
     }
 
-    return this._getResponseBody(response)
+    let response;
+
+    if (this._requestBody) {
+      response = await this._requestHandler[this._requestMethod](
+        this._urlBuilder.build(),
+        this._requestBody
+      );
+      this._requestBody = null;
+    } else {
+      response = await this._requestHandler[this._requestMethod](
+        this._urlBuilder.build()
+      );
+    }
+
+    return this._getResponseBody(response);
   }
 
   /**
@@ -271,8 +450,8 @@ class Octane {
    * @return - The response body
    * @private
    */
-  _getResponseBody (response) {
-    return response.data === '' ? undefined : response.data
+  private _getResponseBody(response: { data: any }) {
+    return response.data === '' ? undefined : response.data;
   }
 
   /**
@@ -283,11 +462,15 @@ class Octane {
    * @param body - A JSON which contains field names paired to field values.
    * @private
    */
-  _prepareRequest (requestMethod, entityName, body) {
-    this._urlBuilder.setEntityUrl(entityName)
-    this._requestMethod = requestMethod
+  private _prepareRequest(
+    requestMethod: string,
+    entityName: string,
+    body: any = undefined
+  ) {
+    this._urlBuilder.setEntityUrl(entityName);
+    this._requestMethod = requestMethod;
     if (body) {
-      this._requestBody = body
+      this._requestBody = body;
     }
   }
 
@@ -298,85 +481,13 @@ class Octane {
    * @returns {{data: [*]}|{data: *}} - A JSON specific to Octane requests.
    * @private
    */
-  _wrapBody (body) {
+  private _wrapBody(body: any) {
     if (Array.isArray(body)) {
-      return { data: body }
+      return { data: body };
     } else {
-      return { data: [body] }
+      return { data: [body] };
     }
   }
 }
 
-module.exports = Octane
-
-/**
- *  Types of operations that can be executed through REST API
- */
-Octane.operationTypes = {
-  create: 'create',
-  get: 'get',
-  update: 'update',
-  delete: 'delete',
-  getAttachmentContent: 'getAttachmentContent',
-  uploadAttachment: 'uploadAttachment'
-}
-
-/**
- * Entities which can be accessed through REST API
- */
-Octane.entityTypes = {
-  applicationModules: 'application_modules',
-  attachments: 'attachments',
-  automatedRuns: 'automated_runs',
-  ciBuilds: 'ci_builds',
-  comments: 'comments',
-  defects: 'defects',
-  epics: 'epics',
-  features: 'features',
-  gherkinTests: 'gherkin_tests',
-  listNodes: 'list_nodes',
-  manualRuns: 'manual_runs',
-  manualTests: 'manualTests',
-  metaphases: 'metaphases',
-  milestones: 'milestones',
-  phases: 'phases',
-  pipelineNodes: 'pipeline_nodes',
-  pipelineRuns: 'pipeline_runs',
-  previousRuns: 'previous_runs',
-  programs: 'programs',
-  releases: 'releases',
-  requirementDocuments: 'requirement_documents',
-  requirementFolders: 'requirement_folders',
-  requirementRoots: 'requirement_roots',
-  requirements: 'requirements',
-  roles: 'roles',
-  runSteps: 'run_steps',
-  runs: 'runs',
-  scmCommits: 'scm_commits',
-  sprints: 'sprints',
-  stories: 'stories',
-  suiteRun: 'suite_run',
-  tasks: 'tasks',
-  taxonomyCategoryNodes: 'taxonomy_category_nodes',
-  taxonomyItemNodes: 'taxonomy_item_nodes',
-  taxonomyNodes: 'taxonomy_nodes',
-  teamSprints: 'team_sprints',
-  teams: 'teams',
-  testSuiteLinkToAutomatedTests: 'test_suite_link_to_automated_tests',
-  testSuiteLinkToGherkinTests: 'test_suite_link_to_gherkin_tests',
-  testSuiteLinkToManualTests: 'test_suite_link_to_manual_tests',
-  testSuiteLinkToTests: 'test_suite_link_to_tests',
-  testSuites: 'test_suites',
-  tests: 'tests',
-  transitions: 'transitions',
-  userItems: 'user_items',
-  userTags: 'user_tags',
-  users: 'users',
-  workItemRoots: 'work_item_roots',
-  workItems: 'work_items',
-  workspaceRoles: 'workspace_roles',
-  workspaceUsers: 'workspace_users',
-  qualityStories: 'quality_stories',
-  fieldsMetadata: 'metadata/fields',
-  entitiesMetadata: 'metadata/entities'
-}
+export default Octane;

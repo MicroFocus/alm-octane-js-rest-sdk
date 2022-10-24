@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import fs from 'fs';
-import path from 'path';
+const fs = require('fs');
+const path = require('path');
 
-import * as utils from '../lib/generate-routes/utils';
+const utils = require('../lib/generate-routes/utils');
 
 const DEFAULT_ROUTES_FILE = '../routes/default.json';
 const API_ANNOTATIONS_FILE = '../doc/apidoc.js';
@@ -48,12 +48,12 @@ function generateAPIAnnotations() {
   saveApiAnnotationsToFile(apiAnnotations, API_ANNOTATIONS_FILE);
 }
 
-function parseRoutes(routes: object, defaultParams: object) {
+function parseRoutes(routes, defaultParams) {
   console.log('parsing default routes ...');
 
   let apiAnnotations = '';
 
-  function generateAPI(routes: object | any, baseType?: string) {
+  function generateAPI(routes, baseType) {
     baseType = baseType || '';
 
     Object.keys(routes).forEach(function (routePart) {
@@ -87,17 +87,7 @@ function parseRoutes(routes: object, defaultParams: object) {
   return apiAnnotations;
 }
 
-function generateAPIAnnotation(
-  section: string,
-  funcName: string,
-  block: {
-    url: string;
-    method: string;
-    description: string;
-    params: object | any;
-  },
-  defaultParams: object | any
-) {
+function generateAPIAnnotation(section, funcName, block, defaultParams) {
   const url = block.url;
   const method = block.method.toLowerCase();
   const description = block.description;
@@ -174,7 +164,7 @@ function generateAPIAnnotation(
   return annotation.join('\n') + '\n */\n\n';
 }
 
-function saveApiAnnotationsToFile(annotations: string, file: string) {
+function saveApiAnnotationsToFile(annotations, file) {
   console.log('saving annotations to ' + file + ' ...');
   try {
     fs.writeFileSync(path.join(__dirname, file), annotations);

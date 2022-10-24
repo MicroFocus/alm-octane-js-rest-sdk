@@ -17,8 +17,8 @@
 const fs = require('fs')
 const path = require('path')
 
-const Octane = require('../lib/generate-routes/octane-routes')
-const utils = require('../lib/generate-routes/utils')
+const Octane = require('../dist/lib/generate-routes/octane-routes')
+const utils = require('../dist/lib/generate-routes/utils')
 
 const META_ROUTES_FILE = '../routes/meta.json'
 const DEFAULT_ROUTES_FILE = '../routes/default.json'

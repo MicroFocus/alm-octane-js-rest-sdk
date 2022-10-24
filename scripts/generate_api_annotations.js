@@ -17,7 +17,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const utils = require('../lib/generate-routes/utils');
+const utils = require('..dist/lib/generate-routes/utils');
 
 const DEFAULT_ROUTES_FILE = '../routes/default.json';
 const API_ANNOTATIONS_FILE = '../doc/apidoc.js';

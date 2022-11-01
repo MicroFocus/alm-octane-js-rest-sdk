@@ -360,7 +360,7 @@ The client API provides the Query module to help you build the query, rather tha
 these queries to the SDK, use the `build()` method after the query is fully built.
 
 ```javascript
-const Query = require('@microfocus/alm-octane-js-rest-sdk/lib/query')
+import Query from '@microfocus/alm-octane-js-rest-sdk/lib/query';
 
 // query statement: "id EQ 1005"
 const query = Query.field('id').equal(1005)

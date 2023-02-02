@@ -392,7 +392,7 @@ class Octane {
   async executeCustomRequest(
     customUrl: string,
     operation: string,
-    body?: object,
+    body?: object | string,
     headers?: object
   ) {
     let response;

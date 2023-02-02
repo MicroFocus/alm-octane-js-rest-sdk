@@ -121,7 +121,7 @@ class RequestHandler {
    * @returns - The result of the operation returned by the server.
    * @throws - The error returned by the server if the request fails.
    */
-  async update(url: string, body?: object, config?: AxiosRequestConfig) {
+  async update(url: string, body?: object | string, config?: AxiosRequestConfig) {
     return this._requestor.put(url, body, config).catch(async (err) => {
       await this._reauthenticate(err);
       return this._requestor.put(url, body, config);
@@ -137,7 +137,7 @@ class RequestHandler {
    * @returns - The result of the operation returned by the server.
    * @throws - The error returned by the server if the request fails.
    */
-  async create(url: string, body?: object, config?: AxiosRequestConfig) {
+  async create(url: string, body?: object | string, config?: AxiosRequestConfig) {
     return this._requestor.post(url, body, config).catch(async (err) => {
       await this._reauthenticate(err);
       return this._requestor.post(url, body, config);
@@ -209,7 +209,7 @@ class RequestHandler {
    */
   async uploadAttachment(
     url: string,
-    body: object,
+    body: object | string,
     config: AxiosRequestConfig
   ) {
     const attachmentConfig = {

@@ -420,6 +420,12 @@ $ npm test test/query.js
 ```
 
 ## What's new :newspaper: <a name="whats-new"></a>
+* 16.1.100-3
+    * Hotfix for allowing strings as custom request bodies
+
+* 16.1.100-2
+    * Hotfix for Query class usage in JS
+
 * 16.1.100 
     * Added autocomplete feature
 

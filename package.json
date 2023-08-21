@@ -54,7 +54,7 @@
     "http-errors": "1.7.3",
     "log4js": "6.4.5",
     "pluralize": "3.0.0",
-    "request": "2.87.0",
+    "request": "2.88.2",
     "tough-cookie": "4.0.0"
   },
   "apidoc": {

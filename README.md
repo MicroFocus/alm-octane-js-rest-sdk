@@ -420,6 +420,9 @@ $ npm test test/query.js
 ```
 
 ## What's new :newspaper: <a name="whats-new"></a>
+* 23.3.0
+    * Query parameter is now encoded 
+
 * 16.1.100-3
     * Hotfix for allowing strings as custom request bodies
 

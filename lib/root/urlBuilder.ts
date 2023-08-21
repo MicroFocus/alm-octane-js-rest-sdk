@@ -55,7 +55,7 @@ class UrlBuilder {
   }
 
   query(query: string) {
-    this._requestUrl.query = `"${query}"`;
+    this._requestUrl.query = `"${encodeURIComponent(query)}"`;
   }
 
   queryParameter(name: string, value: any) {

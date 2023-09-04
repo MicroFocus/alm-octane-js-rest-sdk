@@ -1,6 +1,6 @@
 # Node-Octane
 
-A Node.js wrapper for the MF ALM Octane API.
+A Node.js wrapper for the Open Text ALM Octane and ValueEdge REST API.
 
 ## Table of contents
 1. [Installation](#installation)

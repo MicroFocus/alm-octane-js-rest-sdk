@@ -16,17 +16,15 @@
   },
   "keywords": [
     "octane",
-    "microfocus",
+    "opentext",
     "alm",
     "sdk",
     "rest"
   ],
   "contributors": [
-    "DaSheng Jian <da-sheng.jian@microfocus.com>",
-    "Spencer Bruce <spencer.bruce@microfocus.com",
-    "Laura Andrada Buzas <laura-andrada.buzas@microfocus.com>",
-    "Alexander Stanciu <alexander.stanciu@microfocus.com>",
-    "Silviu-Constantin Anton <silviu-constantin.anton@microfocus.com>"
+    "Spencer Bruce <sbruce@opentext.com>",
+    "Laura Andrada Buzas <lbuzas@opentext.com>",
+    "Silviu-Constantin Anton <santon@opentext.com>"
   ],
   "license": "Apache-2.0",
   "devDependencies": {

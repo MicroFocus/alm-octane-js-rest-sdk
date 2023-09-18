@@ -420,6 +420,9 @@ $ npm test test/query.js
 ```
 
 ## What's new :newspaper: <a name="whats-new"></a>
+* 23.3.1
+    * Rebranding
+
 * 23.3.0
     * Query parameter is now encoded 
 

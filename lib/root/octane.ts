@@ -41,7 +41,7 @@ export interface Params {
   user: string;
   password: string;
   proxy?: string;
-  headers?: Record<string, string | number | boolean>;
+  headers?: {[key: string]: string | string[] | number | boolean | null};
 }
 
 /**

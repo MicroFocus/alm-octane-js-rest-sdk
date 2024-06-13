@@ -31,6 +31,7 @@ import { Params } from './octane';
 
 import axios, {
   AxiosError,
+  AxiosHeaders,
   AxiosInstance,
   AxiosProxyConfig,
   AxiosRequestConfig,
@@ -89,7 +90,7 @@ class RequestHandler {
     }
 
     if (params.headers) {
-      this._options.headers = params.headers;
+      this._options.headers = new AxiosHeaders(params.headers);
     }
 
     this._requestor = wrapper(axios).create(this._options);

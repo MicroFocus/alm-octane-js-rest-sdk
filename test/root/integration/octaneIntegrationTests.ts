@@ -100,13 +100,13 @@ describe('octane', function () {
       });
       it('creates multiple defects', async function () {
         // @ts-ignore
-        this.timeout(2000).slow(750);
+        this.timeout(3000).slow(750);
         const newDefects = await createDefects(numberOfCreatedDefects);
         newDefects.map((defect) => createdIds.push(defect.id));
       });
 
       after(async function () {
-        this.timeout(10000).slow(4000);
+        this.timeout(30000).slow(4000);
         await deleteDefectsWithIds(createdIds);
       });
     });

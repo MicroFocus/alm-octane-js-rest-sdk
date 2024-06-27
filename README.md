@@ -420,6 +420,10 @@ $ npm test test/query.js
 ```
 
 ## What's new :newspaper: <a name="whats-new"></a>
+* 24.2.0
+  * HTTP Proxy support
+  * Added ability to use proxy with credentials
+
 * 23.3.1
     * Rebranding
 

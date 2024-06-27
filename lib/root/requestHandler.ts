@@ -27,7 +27,7 @@
  * limitations under the License.
  */
 
-import {Params} from './octane';
+import { Params } from './octane';
 
 import axios, {
     AxiosError,
@@ -39,13 +39,13 @@ import axios, {
     AxiosResponse,
     ResponseType,
 } from 'axios';
-import {Cookie, CookieJar} from 'tough-cookie';
+import { Cookie, CookieJar } from 'tough-cookie';
 import log4js from 'log4js';
-import {CookieAgent} from "http-cookie-agent/http";
+import { CookieAgent } from "http-cookie-agent/http";
 import * as https from "node:https";
 import * as http from "node:http";
-import {HttpsProxyAgent} from "https-proxy-agent";
-import {RawAxiosRequestHeaders} from "axios";
+import { HttpsProxyAgent } from "https-proxy-agent";
+import { RawAxiosRequestHeaders } from "axios";
 
 const Mutex = require('async-mutex').Mutex;
 
@@ -94,8 +94,8 @@ class RequestHandler {
         if (params.proxy) {
             let httpAgent;
             if (params.proxyUsername && params.proxyPassword) {
-                const proxyUrlWithCredentials = this.createProxyUrlWithCredentials(params.proxy, params.proxyUsername, params.proxyPassword)
-                httpAgent = new HttpsProxyAgent(proxyUrlWithCredentials)
+                const proxyUrlWithCredentials = this.createProxyUrlWithCredentials(params.proxy, params.proxyUsername, params.proxyPassword);
+                httpAgent = new HttpsProxyAgent(proxyUrlWithCredentials);
             } else {
                 httpAgent = new HttpsProxyAgent(params.proxy)
             }
@@ -111,13 +111,13 @@ class RequestHandler {
     }
 
     createProxyUrlWithCredentials(proxyUrl: string, username: string, password: string): string {
-        const proxySplit = proxyUrl.split('://')
-        const proxyProps: string[] = []
-        proxyProps.push(proxySplit[0])
-        proxyProps.push('://')
-        proxyProps.push(`${username}:${password}@`)
-        proxyProps.push(proxySplit[1])
-        return proxyProps.join('')
+        const proxySplit = proxyUrl.split('://');
+        const proxyProps: string[] = [];
+        proxyProps.push(proxySplit[0]);
+        proxyProps.push('://');
+        proxyProps.push(`${username}:${password}@`);
+        proxyProps.push(proxySplit[1]);
+        return proxyProps.join('');
     }
 
     /**
@@ -130,14 +130,14 @@ class RequestHandler {
      */
     async get(url: string, config?: AxiosRequestConfig) {
         return await this.sendRequestWithCookies(url, async (headersWithCookie) =>
-            this._requestor.get(url, {...config, headers: headersWithCookie}))
+            this._requestor.get(url, { ...config, headers: headersWithCookie }))
             .catch(async (err) => {
                 await this._reauthenticate(err);
                 return await this.sendRequestWithCookies(url, (headersWithCookie => this._requestor.get(url, {
                     ...config,
                     headers: headersWithCookie
                 })));
-            })
+            });
     }
 
     /**
@@ -150,14 +150,14 @@ class RequestHandler {
      */
     async delete(url: string, config?: AxiosRequestConfig) {
         return await this.sendRequestWithCookies(url, async (headersWithCookie) =>
-            this._requestor.delete(url, {...config, headers: headersWithCookie}))
+            this._requestor.delete(url, { ...config, headers: headersWithCookie }))
             .catch(async (err) => {
                 await this._reauthenticate(err);
                 return this.sendRequestWithCookies(url, (headersWithCookie => this._requestor.delete(url, {
                     ...config,
                     headers: headersWithCookie
                 })));
-            })
+            });
     }
 
     /**
@@ -171,14 +171,14 @@ class RequestHandler {
      */
     async update(url: string, body?: object | string, config?: AxiosRequestConfig) {
         return await this.sendRequestWithCookies(url, async (headersWithCookie) =>
-            this._requestor.put(url, body,{...config, headers: headersWithCookie}))
+            this._requestor.put(url, body, { ...config, headers: headersWithCookie }))
             .catch(async (err) => {
                 await this._reauthenticate(err);
                 return this.sendRequestWithCookies(url, (headersWithCookie => this._requestor.put(url, body, {
                     ...config,
                     headers: headersWithCookie
                 })));
-            })
+            });
     }
 
     /**
@@ -192,14 +192,14 @@ class RequestHandler {
      */
     async create(url: string, body?: object | string, config?: AxiosRequestConfig) {
         return await this.sendRequestWithCookies(url, async (headersWithCookie) =>
-            this._requestor.post(url, body, {...config, headers: headersWithCookie}))
+            this._requestor.post(url, body, { ...config, headers: headersWithCookie }))
             .catch(async (err) => {
                 await this._reauthenticate(err);
                 return this.sendRequestWithCookies(url, (headersWithCookie => this._requestor.post(url, body, {
                     ...config,
                     headers: headersWithCookie
                 })));
-            })
+            });
 
     }
 
@@ -241,14 +241,14 @@ class RequestHandler {
      */
     async getAttachmentContent(url: string, config?: AxiosRequestConfig) {
         const attachmentConfig: AxiosRequestConfig = {
-            headers: {accept: 'application/octet-stream'},
+            headers: { accept: 'application/octet-stream' },
             responseType: 'arraybuffer',
         };
         const configHeaders = config?.headers;
-        const requestHeaders = {...configHeaders, ...attachmentConfig.headers}
+        const requestHeaders = { ...configHeaders, ...attachmentConfig.headers }
 
         return await this.sendRequestWithCookies(url, async (headersWithCookie) =>
-            this._requestor.get(url, {...config, ...attachmentConfig, headers: headersWithCookie}), requestHeaders)
+            this._requestor.get(url, { ...config, ...attachmentConfig, headers: headersWithCookie }), requestHeaders)
             .catch(async (err) => {
                 await this._reauthenticate(err);
                 return this.sendRequestWithCookies(url, (headersWithCookie => this._requestor.get(url, {
@@ -256,7 +256,7 @@ class RequestHandler {
                     ...attachmentConfig,
                     headers: headersWithCookie
                 })), requestHeaders);
-            })
+            });
     }
 
     /**
@@ -275,14 +275,14 @@ class RequestHandler {
         config?: AxiosRequestConfig
     ) {
         const attachmentConfig = {
-            headers: {'content-type': 'application/octet-stream'},
+            headers: { 'content-type': 'application/octet-stream' },
         };
 
         const configHeaders = config === undefined ? undefined : config.headers;
-        const requestHeaders = {...configHeaders, ...attachmentConfig.headers}
+        const requestHeaders = { ...configHeaders, ...attachmentConfig.headers };
 
         return await this.sendRequestWithCookies(url, async (headersWithCookie) =>
-            this._requestor.post(url, body, {...config, ...attachmentConfig, headers: headersWithCookie}), requestHeaders)
+            this._requestor.post(url, body, { ...config, ...attachmentConfig, headers: headersWithCookie }), requestHeaders)
             .catch(async (err) => {
                 await this._reauthenticate(err);
                 return this.sendRequestWithCookies(url, (headersWithCookie => this._requestor.post(url, body, {
@@ -290,7 +290,7 @@ class RequestHandler {
                     ...attachmentConfig,
                     headers: headersWithCookie
                 })), requestHeaders);
-            })
+            });
     }
 
     /**
@@ -301,7 +301,7 @@ class RequestHandler {
     async signOut() {
         logger.debug('Signing out...');
         return this.sendRequestWithCookies('/authentication/sign_out', async (headersWithCookie) => {
-            const request = await this._requestor.post('/authentication/sign_out', undefined, {headers: headersWithCookie});
+            const request = await this._requestor.post('/authentication/sign_out', undefined, { headers: headersWithCookie });
             logger.debug('Signed out.');
             return request;
         })
@@ -340,7 +340,7 @@ class RequestHandler {
 
     async sendRequestWithCookies(url: string, callBack: (headersWithCookie?: RawAxiosRequestHeaders | AxiosHeaders) => Promise<AxiosResponse>, customHeaders?: RawAxiosRequestHeaders | AxiosHeaders): Promise<AxiosResponse> {
         const cookieHeader = await this.getCookieHeaderForUrl(url);
-        const headersWithCookie = {...customHeaders, 'Cookie': cookieHeader};
+        const headersWithCookie = { ...customHeaders, 'Cookie': cookieHeader };
         const response = await callBack(headersWithCookie);
         await this.updateCookieJarFromResponse(response, url);
 

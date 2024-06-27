@@ -48,6 +48,7 @@
     "axios": "1.7.2",
     "command-line-args": "5.2.1",
     "debug": "4.3.5",
+    "http-cookie-agent": "^6.0.5",
     "http-errors": "2.0.0",
     "https-proxy-agent": "^7.0.4",
     "log4js": "6.9.1",

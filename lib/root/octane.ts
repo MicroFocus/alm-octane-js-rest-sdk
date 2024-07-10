@@ -41,6 +41,8 @@ export interface Params {
   user: string;
   password: string;
   proxy?: string;
+  proxyUsername?: string;
+  proxyPassword?: string;
   headers?: {[key: string]: string | string[] | number | boolean | null};
 }
 

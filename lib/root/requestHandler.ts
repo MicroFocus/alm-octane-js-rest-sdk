@@ -105,6 +105,11 @@ class RequestHandler {
 
         if (params.headers) {
             this._options.headers = new AxiosHeaders(params.headers);
+
+            const customCookies = this._options.headers['Cookie'];
+            if (customCookies) {
+                this._cookieJar.setCookieSync(customCookies, this._options.baseURL);
+            }
         }
 
         this._requestor = axios.create(this._options);
@@ -130,13 +135,13 @@ class RequestHandler {
      */
     async get(url: string, config?: AxiosRequestConfig) {
         return await this.sendRequestWithCookies(url, async (headersWithCookie) =>
-            this._requestor.get(url, { ...config, headers: headersWithCookie }))
+            this._requestor.get(url, { ...config, headers: headersWithCookie }), config?.headers)
             .catch(async (err) => {
                 await this._reauthenticate(err);
                 return await this.sendRequestWithCookies(url, (headersWithCookie => this._requestor.get(url, {
                     ...config,
                     headers: headersWithCookie
-                })));
+                })), config?.headers);
             });
     }
 
@@ -150,13 +155,13 @@ class RequestHandler {
      */
     async delete(url: string, config?: AxiosRequestConfig) {
         return await this.sendRequestWithCookies(url, async (headersWithCookie) =>
-            this._requestor.delete(url, { ...config, headers: headersWithCookie }))
+            this._requestor.delete(url, { ...config, headers: headersWithCookie }), config?.headers)
             .catch(async (err) => {
                 await this._reauthenticate(err);
                 return this.sendRequestWithCookies(url, (headersWithCookie => this._requestor.delete(url, {
                     ...config,
                     headers: headersWithCookie
-                })));
+                })), config?.headers);
             });
     }
 
@@ -171,13 +176,13 @@ class RequestHandler {
      */
     async update(url: string, body?: object | string, config?: AxiosRequestConfig) {
         return await this.sendRequestWithCookies(url, async (headersWithCookie) =>
-            this._requestor.put(url, body, { ...config, headers: headersWithCookie }))
+            this._requestor.put(url, body, { ...config, headers: headersWithCookie }), config?.headers)
             .catch(async (err) => {
                 await this._reauthenticate(err);
                 return this.sendRequestWithCookies(url, (headersWithCookie => this._requestor.put(url, body, {
                     ...config,
                     headers: headersWithCookie
-                })));
+                })), config?.headers);
             });
     }
 
@@ -192,13 +197,13 @@ class RequestHandler {
      */
     async create(url: string, body?: object | string, config?: AxiosRequestConfig) {
         return await this.sendRequestWithCookies(url, async (headersWithCookie) =>
-            this._requestor.post(url, body, { ...config, headers: headersWithCookie }))
+            this._requestor.post(url, body, { ...config, headers: headersWithCookie }), config?.headers)
             .catch(async (err) => {
                 await this._reauthenticate(err);
                 return this.sendRequestWithCookies(url, (headersWithCookie => this._requestor.post(url, body, {
                     ...config,
                     headers: headersWithCookie
-                })));
+                })), config?.headers);
             });
 
     }
@@ -278,7 +283,7 @@ class RequestHandler {
             headers: { 'content-type': 'application/octet-stream' },
         };
 
-        const configHeaders = config === undefined ? undefined : config.headers;
+        const configHeaders = config?.headers;
         const requestHeaders = { ...configHeaders, ...attachmentConfig.headers };
 
         return await this.sendRequestWithCookies(url, async (headersWithCookie) =>

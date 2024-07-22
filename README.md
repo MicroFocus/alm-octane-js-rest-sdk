@@ -420,6 +420,9 @@ $ npm test test/query.js
 ```
 
 ## What's new :newspaper: <a name="whats-new"></a>
+* 24.2.1
+  * Added support for providing custom cookie header
+
 * 24.2.0
   * HTTP Proxy support
   * Added ability to use proxy with credentials

@@ -420,6 +420,9 @@ $ npm test test/query.js
 ```
 
 ## What's new :newspaper: <a name="whats-new"></a>
+* 25.1.0
+  * Fixed vulnerable dependencies: `axios` and `apidoc`
+
 * 24.2.1
   * Added support for providing custom cookie header
 

@@ -1,6 +1,6 @@
 {
   "name": "@microfocus/alm-octane-js-rest-sdk",
-  "version": "24.2.1",
+  "version": "25.1.0",
   "description": "NodeJS wrapper for the Open Text ALM Octane API",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -35,7 +35,7 @@
     "@types/pluralize": "^0.0.33",
     "@types/request": "^2.48.8",
     "@types/tough-cookie": "^4.0.5",
-    "apidoc": "1.2.0",
+    "apidoc": "^1.2.0",
     "axios-mock-adapter": "1.22.0",
     "copyfiles": "^2.4.1",
     "jsdoc": "4.0.3",
@@ -45,7 +45,7 @@
   },
   "dependencies": {
     "async-mutex": "0.5.0",
-    "axios": "1.7.2",
+    "axios": "1.7.9",
     "command-line-args": "5.2.1",
     "debug": "4.3.5",
     "http-cookie-agent": "^6.0.5",
@@ -53,7 +53,7 @@
     "https-proxy-agent": "^7.0.4",
     "log4js": "6.9.1",
     "pluralize": "8.0.0",
-    "request": "2.87.0",
+    "request": "^2.88.2",
     "tough-cookie": "4.1.4"
   },
   "apidoc": {

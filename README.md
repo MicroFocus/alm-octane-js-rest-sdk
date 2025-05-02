@@ -420,6 +420,11 @@ $ npm test test/query.js
 ```
 
 ## What's new :newspaper: <a name="whats-new"></a>
+* 25.2.0
+  * Removed generate-routes and OctaneVanilla
+  * Upgraded `axios`
+  * Removed unused libraries `command-line-args`, `debug`, `http-errors`, `pluralize`, `request`
+
 * 25.1.0
   * Fixed vulnerable dependencies: `axios` and `apidoc`
 

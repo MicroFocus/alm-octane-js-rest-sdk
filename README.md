@@ -43,13 +43,7 @@ $ npm i @microfocus/alm-octane-js-rest-sdk
 
 ## Introduction
 
-This SDK contains two use cases: the generic one which can be used out of the box, namely the Octane object, 
-and also the OctaneVanilla object which needs the default.json generated file. 
-
-The recommended way to use this SDK is to use the Octane object as the OctaneVanilla version is error-prone due
-to the fact that it needs regeneration every time the API is changed or fields are added. 
-
-The docs for the original version of the SDK can be found [here](/lib/generate-routes/README.md).
+A Node SDK that can be used to connect to ALM Octane's REST API.
 
 ## Octane object
 The following sections expose the functionality of the generic version of the SDK. 
@@ -454,7 +448,7 @@ $ npm test test/query.js
     * A generic way to interact with the ALM Octane API has been implemented as `Octane` class
     * The OctaneVanilla code has moved from ES5 to ES6
     * Old functionality is implemented in the `OctaneVanilla` class
-    * The documentation for `OctaneVanilla` functionality can be found [here](/lib/generate-routes/README.md)
+    * The documentation for `OctaneVanilla` functionality can be found ~~[here](/lib/generate-routes/README.md)~~
 
 ## Disclaimer
 Certain versions of software accessible here may contain branding from Hewlett-Packard Company (now HP Inc.) and 

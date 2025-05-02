@@ -5,8 +5,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc && npm run copy-files",
-    "copy-files": "copyfiles routes/* octane.json ./dist/",
+    "build": "tsc",
     "test": "npm run build && cd dist && mocha --recursive",
     "test-jenkins": "npm run build && cd dist && set JUNIT_REPORT_PATH=report.xml && set NODE_ENV=test && mocha --recursive --colors --reporter mocha-jenkins-reporter"
   },
@@ -22,53 +21,36 @@
     "rest"
   ],
   "contributors": [
-    "Spencer Bruce <sbruce@opentext.com>",
-    "Laura Andrada Buzas <lbuzas@opentext.com>",
-    "Silviu-Constantin Anton <santon@opentext.com>"
+    "Stefan Popescu <opopescu@opentext.com>",
+    "Laura Andrada Buzas <lbuzas@opentext.com>"
   ],
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/http-errors": "^2.0.4",
     "@types/jest": "^29.5.12",
     "@types/mocha": "^10.0.6",
-    "@types/node": "^18.11.0",
+    "@types/node": "^22.15.3",
     "@types/pluralize": "^0.0.33",
     "@types/request": "^2.48.8",
     "@types/tough-cookie": "^4.0.5",
-    "apidoc": "^1.2.0",
-    "axios-mock-adapter": "1.22.0",
-    "copyfiles": "^2.4.1",
-    "jsdoc": "4.0.3",
-    "mocha": "10.4.0",
+    "axios-mock-adapter": "2.1.0",
+    "mocha": "^10.4.0",
     "mocha-jenkins-reporter": "0.4.8",
-    "typescript": "^5.4.5"
+    "typescript": "^5.8.3"
   },
   "dependencies": {
     "async-mutex": "0.5.0",
-    "axios": "1.7.9",
-    "command-line-args": "5.2.1",
-    "debug": "4.3.5",
-    "http-cookie-agent": "^6.0.5",
-    "http-errors": "2.0.0",
+    "axios": "1.9.0",
+    "http-cookie-agent": "^7.0.1",
     "https-proxy-agent": "^7.0.4",
     "log4js": "6.9.1",
-    "pluralize": "8.0.0",
-    "request": "^2.88.2",
     "tough-cookie": "4.1.4"
-  },
-  "apidoc": {
-    "title": "node-octane",
-    "name": "node-octane",
-    "template": {
-      "withCompare": false
-    }
   },
   "bugs": {
     "url": "https://github.com/MicroFocus/alm-octane-js-rest-sdk/issues"
   },
   "homepage": "https://github.com/MicroFocus/alm-octane-js-rest-sdk#readme",
   "directories": {
-    "doc": "doc",
     "lib": "lib",
     "test": "test"
   }

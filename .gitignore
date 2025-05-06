@@ -1,6 +1,3 @@
-# ignore generated routes
-routes/default.json
-
 # Logs
 logs
 *.log

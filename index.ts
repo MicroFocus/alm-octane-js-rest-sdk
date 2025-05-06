@@ -28,11 +28,9 @@
  */
 
 import Octane from './lib/root/octane';
-import OctaneVanilla from './lib/generate-routes/octane-routes';
 import Query from './lib/query';
 
 export {
   Octane,
-  OctaneVanilla,
   Query
 }

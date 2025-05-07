@@ -44,7 +44,7 @@ $ npm i @microfocus/alm-octane-js-rest-sdk
 ## Octane object
 
 The `Octane` object is used to connect to the SDP or SDM REST API.
-This SDK is designed to work seamlessly with either Open Text Core Software Delivery Platform (SDP) and Software Delivery Management. For simplicity, these products will be referred to as SDP in the sections below.
+This SDK is designed to work seamlessly with either Open Text Core Software Delivery Platform (SDP) and Software Delivery Management. For simplicity, these products will be referred to as SDP in the sections below. Both namings reference the ALM Octane previous naming of the product.
 
 #### Import
 
@@ -138,7 +138,7 @@ The rest of the methods will not affect directly the SDP data, but add propertie
      
     *Parameters* : 
     - **entityName** - Contains the name of the affected SDP entity. The recommended way to use the entity names is to use the [Octane.entityTypes](#octane-entity-types) entries. 
-    - **body** - A JSON containing *field name* and *field value* pairs which will be used to update the entity. Field names can be obtained by querying the field metadata of SDP. More information about the SDP field metadata can be found [here](https://admhelp.microfocus.com/octane/en/15.0.20/Online/Content/API/MetadataFields.htm). Examples on how to retrieve metadata using the SDK can be found [here](#get-metadata).
+    - **body** - A JSON containing *field name* and *field value* pairs which will be used to update the entity. Field names can be obtained by querying the field metadata of SDP. More information about the SDP field metadata can be found [here](https://admhelp.microfocus.com/octane/en/latest/Online/Content/API/MetadataFields.htm). Examples on how to retrieve metadata using the SDK can be found [here](#get-metadata).
         
     *Behavior*:
     
@@ -155,7 +155,7 @@ The rest of the methods will not affect directly the SDP data, but add propertie
      
     *Parameters* : 
      - **entityName** - Contains the name of the affected SDP entity. The recommended way to use the entity names is to use the [Octane.entityTypes](#octane-entity-types) entries. 
-     - **body** - A JSON containing *field name* and *field value* pairs which will be used to update the entity. Field names can be obtained by querying the field metadata of SDP. More information about the SDP field metadata can be found [here](https://admhelp.microfocus.com/octane/en/15.0.20/Online/Content/API/MetadataFields.htm). Examples on how to retrieve metadata using the SDK can be found [here](#get-metadata).
+     - **body** - A JSON containing *field name* and *field value* pairs which will be used to update the entity. Field names can be obtained by querying the field metadata of SDP. More information about the SDP field metadata can be found [here](https://admhelp.microfocus.com/octane/en/latest/Online/Content/API/MetadataFields.htm). Examples on how to retrieve metadata using the SDK can be found [here](#get-metadata).
     
     *Behavior*:
     
@@ -184,7 +184,7 @@ The rest of the methods will not affect directly the SDP data, but add propertie
     
     *Behavior*
     
-    This method does not fire the request but builds up to the final request URL and defines the request method. When the get request will be executed it will return the attachment content. Information about requests which involve attachments can be found [here](https://admhelp.microfocus.com/octane/en/15.0.20/Online/Content/API/Attachments_HowTo.htm)
+    This method does not fire the request but builds up to the final request URL and defines the request method. When the get request will be executed it will return the attachment content. Information about requests which involve attachments can be found [here](https://admhelp.microfocus.com/octane/en/latest/Online/Content/API/Attachments_HowTo.htm)
     
     > This method must be chained with `at()` to fetch the correct data.  
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          

@@ -1,6 +1,6 @@
-# Node-Octane
+# Open Text Core Software Delivery Platform Node REST API
 
-A Node.js wrapper for the Open Text ALM Octane and ValueEdge REST API.
+A Node.js wrapper for the Open Text Core Software Delivery Platform (SDP) and Software Delivery Management REST API.
 
 ## Table of contents
 1. [Installation](#installation)
@@ -41,12 +41,10 @@ Install via npm
 $ npm i @microfocus/alm-octane-js-rest-sdk
 ```
 
-## Introduction
-
-A Node SDK that can be used to connect to ALM Octane's REST API.
-
 ## Octane object
-The following sections expose the functionality of the generic version of the SDK. 
+
+The `Octane` object is used to connect to the SDP or SDM REST API.
+This SDK is designed to work seamlessly with either Open Text Core Software Delivery Platform (SDP) and Software Delivery Management. For simplicity, these products will be referred to as SDP in the sections below.
 
 #### Import
 
@@ -61,11 +59,11 @@ Params can have the following members:
 
 Mandatory parameters:
 
-- ```server``` - The alm Octane server URL.
+- ```server``` - The SDP server URL.
 
-- ```sharedSpace``` - The ALM Octane shared space id.
+- ```sharedSpace``` - The SDP shared space id.
 
-- ```workspace``` - The ALM Octane workspace id. 
+- ```workspace``` - The SDP workspace id. 
 
 - ```user``` - Can be either an existing user's email or an existing API Access key. 
 
@@ -95,17 +93,17 @@ const octane = new Octane({
 
 #### Methods
 
-The method which actually fires a request is the `execute()` method. This means, only when the `execute()` method is called, the Octane data can be affected or retrieved. The other methods are used solely to set up the request. Please see the [examples](#usage-examples) for a better understanding.
+The method which actually fires a request is the `execute()` method. This means, only when the `execute()` method is called, the SDP data can be affected or retrieved. The other methods are used solely to set up the request. Please see the [examples](#usage-examples) for a better understanding.
 
-Besides `execute()`, the `signOut()` can be used to send a sign out request to Octane. 
+Besides `execute()`, the `signOut()` can be used to send a sign out request to SDP. 
 
-The rest of the methods will not affect directly the Octane data, but add properties to the final URL which will be used for the actual request. Moreover, some of the methods can be chained.
+The rest of the methods will not affect directly the SDP data, but add properties to the final URL which will be used for the actual request. Moreover, some of the methods can be chained.
 
 - ```create(entityName, body)``` <a name="create"></a>
     
     *Parameters* : 
-    - **entityName** - Contains the name of the affected Octane entity. The recommended way to use the entity names is to use the [Octane.entityTypes](#octane-entity-types) entries. 
-    - **body** - A JSON containing *field name* and *field value* pairs which will be used to crate the entity. Field names can be obtained by querying the field metadata of Octane. More information about the Octane field metadata can be found [here](https://admhelp.microfocus.com/octane/en/15.0.20/Online/Content/API/MetadataFields.htm). Examples on how to retrieve metadata using the SDK can be found [here](#get-metadata).
+    - **entityName** - Contains the name of the affected SDP entity. The recommended way to use the entity names is to use the [Octane.entityTypes](#octane-entity-types) entries. 
+    - **body** - A JSON containing *field name* and *field value* pairs which will be used to crate the entity. Field names can be obtained by querying the field metadata of SDP. More information about the SDP field metadata can be found [here](https://admhelp.microfocus.com/octane/en/latest/Online/Content/API/MetadataFields.htm). Examples on how to retrieve metadata using the SDK can be found [here](#get-metadata).
         
     *Behavior*:
     
@@ -115,13 +113,13 @@ The rest of the methods will not affect directly the Octane data, but add proper
     
     *Methods which can be chained*:
     
-    The only chaining allowed is with the `execute()` method, resulting in firing a request to Octane and thus creating the entity defined in the *body* JSON.
+    The only chaining allowed is with the `execute()` method, resulting in firing a request to SDP and thus creating the entity defined in the *body* JSON.
     
          
 - ```get(entityName)``` <a name="get"></a>
 
     *Parameters* : 
-    - **entityName** - Contains the name of the Octane entity which will be fetched. The recommended way to use the entity names is to use the [Octane.entityTypes](#octane-entity-types) entries. 
+    - **entityName** - Contains the name of the SDP entity which will be fetched. The recommended way to use the entity names is to use the [Octane.entityTypes](#octane-entity-types) entries. 
     
     *Behavior*
    
@@ -132,15 +130,15 @@ The rest of the methods will not affect directly the Octane data, but add proper
    - `at(id)` - Defines which entity will be targeted for the next request. The input for this method is the id of the targeted entity.
    - `fields(fields)` - The fields parameter represents an array with names of fields relevant for the entity which will be affected by the request. When the request will be fired, the entities affected will contain the listed fields. Please inspect the field metadata before passing field names to this method.
    - `orderBy(fields)` - The fields parameter represent an array with names of fields which is relevant for the order in which the entities will be processed. Adding a '-' at the beginning of any field name will fetch the entities in a descending order (ex: [id, '-name']). Please inspect the field metadata before passing field names to this method.
-   - `query(query)` - Defines an Octane-specific filter. When the request will be executed, only the entities filtered by the query will be gathered.
+   - `query(query)` - Defines an SDP-specific filter. When the request will be executed, only the entities filtered by the query will be gathered.
    - `limit(limit)` - When a query returns a large set of data, the results are returned in a series of pages. There is a default limit set for the entities fetched in a page. However, the user can set a custom limit by providing an integer greater that 0.
    - `offset(offset)` - When a query returns a large set of data, the results are returned in a series of pages. There is a default limit set for the entities fetched in a page. Based on that limit, multiple pages are formed. To select the desired range of entities, the offset must be provided as a number which sets the index of the entity which will be fetched first. If the offset is not provided, 0 is used instead.
     
 - ```update(entityName, body)``` <a name="update"></a>
      
     *Parameters* : 
-    - **entityName** - Contains the name of the affected Octane entity. The recommended way to use the entity names is to use the [Octane.entityTypes](#octane-entity-types) entries. 
-    - **body** - A JSON containing *field name* and *field value* pairs which will be used to update the entity. Field names can be obtained by querying the field metadata of Octane. More information about the Octane field metadata can be found [here](https://admhelp.microfocus.com/octane/en/15.0.20/Online/Content/API/MetadataFields.htm). Examples on how to retrieve metadata using the SDK can be found [here](#get-metadata).
+    - **entityName** - Contains the name of the affected SDP entity. The recommended way to use the entity names is to use the [Octane.entityTypes](#octane-entity-types) entries. 
+    - **body** - A JSON containing *field name* and *field value* pairs which will be used to update the entity. Field names can be obtained by querying the field metadata of SDP. More information about the SDP field metadata can be found [here](https://admhelp.microfocus.com/octane/en/15.0.20/Online/Content/API/MetadataFields.htm). Examples on how to retrieve metadata using the SDK can be found [here](#get-metadata).
         
     *Behavior*:
     
@@ -156,21 +154,21 @@ The rest of the methods will not affect directly the Octane data, but add proper
 - ```updateBulk(entityName, body)``` <a name="updateBulk"></a>
      
     *Parameters* : 
-     - **entityName** - Contains the name of the affected Octane entity. The recommended way to use the entity names is to use the [Octane.entityTypes](#octane-entity-types) entries. 
-     - **body** - A JSON containing *field name* and *field value* pairs which will be used to update the entity. Field names can be obtained by querying the field metadata of Octane. More information about the Octane field metadata can be found [here](https://admhelp.microfocus.com/octane/en/15.0.20/Online/Content/API/MetadataFields.htm). Examples on how to retrieve metadata using the SDK can be found [here](#get-metadata).
+     - **entityName** - Contains the name of the affected SDP entity. The recommended way to use the entity names is to use the [Octane.entityTypes](#octane-entity-types) entries. 
+     - **body** - A JSON containing *field name* and *field value* pairs which will be used to update the entity. Field names can be obtained by querying the field metadata of SDP. More information about the SDP field metadata can be found [here](https://admhelp.microfocus.com/octane/en/15.0.20/Online/Content/API/MetadataFields.htm). Examples on how to retrieve metadata using the SDK can be found [here](#get-metadata).
     
     *Behavior*:
     
-    This method does not fire the request but builds up to the final URL and defines the request method. When the request will be executed, the updated entities will have the type provided by entityName and the attributes defined in the body JSON. Every entity in the body JSON must have an existing id to target existing entities in Octane. This method affects multiple entities.
+    This method does not fire the request but builds up to the final URL and defines the request method. When the request will be executed, the updated entities will have the type provided by entityName and the attributes defined in the body JSON. Every entity in the body JSON must have an existing id to target existing entities in SDP. This method affects multiple entities.
     
     *Methods which can be chained*
     - `execute()` - Will fire the request to update all the entities for the built query.
-    - `query(query)` - Defines an Octane-specific filter. When the request will be executed, only the entities filtered by the query will be affected. In this case the body of the request does not have to contain ids for the entities.
+    - `query(query)` - Defines an SDP-specific filter. When the request will be executed, only the entities filtered by the query will be affected. In this case the body of the request does not have to contain ids for the entities.
      
 - ```delete(entityName)``` <a name="delete"></a>
     
     *Parameters* : 
-    - **entityName** - Contains the name of the Octane entity which will be fetched. The recommended way to use the entity names is to use the [Octane.entityTypes](#octane-entity-types) entries. 
+    - **entityName** - Contains the name of the SDP entity which will be fetched. The recommended way to use the entity names is to use the [Octane.entityTypes](#octane-entity-types) entries. 
         
     *Behavior*
        
@@ -180,7 +178,7 @@ The rest of the methods will not affect directly the Octane data, but add proper
    *Methods which can be chained*
    - `execute()` - Will fire the request to delete all the entities which were selected using a query or an id.
    - `at(id)` - Defines which entity will be targeted for the next request. The input for this method is the id of the targeted entity.
-   - `query(query)` - Defines an Octane-specific filter. When the request will be executed, only the entities filtered by the query will be deleted.
+   - `query(query)` - Defines an SDP-specific filter. When the request will be executed, only the entities filtered by the query will be deleted.
 
 - ```getAttachmentContent()``` <a name="getAttachmentContent"></a>
     
@@ -206,7 +204,7 @@ The rest of the methods will not affect directly the Octane data, but add proper
     
     This method does not fire the request but builds up to the final URL and defines the request method.
     
-    When the request will be executed, the created attachment will have the name provided by attachmentName, the content defined by attachmentData and it will be under the entity provided by ownerName and ownerReference.  Information about requests which involve attachments can be found [here](https://admhelp.microfocus.com/octane/en/15.0.20/Online/Content/API/Attachments_HowTo.htm)
+    When the request will be executed, the created attachment will have the name provided by attachmentName, the content defined by attachmentData and it will be under the entity provided by ownerName and ownerReference.  Information about requests which involve attachments can be found [here](https://admhelp.microfocus.com/octane/en/latest/Online/Content/API/Attachments_HowTo.htm)
        
     *Methods which can be chained*
      - `execute()` - Will fire the request to create the attachment defined by attachmentData and it will be under the entity provided by ownerName and ownerReference.
@@ -228,22 +226,22 @@ The rest of the methods will not affect directly the Octane data, but add proper
 
   *Behavior*
 
-  Fires an authenticate request to Octane. After this request is fulfilled any further operation wll not require to reauthenticate.
+  Fires an authenticate request to SDP. After this request is fulfilled any further operation wll not require to reauthenticate.
 
 - ```signOut()``` <a name="signOut"></a>
 
      *Behavior*
      
-     Fires a sign out request to Octane. After this request is fulfilled any further operation wll need to reauthenticate.
+     Fires a sign out request to SDP. After this request is fulfilled any further operation wll need to reauthenticate.
 
 #### Octane.entityTypes <a name="octane-entity-types"></a>
 
-The Octane.entityTypes JSON contains all the entities present in the public API of ALM Octane. This can be used in order
-to access Octane entities.
+The Octane.entityTypes JSON contains all the entities present in the public API of SDP. This can be used in order
+to access SDP entities.
 
 #### Octane.operationTypes <a name="octane-operation-types"></a>
 
-The Octane.operationTypes JSON contains all the operations that can be executed via the public API of ALM Octane. This can be used in order
+The Octane.operationTypes JSON contains all the operations that can be executed via the public API of SDP. This can be used in order
 to generate custom requests.
 
 ## Usage examples
@@ -347,7 +345,7 @@ to generate custom requests.
 
 #### Query
 
-The Octane REST API supports entities querying by filtering based on field values. To filter, use a query statement, which is 
+The SDP REST API supports entities querying by filtering based on field values. To filter, use a query statement, which is 
 comprised of at least one query phrase.
 
 The client API provides the Query module to help you build the query, rather than writing the complex query statement. To pass

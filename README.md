@@ -1,4 +1,4 @@
-# Open Text Core Software Delivery Platform Node REST API
+# OpenText Core Software Delivery Platform Node REST API
 
 A Node.js wrapper for the Open Text Core Software Delivery Platform (SDP) and Software Delivery Management REST API.
 

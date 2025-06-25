@@ -224,7 +224,7 @@ class RequestHandler {
 
         logger.debug('Signing in...');
         return await this.sendRequestWithCookies(authOptions.url, async (headersWithCookie) => {
-            let filteredCookies =
+            const filteredHeadersWithCookie =
                 headersWithCookie && this.hasHeader(headersWithCookie, 'on-behalf-of')
                 ? this.filterOutHeaders(headersWithCookie, ['on-behalf-of'])
                 : headersWithCookie;
@@ -232,7 +232,7 @@ class RequestHandler {
                 authOptions.url,
                 authOptions.body,
                 {
-                    headers: filteredCookies
+                    headers: filteredHeadersWithCookie
                 }
             );
             logger.debug('Signed in.');

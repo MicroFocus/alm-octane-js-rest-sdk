@@ -412,7 +412,7 @@ $ npm test test/query.js
 ```
 
 ## What's new :newspaper: <a name="whats-new"></a>
-* 25.2.0
+* 25.3.0
   * Removed ON-BEHALF-OF header from `authenticate()` method
   
 * 25.2.0

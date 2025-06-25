@@ -224,14 +224,19 @@ class RequestHandler {
 
         logger.debug('Signing in...');
         return await this.sendRequestWithCookies(authOptions.url, async (headersWithCookie) => {
+            let filteredCookies =
+                headersWithCookie && this.hasHeader(headersWithCookie, 'on-behalf-of')
+                ? this.filterOutHeaders(headersWithCookie, ['on-behalf-of'])
+                : headersWithCookie;
             const request = await this._requestor.post(
                 authOptions.url,
                 authOptions.body,
                 {
-                    headers: headersWithCookie
+                    headers: filteredCookies
                 }
             );
             logger.debug('Signed in.');
+
             return request;
         });
     }
@@ -380,6 +385,42 @@ class RequestHandler {
 
     async getCookieHeaderForUrl(url: string): Promise<string> {
         return await this._cookieJar.getCookieString(this._options.baseURL + url);
+    }
+
+    private hasHeader(
+        headers: RawAxiosRequestHeaders | AxiosHeaders,
+        key: string
+    ): boolean {
+        if (!headers) return false;
+
+        const normalizedKey = key.toLowerCase();
+
+        if (typeof (headers as AxiosHeaders).get === 'function') {
+            return (headers as AxiosHeaders).has(normalizedKey);
+        } else {
+            return Object.keys(headers).some(k => k.toLowerCase() === normalizedKey);
+        }
+    }
+
+    private filterOutHeaders(
+        headers: RawAxiosRequestHeaders | AxiosHeaders,
+        excludeKeys: string[]
+    ): AxiosHeaders {
+        const result = new AxiosHeaders();
+        const excludeSet = new Set(excludeKeys.map(k => k.toLowerCase()));
+
+        const plainHeaders =
+            typeof (headers as AxiosHeaders).toJSON === 'function'
+                ? (headers as AxiosHeaders).toJSON()
+                : headers;
+
+        for (const [key, value] of Object.entries(plainHeaders)) {
+            if (!excludeSet.has(key.toLowerCase())) {
+                result.set(key, value);
+            }
+        }
+
+        return result;
     }
 }
 

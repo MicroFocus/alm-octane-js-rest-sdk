@@ -413,7 +413,7 @@ $ npm test test/query.js
 
 ## What's new :newspaper: <a name="whats-new"></a>
 * 25.4.0
-  * Upgraded `brace-expansion` version 
+  * Upgraded `brace-expansion` version to fix a vulnerable dependency
 * 25.3.0
   * Removed ON-BEHALF-OF header from `authenticate()` method
   

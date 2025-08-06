@@ -36,6 +36,7 @@
     "@types/request": "^2.48.8",
     "@types/tough-cookie": "^4.0.5",
     "axios-mock-adapter": "2.1.0",
+    "brace-expansion": "^2.0.2",
     "mocha": "^10.4.0",
     "mocha-jenkins-reporter": "0.4.8",
     "typescript": "^5.8.3"

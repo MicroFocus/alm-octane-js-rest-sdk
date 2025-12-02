@@ -1,6 +1,6 @@
 {
   "name": "@microfocus/alm-octane-js-rest-sdk",
-  "version": "25.4.0",
+  "version": "25.4.1",
   "description": "NodeJS wrapper for the OpenText Core Software Delivery Platform API",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -31,7 +31,7 @@
     "@types/http-errors": "^2.0.4",
     "@types/jest": "^29.5.12",
     "@types/mocha": "^10.0.6",
-    "@types/node": "^22.15.3",
+    "@types/node": "^22.19.1",
     "@types/pluralize": "^0.0.33",
     "@types/request": "^2.48.8",
     "@types/tough-cookie": "^4.0.5",

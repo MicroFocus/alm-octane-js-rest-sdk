@@ -96,10 +96,12 @@ class Octane {
     manualTests: string;
     metaphases: string;
     milestones: string;
+    modelItems: string;
     phases: string;
     pipelineNodes: string;
     pipelineRuns: string;
     previousRuns: string;
+    processes: string;
     programs: string;
     releases: string;
     requirementDocuments: string;
@@ -113,6 +115,8 @@ class Octane {
     sprints: string;
     stories: string;
     suiteRun: string;
+    suiteRunSchedulers: string;
+    suiteRunSchedulerRuns: string;
     tasks: string;
     taxonomyCategoryNodes: string;
     taxonomyItemNodes: string;
@@ -151,10 +155,12 @@ class Octane {
     manualTests: 'manualTests',
     metaphases: 'metaphases',
     milestones: 'milestones',
+    modelItems: 'model_items',
     phases: 'phases',
     pipelineNodes: 'pipeline_nodes',
     pipelineRuns: 'pipeline_runs',
     previousRuns: 'previous_runs',
+    processes: 'processes',
     programs: 'programs',
     releases: 'releases',
     requirementDocuments: 'requirement_documents',
@@ -168,6 +174,8 @@ class Octane {
     sprints: 'sprints',
     stories: 'stories',
     suiteRun: 'suite_run',
+    suiteRunSchedulers: 'suite_run_schedulers',
+    suiteRunSchedulerRuns: 'suite_run_scheduler_runs',
     tasks: 'tasks',
     taxonomyCategoryNodes: 'taxonomy_category_nodes',
     taxonomyItemNodes: 'taxonomy_item_nodes',

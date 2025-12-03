@@ -412,6 +412,8 @@ $ npm test test/query.js
 ```
 
 ## What's new :newspaper: <a name="whats-new"></a>
+* 26.1.0
+  Standardize the structure and behavior of model items and process entities across VS Code plugins
 * 25.4.0
   * Upgraded `brace-expansion` version to fix a vulnerable dependency
 * 25.3.0

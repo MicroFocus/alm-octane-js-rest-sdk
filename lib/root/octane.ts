@@ -101,7 +101,7 @@ class Octane {
     pipelineNodes: string;
     pipelineRuns: string;
     previousRuns: string;
-    processItems: string;
+    processes: string;
     programs: string;
     releases: string;
     requirementDocuments: string;
@@ -160,7 +160,7 @@ class Octane {
     pipelineNodes: 'pipeline_nodes',
     pipelineRuns: 'pipeline_runs',
     previousRuns: 'previous_runs',
-    processItems: 'processes',
+    processes: 'processes',
     programs: 'programs',
     releases: 'releases',
     requirementDocuments: 'requirement_documents',

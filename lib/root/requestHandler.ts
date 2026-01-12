@@ -27,7 +27,7 @@
  * limitations under the License.
  */
 
-import { Params } from './octane';
+import {Params} from './octane';
 
 import axios, {
     AxiosError,
@@ -37,15 +37,15 @@ import axios, {
     AxiosRequestConfig,
     AxiosRequestHeaders,
     AxiosResponse,
+    RawAxiosRequestHeaders,
     ResponseType,
 } from 'axios';
-import { Cookie, CookieJar } from 'tough-cookie';
+import {Cookie, CookieJar} from 'tough-cookie';
 import log4js from 'log4js';
-import { CookieAgent } from "http-cookie-agent/http";
+import {CookieAgent} from "http-cookie-agent/http";
 import * as https from "node:https";
 import * as http from "node:http";
-import { HttpsProxyAgent } from "https-proxy-agent";
-import { RawAxiosRequestHeaders } from "axios";
+import {HttpsProxyAgent} from "https-proxy-agent";
 
 const Mutex = require('async-mutex').Mutex;
 
@@ -63,8 +63,9 @@ logger.level = 'debug';
  * @param {Object} [params.headers] - JSON containing headers which will be used for all the requests
  */
 class RequestHandler {
-    private readonly _user: string;
-    private readonly _password: string;
+    private readonly _user?: string;
+    private readonly _password?: string;
+    private readonly _token?: string;
     private _mutex: typeof Mutex;
     private _cookieJar: CookieJar;
     private readonly _options: {
@@ -79,10 +80,14 @@ class RequestHandler {
     private _needsAuthenication: boolean;
 
     constructor(params: Params) {
+        if(!params.token && (!params.user || !params.password)) {
+            throw new Error('Either token or user and password must be provided');
+        }
         this._user = params.user;
         this._password = params.password;
         this._needsAuthenication = false;
         this._cookieJar = new CookieJar();
+        this._token = params.token;
 
         this._mutex = new Mutex();
 
@@ -223,22 +228,23 @@ class RequestHandler {
         };
 
         logger.debug('Signing in...');
-        return await this.sendRequestWithCookies(authOptions.url, async (headersWithCookie) => {
-            const filteredHeadersWithCookie =
-                headersWithCookie && this.hasHeader(headersWithCookie, 'on-behalf-of')
-                ? this.filterOutHeaders(headersWithCookie, ['on-behalf-of'])
-                : headersWithCookie;
-            const request = await this._requestor.post(
-                authOptions.url,
-                authOptions.body,
-                {
-                    headers: filteredHeadersWithCookie
-                }
-            );
-            logger.debug('Signed in.');
 
-            return request;
-        });
+        // Filter out 'on-behalf-of' header if it exists in default headers
+        const headers = this._options.headers && this.hasHeader(this._options.headers, 'on-behalf-of')
+            ? this.filterOutHeaders(this._options.headers, ['on-behalf-of'])
+            : this._options.headers;
+
+        const response = await this._requestor.post(
+            authOptions.url,
+            authOptions.body,
+            { headers }
+        );
+
+        // Save cookies from the authentication response
+        await this.updateCookieJarFromResponse(response, authOptions.url);
+
+        logger.debug('Signed in.');
+        return response;
     }
 
     /**
@@ -310,12 +316,11 @@ class RequestHandler {
      */
     async signOut() {
         logger.debug('Signing out...');
-        return this.sendRequestWithCookies('/authentication/sign_out', async (headersWithCookie) => {
-            const request = await this._requestor.post('/authentication/sign_out', undefined, { headers: headersWithCookie });
-            logger.debug('Signed out.');
-            return request;
-        })
-
+        const cookieHeader = await this.getCookieHeaderForUrl('/authentication/sign_out');
+        const headers = {...this._options.headers, 'Cookie': cookieHeader};
+        const response = await this._requestor.post('/authentication/sign_out', undefined, { headers });
+        logger.debug('Signed out.');
+        return response;
     }
 
     /**
@@ -349,6 +354,39 @@ class RequestHandler {
     }
 
     async sendRequestWithCookies(url: string, callBack: (headersWithCookie?: RawAxiosRequestHeaders | AxiosHeaders) => Promise<AxiosResponse>, customHeaders?: RawAxiosRequestHeaders | AxiosHeaders): Promise<AxiosResponse> {
+        if (this._user && this._password) {
+            try {
+                return await this.sendRequestWithCredentials(url, callBack, customHeaders);
+            } catch (err: any) {
+                // If not 401, throw the error
+                logger.debug('Reached here with error:', err);
+                if (!err.response || err.response.status !== 401) {
+                    throw err;
+                }
+                // If 401, credentials/cookies expired, fall through to token auth
+                logger.debug('Cookie authentication failed (401), trying token authentication...');
+            }
+        }
+
+        if (this._token) {
+            return await this.sendRequestWithToken(url, callBack, customHeaders);
+        }
+
+        throw new Error('No valid authentication available. Neither credentials nor token provided.');
+    }
+
+    /**
+     * Sends an HTTP request using cookie-based authentication.
+     * Adds the `Cookie` header to the request using stored credentials.
+     * Updates the cookie jar with any cookies received in the response.
+     *
+     * @param url The URL to send the request to.
+     * @param callBack A callback that performs the actual HTTP request with the provided headers.
+     * @param customHeaders Optional custom headers to include in the request.
+     * @returns The Axios response from the server.
+     * @throws Error if the request fails.
+     */
+    private async sendRequestWithCredentials(url: string, callBack: (headersWithCookie?: RawAxiosRequestHeaders | AxiosHeaders) => Promise<AxiosResponse>, customHeaders?: RawAxiosRequestHeaders | AxiosHeaders): Promise<AxiosResponse> {
         const cookieHeader = await this.getCookieHeaderForUrl(url);
         const headersWithCookie = { ...customHeaders, 'Cookie': cookieHeader };
         const response = await callBack(headersWithCookie);
@@ -357,6 +395,31 @@ class RequestHandler {
         return response;
     }
 
+
+    /**
+     * Sends an HTTP request using token-based authentication.
+     * Adds the `Authorization` header with the bearer token to the request.
+     * If the server responds with a 401 status, throws an error indicating token authentication failure.
+     *
+     * @param url The URL to send the request to.
+     * @param callBack A callback that performs the actual HTTP request with the provided headers.
+     * @param customHeaders Optional custom headers to include in the request.
+     * @returns The Axios response from the server.
+     * @throws Error if token authentication fails (401) or another request error occurs.
+     */
+    private async sendRequestWithToken(url: string, callBack: (headersWithCookie?: RawAxiosRequestHeaders | AxiosHeaders) => Promise<AxiosResponse>, customHeaders?: RawAxiosRequestHeaders | AxiosHeaders): Promise<AxiosResponse> {
+        const headersWithToken = { ...customHeaders, Authorization: `Bearer ${this._token}` };
+        try {
+            const response =  await callBack(headersWithToken);
+            await this.updateCookieJarFromResponse(response, url);
+            return response;
+        } catch (err: any) {
+            if(err.response && err.response.status === 401) {
+                throw new Error('Token authentication failed. The token may be expired or invalid.');
+            }
+            throw err;
+        }
+    }
 
     async updateCookieJarFromResponse(response: AxiosResponse, url: string) {
         const setCookieHeaders = response.headers['set-cookie'];

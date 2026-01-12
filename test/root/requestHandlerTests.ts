@@ -37,6 +37,7 @@ const testServerUrl = '';
 const uri = '/some/uri';
 const user = 'MyUser';
 const password = 'MyPassword';
+const token = 'TestToken123';
 
 const UNAUTHORIZED_ERROR = {
   name: 'Error',
@@ -44,6 +45,184 @@ const UNAUTHORIZED_ERROR = {
     status: 401,
   },
 };
+
+export class BuildServerResponses {
+  scope: MockAdapter;
+  authenticatedCookie: string;
+  loginCookieName: string;
+  constructor(requester: AxiosInstance) {
+    this.scope = new MockAdapter(requester);
+    this.authenticatedCookie = 'Authenticated';
+    this.loginCookieName = 'LWSSO_COOKIE_KEY';
+  }
+
+  withSuccessfulAuthentication(user?: string, password?: string) {
+    this.scope
+        .onPost('/authentication/sign_in', {
+          asymmetricMatch(actual: { user: string; password: string }) {
+            if (user) {
+              assert.strictEqual(actual.user, user);
+            }
+            if (password) {
+              assert.strictEqual(actual.password, password);
+            }
+            return true;
+          },
+        })
+        .reply(200, undefined, {
+          'Set-Cookie': this.loginCookieName + '=' + this.authenticatedCookie,
+        });
+    return this;
+  }
+
+  withUnsuccessfulAuthentication() {
+    this.scope
+        .onPost('/authentication/sign_in')
+        .reply(401, undefined, { 'Set-Cookie': this.loginCookieName + '=' });
+    return this;
+  }
+
+  withUnsuccessfulGetRequest(uri: string, errorBody: object) {
+    this.scope.onGet(uri).reply(400, errorBody);
+    return this;
+  }
+
+  withUnsuccessfulDeleteRequest(uri: string, errorBody: object) {
+    this.scope.onDelete(uri).reply(400, errorBody);
+    return this;
+  }
+
+  withUnsuccessfulUpdateRequest(uri: string, errorBody: object) {
+    this.scope.onPut(uri).reply(400, errorBody);
+    return this;
+  }
+
+  withUnsuccessfulCreateRequest(uri: string, errorBody: object) {
+    this.scope.onPost(uri).reply(400, errorBody);
+    return this;
+  }
+
+  withGetRequest(uri: string, statusCode: number, replyData?: any) {
+    this.scope.onGet(uri).reply(statusCode, replyData);
+    return this;
+  }
+
+  withDeleteRequest(uri: string, statusCode: number) {
+    this.scope.onDelete(uri).reply(statusCode);
+    return this;
+  }
+
+  withUpdateRequest(
+      uri: string,
+      statusCode: number,
+      body?: object,
+      replyData?: any
+  ) {
+    this.scope.onPut(uri, body).reply(statusCode, replyData);
+    return this;
+  }
+
+  withCreateRequest(
+      uri: string,
+      statusCode: number,
+      body?: object,
+      replyData?: any
+  ) {
+    this.scope.onPost(uri, body).reply(statusCode, replyData);
+    return this;
+  }
+
+  withUnauthorizedUpdateRequest(uri: string, body?: object, replyData?: any) {
+    return this.withUpdateRequest(uri, 401, body, replyData);
+  }
+
+  withUnauthorizedGetRequest(uri: string) {
+    return this.withGetRequest(uri, 401);
+  }
+
+  withUnauthorizedDeleteRequest(uri: string) {
+    return this.withDeleteRequest(uri, 401);
+  }
+
+  withUnauthorizedCreateRequest(uri: string, body?: object, replyData?: any) {
+    return this.withCreateRequest(uri, 401, body, replyData);
+  }
+
+  withSuccessfulSignOut() {
+    this.scope
+        .onPost('/authentication/sign_out')
+        .reply(200, undefined, { 'Set-Cookie': this.loginCookieName + '=' });
+    return this;
+  }
+
+  withUnsuccessfulSignOut() {
+    this.scope
+        .onPost('/authentication/sign_out')
+        .reply(401, undefined, { 'Set-Cookie': 'LWSSO_COOKIE_KEY=' });
+    return this;
+  }
+
+  withTokenGetRequest(uri: string, token: string, statusCode: number, replyData?: any) {
+    this.scope
+        .onGet(uri)
+        .reply(function(config) {
+          // Verify the Authorization header contains the token
+          if (config.headers?.Authorization === `Bearer ${token}`) {
+            return [statusCode, replyData];
+          }
+          return [401, { error: 'Invalid token' }];
+        });
+    return this;
+  }
+
+  withUnauthorizedTokenGetRequest(uri: string, token: string) {
+    return this.withTokenGetRequest(uri, token, 401);
+  }
+
+  withTokenDeleteRequest(uri: string, token: string, statusCode: number) {
+    this.scope
+        .onDelete(uri)
+        .reply(function(config) {
+          if (config.headers?.Authorization === `Bearer ${token}`) {
+            return [statusCode];
+          }
+          return [401, { error: 'Invalid token' }];
+        });
+    return this;
+  }
+
+  withUnauthorizedTokenDeleteRequest(uri: string, token: string) {
+    return this.withTokenDeleteRequest(uri, token, 401);
+  }
+
+  withTokenUpdateRequest(uri: string, token: string, statusCode: number, body?: object, replyData?: any) {
+    this.scope
+        .onPut(uri, body)
+        .reply(function(config) {
+          if (config.headers?.Authorization === `Bearer ${token}`) {
+            return [statusCode, replyData];
+          }
+          return [401, { error: 'Invalid token' }];
+        });
+    return this;
+  }
+
+  withTokenCreateRequest(uri: string, token: string, statusCode: number, body?: object, replyData?: any) {
+    this.scope
+        .onPost(uri, body)
+        .reply(function(config) {
+          if (config.headers?.Authorization === `Bearer ${token}`) {
+            return [statusCode, replyData];
+          }
+          return [401, { error: 'Invalid token' }];
+        });
+    return this;
+  }
+
+  build() {
+    return this.scope;
+  }
+}
 
 describe('requestHandler', function () {
   // @ts-ignore
@@ -122,7 +301,14 @@ describe('requestHandler', function () {
         .withSuccessfulAuthentication()
         .withUnauthorizedGetRequest(uri)
         .build();
-      await throwsUnauthorizedException(requestHandler.get(uri));
+      try {
+        await requestHandler.get(uri);
+        assert.fail('Expected an error to be thrown');
+      } catch (err: any) {
+        assert.ok(err.message.includes('No valid authentication available. Neither credentials nor token provided.'),
+            `Expected error message to include "No valid authentication available. Neither credentials nor token provided.", but got: ${err.message}`
+        );
+      }
       scope.reset();
     });
     it('throws an error if request was answered with status code 401 and authentication fails', async () => {
@@ -131,7 +317,14 @@ describe('requestHandler', function () {
         .withUnauthorizedGetRequest(uri)
         .withUnsuccessfulAuthentication()
         .build();
-      await throwsUnauthorizedException(requestHandler.get(uri));
+      try {
+        await requestHandler.get(uri);
+        assert.fail('Expected an error to be thrown');
+      } catch (err: any) {
+        assert.ok(err.message.includes('No valid authentication available. Neither credentials nor token provided.'),
+            `Expected error message to include "No valid authentication available. Neither credentials nor token provided.", but got: ${err.message}`
+        );
+      }
       scope.reset();
     });
     it('returns the data even if the 1st request was with the status code 401', async function () {
@@ -175,7 +368,15 @@ describe('requestHandler', function () {
         .withSuccessfulAuthentication()
         .withUnauthorizedDeleteRequest(uri)
         .build();
-      await throwsUnauthorizedException(requestHandler.delete(uri));
+      try {
+        await requestHandler.delete(uri);
+        assert.fail('Expected an error to be thrown');
+      } catch (err: any) {
+        assert.ok(
+            err.message.includes('No valid authentication available. Neither credentials nor token provided.'),
+            `Expected error message to include "No valid authentication available. Neither credentials nor token provided.", but got: ${err.message}`
+        );
+      }
       scope.reset();
     });
     it('throws an error if request was answered with status code 401 and authentication fails', async () => {
@@ -184,7 +385,15 @@ describe('requestHandler', function () {
         .withUnauthorizedDeleteRequest(uri)
         .withUnsuccessfulAuthentication()
         .build();
-      await throwsUnauthorizedException(requestHandler.delete(uri));
+      try {
+        await requestHandler.delete(uri);
+        assert.fail('Expected an error to be thrown');
+      } catch (err: any) {
+        assert.ok(
+            err.message.includes('No valid authentication available. Neither credentials nor token provided.'),
+            `Expected error message to include "No valid authentication available. Neither credentials nor token provided.", but got: ${err.message}`
+        );
+      }
       scope.reset();
     });
     it('request is made even if 1st request was with the status code 401', async function () {
@@ -226,7 +435,15 @@ describe('requestHandler', function () {
         .withSuccessfulAuthentication()
         .withUnauthorizedUpdateRequest(uri)
         .build();
-      await throwsUnauthorizedException(requestHandler.update(uri));
+      try {
+        await requestHandler.update(uri);
+        assert.fail('Expected an error to be thrown');
+      } catch (err: any) {
+        assert.ok(
+            err.message.includes('No valid authentication available. Neither credentials nor token provided.'),
+            `Expected error message to include "No valid authentication available. Neither credentials nor token provided.", but got: ${err.message}`
+        );
+      }
       scope.reset();
     });
     it('throws an error if request was answered with status code 401 and authentication fails', async () => {
@@ -235,7 +452,15 @@ describe('requestHandler', function () {
         .withUnauthorizedUpdateRequest(uri)
         .withUnsuccessfulAuthentication()
         .build();
-      await throwsUnauthorizedException(requestHandler.update(uri));
+      try {
+        await requestHandler.update(uri);
+        assert.fail('Expected an error to be thrown');
+      } catch (err: any) {
+        assert.ok(
+            err.message.includes('No valid authentication available. Neither credentials nor token provided.'),
+            `Expected error message to include "No valid authentication available. Neither credentials nor token provided.", but got: ${err.message}`
+        );
+      }
       scope.reset();
     });
     it('request is made even if 1st request was with the status code 401', async function () {
@@ -289,7 +514,15 @@ describe('requestHandler', function () {
         .withSuccessfulAuthentication()
         .withUnauthorizedCreateRequest(uri)
         .build();
-      await throwsUnauthorizedException(requestHandler.create(uri));
+      try {
+        await requestHandler.create(uri);
+        assert.fail('Expected an error to be thrown');
+      } catch (err: any) {
+        assert.ok(
+            err.message.includes('No valid authentication available. Neither credentials nor token provided.'),
+            `Expected error message to include "No valid authentication available. Neither credentials nor token provided.", but got: ${err.message}`
+        );
+      }
       scope.reset();
     });
     it('throws an error if request was answered with status code 401 and authentication fails', async () => {
@@ -298,7 +531,15 @@ describe('requestHandler', function () {
         .withUnauthorizedCreateRequest(uri)
         .withUnsuccessfulAuthentication()
         .build();
-      await throwsUnauthorizedException(requestHandler.create(uri));
+      try {
+        await requestHandler.create(uri);
+        assert.fail('Expected an error to be thrown');
+      } catch (err: any) {
+        assert.ok(
+            err.message.includes('No valid authentication available. Neither credentials nor token provided.'),
+            `Expected error message to include "No valid authentication available. Neither credentials nor token provided.", but got: ${err.message}`
+        );
+      }
       scope.reset();
     });
     it('request is made even if 1st request was with the status code 401', async function () {
@@ -402,125 +643,175 @@ describe('requestHandler', function () {
       scope.reset();
     });
   });
+});
 
-  class BuildServerResponses {
-    scope: MockAdapter;
-    authenticatedCookie: string;
-    loginCookieName: string;
-    constructor(requester: AxiosInstance) {
-      this.scope = new MockAdapter(requester);
-      this.authenticatedCookie = 'Authenticated';
-      this.loginCookieName = 'LWSSO_COOKIE_KEY';
-    }
+describe('requestHandler with token authentication', function () {
+  let requestHandlerWithToken: RequestHandler;
 
-    withSuccessfulAuthentication(user?: string, password?: string) {
-      this.scope
-        .onPost('/authentication/sign_in', {
-          asymmetricMatch(actual: { user: string; password: string }) {
-            if (user) {
-              assert.strictEqual(actual.user, user);
-            }
-            if (password) {
-              assert.strictEqual(actual.password, password);
-            }
-            return true;
-          },
-        })
-        .reply(200, undefined, {
-          'Set-Cookie': this.loginCookieName + '=' + this.authenticatedCookie,
-        });
-      return this;
-    }
+  beforeEach(() => {
+    requestHandlerWithToken = new RequestHandler({
+      token: token,
+      server: testServerUrl,
+      sharedSpace: 1001,
+      workspace: 1002,
+    });
+  });
 
-    withUnsuccessfulAuthentication() {
-      this.scope
-        .onPost('/authentication/sign_in')
-        .reply(401, undefined, { 'Set-Cookie': this.loginCookieName + '=' });
-      return this;
-    }
+  describe('#get with token', () => {
+    it('makes a successful get request using token authentication', async function () {
+      const objectToGet = 'Request was successful with token';
+      // @ts-ignore
+      const scope = new BuildServerResponses(requestHandlerWithToken._requestor)
+          .withTokenGetRequest(uri, token, 200, objectToGet)
+          .build();
 
-    withUnsuccessfulGetRequest(uri: string, errorBody: object) {
-      this.scope.onGet(uri).reply(400, errorBody);
-      return this;
-    }
+      const objectGot = await requestHandlerWithToken.get(uri);
+      assert.strictEqual(objectGot.data, objectToGet);
+      scope.reset();
+    });
 
-    withUnsuccessfulDeleteRequest(uri: string, errorBody: object) {
-      this.scope.onDelete(uri).reply(400, errorBody);
-      return this;
-    }
+    it('throws an error if token authentication fails', async function () {
+      // @ts-ignore
+      const scope = new BuildServerResponses(requestHandlerWithToken._requestor)
+          .withUnauthorizedTokenGetRequest(uri, token)
+          .build();
 
-    withUnsuccessfulUpdateRequest(uri: string, errorBody: object) {
-      this.scope.onPut(uri).reply(400, errorBody);
-      return this;
-    }
+      try {
+        await requestHandlerWithToken.get(uri);
+        assert.fail('Expected an error to be thrown');
+      } catch (err: any) {
+        assert.ok(
+            err.message.includes('Token authentication failed'),
+            `Expected error message about token failure, but got: ${err.message}`
+        );
+      }
+      scope.reset();
+    });
+  });
 
-    withUnsuccessfulCreateRequest(uri: string, errorBody: object) {
-      this.scope.onPost(uri).reply(400, errorBody);
-      return this;
-    }
+  describe('#delete with token', () => {
+    it('makes a successful delete request using token authentication', async function () {
+      // @ts-ignore
+      const scope = new BuildServerResponses(requestHandlerWithToken._requestor)
+          .withTokenDeleteRequest(uri, token, 200)
+          .build();
 
-    withGetRequest(uri: string, statusCode: number, replyData?: any) {
-      this.scope.onGet(uri).reply(statusCode, replyData);
-      return this;
-    }
+      const shouldBeUndefined = await requestHandlerWithToken.delete(uri);
+      assert.strictEqual(shouldBeUndefined.data, undefined);
+      scope.reset();
+    });
 
-    withDeleteRequest(uri: string, statusCode: number) {
-      this.scope.onDelete(uri).reply(statusCode);
-      return this;
-    }
+    it('throws an error if token authentication fails', async function () {
+      // @ts-ignore
+      const scope = new BuildServerResponses(requestHandlerWithToken._requestor)
+          .withUnauthorizedTokenDeleteRequest(uri, token)
+          .build();
 
-    withUpdateRequest(
-      uri: string,
-      statusCode: number,
-      body?: object,
-      replyData?: any
-    ) {
-      this.scope.onPut(uri, body).reply(statusCode, replyData);
-      return this;
-    }
+      try {
+        await requestHandlerWithToken.delete(uri);
+        assert.fail('Expected an error to be thrown');
+      } catch (err: any) {
+        assert.ok(
+            err.message.includes('Token authentication failed'),
+            `Expected error message about token failure, but got: ${err.message}`
+        );
+      }
+      scope.reset();
+    });
+  });
 
-    withCreateRequest(
-      uri: string,
-      statusCode: number,
-      body?: object,
-      replyData?: any
-    ) {
-      this.scope.onPost(uri, body).reply(statusCode, replyData);
-      return this;
-    }
+  describe('#update with token', () => {
+    it('makes a successful update request using token authentication', async function () {
+      const updatedObject = 'Success';
+      const updateBody = {
+        parameter1: 'parameter1',
+        parameter2: 2,
+      };
+      // @ts-ignore
+      const scope = new BuildServerResponses(requestHandlerWithToken._requestor)
+          .withTokenUpdateRequest(uri, token, 200, updateBody, updatedObject)
+          .build();
 
-    withUnauthorizedUpdateRequest(uri: string, body?: object, replyData?: any) {
-      return this.withUpdateRequest(uri, 401, body, replyData);
-    }
+      const responseObject = await requestHandlerWithToken.update(uri, updateBody);
+      assert.strictEqual(responseObject.data, updatedObject);
+      scope.reset();
+    });
+  });
 
-    withUnauthorizedGetRequest(uri: string) {
-      return this.withGetRequest(uri, 401);
-    }
+  describe('#create with token', () => {
+    it('makes a successful create request using token authentication', async function () {
+      const createObject = { data: 'Success' };
+      const createBody = {
+        parameter1: 'parameter1',
+        parameter2: 2,
+      };
+      // @ts-ignore
+      const scope = new BuildServerResponses(requestHandlerWithToken._requestor)
+          .withTokenCreateRequest(uri, token, 200, createBody, createObject)
+          .build();
 
-    withUnauthorizedDeleteRequest(uri: string) {
-      return this.withDeleteRequest(uri, 401);
-    }
+      const responseObject = await requestHandlerWithToken.create(uri, createBody);
+      assert.strictEqual(
+          JSON.stringify(responseObject.data),
+          JSON.stringify(createObject)
+      );
+      scope.reset();
+    });
+  });
+});
 
-    withUnauthorizedCreateRequest(uri: string, body?: object, replyData?: any) {
-      return this.withCreateRequest(uri, 401, body, replyData);
-    }
+// Test the hybrid flow (credentials + token)
+describe('requestHandler with credentials and token (hybrid)', function () {
+  let requestHandlerHybrid: RequestHandler;
 
-    withSuccessfulSignOut() {
-      this.scope
-        .onPost('/authentication/sign_out')
-        .reply(200, undefined, { 'Set-Cookie': this.loginCookieName + '=' });
-      return this;
-    }
+  beforeEach(() => {
+    requestHandlerHybrid = new RequestHandler({
+      user: user,
+      password: password,
+      token: token,
+      server: testServerUrl,
+      sharedSpace: 1001,
+      workspace: 1002,
+    });
+  });
 
-    withUnsuccessfulSignOut() {
-      this.scope
-        .onPost('/authentication/sign_out')
-        .reply(401, undefined, { 'Set-Cookie': 'LWSSO_COOKIE_KEY=' });
-      return this;
-    }
+  describe('fallback from cookies to token', () => {
+    it('falls back to token auth when cookie auth returns 401', async function () {
+      const objectToGet = 'Request successful with token fallback';
 
-    build() {
-      return this.scope;
-    }
-  }
+      // @ts-ignore
+      const scope = new BuildServerResponses(requestHandlerHybrid._requestor)
+          .withSuccessfulAuthentication()
+          .withUnauthorizedGetRequest(uri)
+          .withTokenGetRequest(uri, token, 200, objectToGet)
+          .build();
+
+      await requestHandlerHybrid.authenticate();
+      const response = await requestHandlerHybrid.get(uri);
+      assert.strictEqual(response.data, objectToGet);
+      scope.reset();
+    });
+
+    it('throws error when both cookie and token auth fail', async function () {
+      // @ts-ignore
+      const scope = new BuildServerResponses(requestHandlerHybrid._requestor)
+          .withSuccessfulAuthentication()
+          .withUnauthorizedGetRequest(uri)
+          .withUnauthorizedTokenGetRequest(uri, token)
+          .build();
+
+      await requestHandlerHybrid.authenticate();
+
+      try {
+        await requestHandlerHybrid.get(uri);
+        assert.fail('Expected an error to be thrown');
+      } catch (err: any) {
+        assert.ok(
+            err.message.includes('Token authentication failed'),
+            `Expected error message about token failure, but got: ${err.message}`
+        );
+      }
+      scope.reset();
+    });
+  });
 });

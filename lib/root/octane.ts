@@ -38,8 +38,9 @@ export interface Params {
   server: string;
   sharedSpace: number;
   workspace: number;
-  user: string;
-  password: string;
+  user?: string;
+  password?: string;
+  token?: string;
   proxy?: string;
   proxyUsername?: string;
   proxyPassword?: string;

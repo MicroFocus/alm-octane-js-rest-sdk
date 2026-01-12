@@ -368,12 +368,12 @@ class RequestHandler {
             }
         }
 
-            if (this._token) {
-                return await this.sendRequestWithToken(url, callBack, customHeaders);
-            }
-
-            throw new Error('No valid authentication available. Neither credentials nor token provided.');
+        if (this._token) {
+            return await this.sendRequestWithToken(url, callBack, customHeaders);
         }
+
+        throw new Error('No valid authentication available. Neither credentials nor token provided.');
+    }
 
     /**
      * Sends an HTTP request using cookie-based authentication.

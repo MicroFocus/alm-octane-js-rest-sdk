@@ -438,6 +438,8 @@ $ npm test test/query.js
 ```
 
 ## What's new :newspaper: <a name="whats-new"></a>
+* 26.2.0
+  * Fixed vulnerabilities related to external dependencies.
 * 26.1.0
   * Standardize the structure and behavior of model items and process entities across VS Code plugins
 * 25.4.0

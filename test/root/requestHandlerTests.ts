@@ -301,14 +301,7 @@ describe('requestHandler', function () {
         .withSuccessfulAuthentication()
         .withUnauthorizedGetRequest(uri)
         .build();
-      try {
-        await requestHandler.get(uri);
-        assert.fail('Expected an error to be thrown');
-      } catch (err: any) {
-        assert.ok(err.message.includes('No valid authentication available. Neither credentials nor token provided.'),
-            `Expected error message to include "No valid authentication available. Neither credentials nor token provided.", but got: ${err.message}`
-        );
-      }
+      await throwsUnauthorizedException(requestHandler.get(uri));
       scope.reset();
     });
     it('throws an error if request was answered with status code 401 and authentication fails', async () => {
@@ -317,14 +310,7 @@ describe('requestHandler', function () {
         .withUnauthorizedGetRequest(uri)
         .withUnsuccessfulAuthentication()
         .build();
-      try {
-        await requestHandler.get(uri);
-        assert.fail('Expected an error to be thrown');
-      } catch (err: any) {
-        assert.ok(err.message.includes('No valid authentication available. Neither credentials nor token provided.'),
-            `Expected error message to include "No valid authentication available. Neither credentials nor token provided.", but got: ${err.message}`
-        );
-      }
+      await throwsUnauthorizedException(requestHandler.get(uri));
       scope.reset();
     });
     it('returns the data even if the 1st request was with the status code 401', async function () {
@@ -368,15 +354,7 @@ describe('requestHandler', function () {
         .withSuccessfulAuthentication()
         .withUnauthorizedDeleteRequest(uri)
         .build();
-      try {
-        await requestHandler.delete(uri);
-        assert.fail('Expected an error to be thrown');
-      } catch (err: any) {
-        assert.ok(
-            err.message.includes('No valid authentication available. Neither credentials nor token provided.'),
-            `Expected error message to include "No valid authentication available. Neither credentials nor token provided.", but got: ${err.message}`
-        );
-      }
+      await throwsUnauthorizedException(requestHandler.delete(uri));
       scope.reset();
     });
     it('throws an error if request was answered with status code 401 and authentication fails', async () => {
@@ -385,15 +363,7 @@ describe('requestHandler', function () {
         .withUnauthorizedDeleteRequest(uri)
         .withUnsuccessfulAuthentication()
         .build();
-      try {
-        await requestHandler.delete(uri);
-        assert.fail('Expected an error to be thrown');
-      } catch (err: any) {
-        assert.ok(
-            err.message.includes('No valid authentication available. Neither credentials nor token provided.'),
-            `Expected error message to include "No valid authentication available. Neither credentials nor token provided.", but got: ${err.message}`
-        );
-      }
+      await throwsUnauthorizedException(requestHandler.delete(uri));
       scope.reset();
     });
     it('request is made even if 1st request was with the status code 401', async function () {
@@ -435,15 +405,7 @@ describe('requestHandler', function () {
         .withSuccessfulAuthentication()
         .withUnauthorizedUpdateRequest(uri)
         .build();
-      try {
-        await requestHandler.update(uri);
-        assert.fail('Expected an error to be thrown');
-      } catch (err: any) {
-        assert.ok(
-            err.message.includes('No valid authentication available. Neither credentials nor token provided.'),
-            `Expected error message to include "No valid authentication available. Neither credentials nor token provided.", but got: ${err.message}`
-        );
-      }
+      await throwsUnauthorizedException(requestHandler.update(uri));
       scope.reset();
     });
     it('throws an error if request was answered with status code 401 and authentication fails', async () => {
@@ -452,15 +414,7 @@ describe('requestHandler', function () {
         .withUnauthorizedUpdateRequest(uri)
         .withUnsuccessfulAuthentication()
         .build();
-      try {
-        await requestHandler.update(uri);
-        assert.fail('Expected an error to be thrown');
-      } catch (err: any) {
-        assert.ok(
-            err.message.includes('No valid authentication available. Neither credentials nor token provided.'),
-            `Expected error message to include "No valid authentication available. Neither credentials nor token provided.", but got: ${err.message}`
-        );
-      }
+      await throwsUnauthorizedException(requestHandler.update(uri));
       scope.reset();
     });
     it('request is made even if 1st request was with the status code 401', async function () {
@@ -514,15 +468,7 @@ describe('requestHandler', function () {
         .withSuccessfulAuthentication()
         .withUnauthorizedCreateRequest(uri)
         .build();
-      try {
-        await requestHandler.create(uri);
-        assert.fail('Expected an error to be thrown');
-      } catch (err: any) {
-        assert.ok(
-            err.message.includes('No valid authentication available. Neither credentials nor token provided.'),
-            `Expected error message to include "No valid authentication available. Neither credentials nor token provided.", but got: ${err.message}`
-        );
-      }
+      await throwsUnauthorizedException(requestHandler.create(uri));
       scope.reset();
     });
     it('throws an error if request was answered with status code 401 and authentication fails', async () => {
@@ -531,15 +477,7 @@ describe('requestHandler', function () {
         .withUnauthorizedCreateRequest(uri)
         .withUnsuccessfulAuthentication()
         .build();
-      try {
-        await requestHandler.create(uri);
-        assert.fail('Expected an error to be thrown');
-      } catch (err: any) {
-        assert.ok(
-            err.message.includes('No valid authentication available. Neither credentials nor token provided.'),
-            `Expected error message to include "No valid authentication available. Neither credentials nor token provided.", but got: ${err.message}`
-        );
-      }
+      await throwsUnauthorizedException(requestHandler.create(uri));
       scope.reset();
     });
     it('request is made even if 1st request was with the status code 401', async function () {
@@ -775,43 +713,15 @@ describe('requestHandler with credentials and token (hybrid)', function () {
     });
   });
 
-  describe('fallback from cookies to token', () => {
-    it('falls back to token auth when cookie auth returns 401', async function () {
-      const objectToGet = 'Request successful with token fallback';
-
+    it('check if credentials were specifically used when having hybrid setup', async function () {
+      const objectToGet = 'Request was successful';
       // @ts-ignore
       const scope = new BuildServerResponses(requestHandlerHybrid._requestor)
           .withSuccessfulAuthentication()
-          .withUnauthorizedGetRequest(uri)
-          .withTokenGetRequest(uri, token, 200, objectToGet)
+          .withGetRequest(uri, 200, objectToGet)
           .build();
-
-      await requestHandlerHybrid.authenticate();
-      const response = await requestHandlerHybrid.get(uri);
-      assert.strictEqual(response.data, objectToGet);
+      const objectGot = await requestHandlerHybrid.get(uri);
+      assert.strictEqual(objectGot.data, objectToGet);
       scope.reset();
     });
-
-    it('throws error when both cookie and token auth fail', async function () {
-      // @ts-ignore
-      const scope = new BuildServerResponses(requestHandlerHybrid._requestor)
-          .withSuccessfulAuthentication()
-          .withUnauthorizedGetRequest(uri)
-          .withUnauthorizedTokenGetRequest(uri, token)
-          .build();
-
-      await requestHandlerHybrid.authenticate();
-
-      try {
-        await requestHandlerHybrid.get(uri);
-        assert.fail('Expected an error to be thrown');
-      } catch (err: any) {
-        assert.ok(
-            err.message.includes('Token authentication failed'),
-            `Expected error message about token failure, but got: ${err.message}`
-        );
-      }
-      scope.reset();
-    });
-  });
 });

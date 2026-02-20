@@ -355,17 +355,7 @@ class RequestHandler {
 
     async sendRequestWithCookies(url: string, callBack: (headersWithCookie?: RawAxiosRequestHeaders | AxiosHeaders) => Promise<AxiosResponse>, customHeaders?: RawAxiosRequestHeaders | AxiosHeaders): Promise<AxiosResponse> {
         if (this._user && this._password) {
-            try {
-                return await this.sendRequestWithCredentials(url, callBack, customHeaders);
-            } catch (err: any) {
-                // If not 401, throw the error
-                logger.debug('Reached here with error:', err);
-                if (!err.response || err.response.status !== 401) {
-                    throw err;
-                }
-                // If 401, credentials/cookies expired, fall through to token auth
-                logger.debug('Cookie authentication failed (401), trying token authentication...');
-            }
+            return await this.sendRequestWithCredentials(url, callBack, customHeaders);
         }
 
         if (this._token) {

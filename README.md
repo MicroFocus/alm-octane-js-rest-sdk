@@ -39,7 +39,7 @@ A Node.js wrapper for the Open Text Core Software Delivery Platform (SDP) and So
 Install via npm
 
 ```bash
-$ npm i @microfocus/alm-octane-js-rest-sdk
+$ npm i @opentext/alm-octane-js-rest-sdk
 ```
 
 ## Octane object
@@ -50,7 +50,7 @@ This SDK is designed to work seamlessly with either Open Text Core Software Deli
 #### Import
 
 ```javascript
-import { Octane } from '@microfocus/alm-octane-js-rest-sdk';
+import { Octane } from '@opentext/alm-octane-js-rest-sdk';
 
 ```
 
@@ -378,7 +378,7 @@ The client API provides the Query module to help you build the query, rather tha
 these queries to the SDK, use the `build()` method after the query is fully built.
 
 ```javascript
-import { Query } from '@microfocus/alm-octane-js-rest-sdk'
+import { Query } from '@opentext/alm-octane-js-rest-sdk'
 
 // query statement: "id EQ 1005"
 const query = Query.field('id').equal(1005)

@@ -1,0 +1,19 @@
+{
+  "config": {
+    "protocol": "http/https",
+    "host": "octane_host",
+    "port": "octane_port",
+    "pathPrefix": "path_prefix",
+    "headers": "Content-Type: application/json",
+    "tech_preview_API": false,
+    "shared_space_id": "shared_space_id",
+    "workspace_id": "workspace_id"
+  },
+  "options": {
+    "username": "username",
+    "password": "password",
+    "client_id": "client_id",
+    "client_secret": "client_secret",
+    "proxy": {}
+  }
+}

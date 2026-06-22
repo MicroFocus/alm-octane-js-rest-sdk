@@ -28,26 +28,26 @@
   ],
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/http-errors": "^2.0.4",
-    "@types/jest": "^29.5.12",
-    "@types/mocha": "^10.0.6",
-    "@types/node": "^22.19.1",
+    "@types/http-errors": "^2.0.5",
+    "@types/jest": "^30.0.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^25.9.3",
     "@types/pluralize": "^0.0.33",
-    "@types/request": "^2.48.8",
+    "@types/request": "^2.48.13",
     "@types/tough-cookie": "^4.0.5",
     "axios-mock-adapter": "2.1.0",
-    "brace-expansion": "^2.0.2",
-    "mocha": "^10.4.0",
+    "brace-expansion": "^5.0.6",
+    "mocha": "^10.8.2",
     "mocha-jenkins-reporter": "0.4.8",
-    "typescript": "^5.8.3"
+    "typescript": "^6.0.3"
   },
   "dependencies": {
     "async-mutex": "0.5.0",
-    "axios": "1.13.5",
-    "http-cookie-agent": "^7.0.1",
-    "https-proxy-agent": "^7.0.4",
+    "axios": "1.18.0",
+    "http-cookie-agent": "^8.0.0",
+    "https-proxy-agent": "^9.1.0",
     "log4js": "6.9.1",
-    "tough-cookie": "4.1.4"
+    "tough-cookie": "^6.0.1"
   },
   "bugs": {
     "url": "https://github.com/MicroFocus/alm-octane-js-rest-sdk/issues"

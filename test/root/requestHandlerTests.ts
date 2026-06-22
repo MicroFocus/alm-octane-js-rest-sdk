@@ -33,7 +33,7 @@ import assert from 'assert';
 import { AxiosInstance } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import RequestHandler from '../../lib/root/requestHandler';
-const testServerUrl = '';
+const testServerUrl = 'http://localhost';
 const uri = '/some/uri';
 const user = 'MyUser';
 const password = 'MyPassword';
@@ -374,7 +374,7 @@ describe('requestHandler', function () {
         .withDeleteRequest(uri, 200)
         .build();
       const shouldBeUndefined = await requestHandler.delete(uri);
-      assert.strictEqual(shouldBeUndefined.data, undefined);
+      assert.strictEqual(shouldBeUndefined?.data, undefined);
       scope.reset();
     });
     it('makes a successful delete request', async function () {
@@ -557,7 +557,7 @@ describe('requestHandler', function () {
       const shouldBeUndefined = await requestHandler._reauthenticate(
         UNAUTHORIZED_ERROR
       );
-      assert.strictEqual(shouldBeUndefined.data, undefined);
+      assert.strictEqual(shouldBeUndefined?.data, undefined);
       scope.reset();
     });
   });

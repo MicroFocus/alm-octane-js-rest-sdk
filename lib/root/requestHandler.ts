@@ -33,21 +33,16 @@ import axios, {
     AxiosError,
     AxiosHeaders,
     AxiosInstance,
-    AxiosProxyConfig,
     AxiosRequestConfig,
-    AxiosRequestHeaders,
     AxiosResponse,
-    RawAxiosRequestHeaders,
-    ResponseType,
+    RawAxiosRequestHeaders
 } from 'axios';
+import {Mutex} from 'async-mutex';
 import {Cookie, CookieJar} from 'tough-cookie';
 import log4js from 'log4js';
-import {CookieAgent} from "http-cookie-agent/http";
-import * as https from "node:https";
-import * as http from "node:http";
+// TS1479 is a type-check false positive here in Node16/CJS mode for this dual-runtime dependency.
+// @ts-expect-error TS1479
 import {HttpsProxyAgent} from "https-proxy-agent";
-
-const Mutex = require('async-mutex').Mutex;
 
 const logger = log4js.getLogger();
 logger.level = 'debug';
@@ -66,16 +61,9 @@ class RequestHandler {
     private readonly _user?: string;
     private readonly _password?: string;
     private readonly _token?: string;
-    private _mutex: typeof Mutex;
+    private _mutex: Mutex;
     private _cookieJar: CookieJar;
-    private readonly _options: {
-        httpsAgent?: CookieAgent<https.Agent>,
-        httpAgent?: CookieAgent<http.Agent>,
-        baseURL: string;
-        responseType?: ResponseType;
-        proxy?: AxiosProxyConfig;
-        headers?: AxiosRequestHeaders;
-    };
+    private readonly _options: AxiosRequestConfig;
     private _requestor: AxiosInstance;
     private _needsAuthenication: boolean;
 
@@ -109,11 +97,12 @@ class RequestHandler {
         }
 
         if (params.headers) {
-            this._options.headers = new AxiosHeaders(params.headers);
+            this._options.headers = AxiosHeaders.from(params.headers);
 
-            const customCookies = this._options.headers['Cookie'];
-            if (customCookies) {
-                this._cookieJar.setCookieSync(customCookies, this._options.baseURL);
+            const customCookies = AxiosHeaders.from(this._options.headers).get('Cookie');
+            const cookieHeader = Array.isArray(customCookies) ? customCookies.join('; ') : customCookies;
+            if (typeof cookieHeader === 'string' && cookieHeader.length > 0) {
+                this._cookieJar.setCookieSync(cookieHeader, this._options.baseURL!);
             }
         }
 
@@ -353,7 +342,11 @@ class RequestHandler {
         });
     }
 
-    async sendRequestWithCookies(url: string, callBack: (headersWithCookie?: RawAxiosRequestHeaders | AxiosHeaders) => Promise<AxiosResponse>, customHeaders?: RawAxiosRequestHeaders | AxiosHeaders): Promise<AxiosResponse> {
+    async sendRequestWithCookies(
+        url: string,
+        callBack: (headersWithCookie?: RawAxiosRequestHeaders) => Promise<AxiosResponse>,
+        customHeaders?: AxiosRequestConfig['headers']
+    ): Promise<AxiosResponse> {
         if (this._user && this._password) {
             return await this.sendRequestWithCredentials(url, callBack, customHeaders);
         }
@@ -376,9 +369,13 @@ class RequestHandler {
      * @returns The Axios response from the server.
      * @throws Error if the request fails.
      */
-    private async sendRequestWithCredentials(url: string, callBack: (headersWithCookie?: RawAxiosRequestHeaders | AxiosHeaders) => Promise<AxiosResponse>, customHeaders?: RawAxiosRequestHeaders | AxiosHeaders): Promise<AxiosResponse> {
+    private async sendRequestWithCredentials(
+        url: string,
+        callBack: (headersWithCookie?: RawAxiosRequestHeaders) => Promise<AxiosResponse>,
+        customHeaders?: AxiosRequestConfig['headers']
+    ): Promise<AxiosResponse> {
         const cookieHeader = await this.getCookieHeaderForUrl(url);
-        const headersWithCookie = { ...customHeaders, 'Cookie': cookieHeader };
+        const headersWithCookie = this.mergeHeaders(customHeaders, {Cookie: cookieHeader});
         const response = await callBack(headersWithCookie);
         await this.updateCookieJarFromResponse(response, url);
 
@@ -397,8 +394,12 @@ class RequestHandler {
      * @returns The Axios response from the server.
      * @throws Error if token authentication fails (401) or another request error occurs.
      */
-    private async sendRequestWithToken(url: string, callBack: (headersWithCookie?: RawAxiosRequestHeaders | AxiosHeaders) => Promise<AxiosResponse>, customHeaders?: RawAxiosRequestHeaders | AxiosHeaders): Promise<AxiosResponse> {
-        const headersWithToken = { ...customHeaders, Authorization: `Bearer ${this._token}` };
+    private async sendRequestWithToken(
+        url: string,
+        callBack: (headersWithCookie?: RawAxiosRequestHeaders) => Promise<AxiosResponse>,
+        customHeaders?: AxiosRequestConfig['headers']
+    ): Promise<AxiosResponse> {
+        const headersWithToken = this.mergeHeaders(customHeaders, {Authorization: `Bearer ${this._token}`});
         try {
             const response =  await callBack(headersWithToken);
             await this.updateCookieJarFromResponse(response, url);
@@ -440,40 +441,41 @@ class RequestHandler {
         return await this._cookieJar.getCookieString(this._options.baseURL + url);
     }
 
+    private mergeHeaders(
+        headers?: AxiosRequestConfig['headers'],
+        additionalHeaders?: RawAxiosRequestHeaders
+    ): RawAxiosRequestHeaders {
+        const normalizedHeaders = AxiosHeaders.from((headers ?? {}) as any);
+        if (additionalHeaders) {
+            for (const [key, value] of Object.entries(additionalHeaders)) {
+                normalizedHeaders.set(key, value);
+            }
+        }
+
+        return normalizedHeaders.toJSON() as RawAxiosRequestHeaders;
+    }
+
     private hasHeader(
-        headers: RawAxiosRequestHeaders | AxiosHeaders,
+        headers: AxiosRequestConfig['headers'],
         key: string
     ): boolean {
         if (!headers) return false;
 
         const normalizedKey = key.toLowerCase();
-
-        if (typeof (headers as AxiosHeaders).get === 'function') {
-            return (headers as AxiosHeaders).has(normalizedKey);
-        } else {
-            return Object.keys(headers).some(k => k.toLowerCase() === normalizedKey);
-        }
+        const normalizedHeaders = AxiosHeaders.from(headers as any);
+        return normalizedHeaders.has(normalizedKey);
     }
 
     private filterOutHeaders(
-        headers: RawAxiosRequestHeaders | AxiosHeaders,
+        headers: AxiosRequestConfig['headers'],
         excludeKeys: string[]
-    ): AxiosHeaders {
-        const result = new AxiosHeaders();
-        const excludeSet = new Set(excludeKeys.map(k => k.toLowerCase()));
-
-        const plainHeaders =
-            typeof (headers as AxiosHeaders).toJSON === 'function'
-                ? (headers as AxiosHeaders).toJSON()
-                : headers;
-
-        for (const [key, value] of Object.entries(plainHeaders)) {
-            if (!excludeSet.has(key.toLowerCase())) {
-                result.set(key, value);
-            }
+    ): RawAxiosRequestHeaders {
+        const result = AxiosHeaders.from(headers as any);
+        for (const key of excludeKeys) {
+            result.delete(key);
         }
 
-        return result;
+        return result.toJSON() as RawAxiosRequestHeaders;
     }
 }
 

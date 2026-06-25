@@ -49,6 +49,10 @@
     "log4js": "6.9.1",
     "tough-cookie": "^6.0.1"
   },
+  "overrides": {
+    "serialize-javascript": "7.0.5",
+    "diff": "^4.0.4"
+  },
   "bugs": {
     "url": "https://github.com/MicroFocus/alm-octane-js-rest-sdk/issues"
   },

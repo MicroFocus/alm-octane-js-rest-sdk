@@ -438,6 +438,8 @@ $ npm test test/query.js
 ```
 
 ## What's new :newspaper: <a name="whats-new"></a>
+* 26.2.1
+  * Fixed the problem with spaces in folder name when packaging extensions based on js-sdk
 * 26.2.0
   * Fixed vulnerabilities related to external dependencies.
 * 26.1.0

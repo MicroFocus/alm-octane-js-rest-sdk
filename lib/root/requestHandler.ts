@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2025 Open Text.
+ * Copyright 2020-2026 Open Text.
  *
  * The only warranties for products and services of Open Text and
  * its affiliates and licensors (“Open Text”) are as may be set forth
@@ -58,9 +58,8 @@ logger.level = 'debug';
  * @param {Object} [params.headers] - JSON containing headers which will be used for all the requests
  */
 class RequestHandler {
-    private readonly _user?: string;
-    private readonly _password?: string;
-    private readonly _token?: string;
+    private readonly _user: string;
+    private readonly _password: string;
     private _mutex: Mutex;
     private _cookieJar: CookieJar;
     private readonly _options: AxiosRequestConfig;
@@ -68,14 +67,13 @@ class RequestHandler {
     private _needsAuthenication: boolean;
 
     constructor(params: Params) {
-        if(!params.token && (!params.user || !params.password)) {
-            throw new Error('Either token or user and password must be provided');
+        if (!params.user || !params.password) {
+            throw new Error('User and password must be provided');
         }
         this._user = params.user;
         this._password = params.password;
         this._needsAuthenication = false;
         this._cookieJar = new CookieJar();
-        this._token = params.token;
 
         this._mutex = new Mutex();
 
@@ -347,15 +345,7 @@ class RequestHandler {
         callBack: (headersWithCookie?: RawAxiosRequestHeaders) => Promise<AxiosResponse>,
         customHeaders?: AxiosRequestConfig['headers']
     ): Promise<AxiosResponse> {
-        if (this._user && this._password) {
-            return await this.sendRequestWithCredentials(url, callBack, customHeaders);
-        }
-
-        if (this._token) {
-            return await this.sendRequestWithToken(url, callBack, customHeaders);
-        }
-
-        throw new Error('No valid authentication available. Neither credentials nor token provided.');
+        return await this.sendRequestWithCredentials(url, callBack, customHeaders);
     }
 
     /**
@@ -380,36 +370,6 @@ class RequestHandler {
         await this.updateCookieJarFromResponse(response, url);
 
         return response;
-    }
-
-
-    /**
-     * Sends an HTTP request using token-based authentication.
-     * Adds the `Authorization` header with the bearer token to the request.
-     * If the server responds with a 401 status, throws an error indicating token authentication failure.
-     *
-     * @param url The URL to send the request to.
-     * @param callBack A callback that performs the actual HTTP request with the provided headers.
-     * @param customHeaders Optional custom headers to include in the request.
-     * @returns The Axios response from the server.
-     * @throws Error if token authentication fails (401) or another request error occurs.
-     */
-    private async sendRequestWithToken(
-        url: string,
-        callBack: (headersWithCookie?: RawAxiosRequestHeaders) => Promise<AxiosResponse>,
-        customHeaders?: AxiosRequestConfig['headers']
-    ): Promise<AxiosResponse> {
-        const headersWithToken = this.mergeHeaders(customHeaders, {Authorization: `Bearer ${this._token}`});
-        try {
-            const response =  await callBack(headersWithToken);
-            await this.updateCookieJarFromResponse(response, url);
-            return response;
-        } catch (err: any) {
-            if(err.response && err.response.status === 401) {
-                throw new Error('Token authentication failed. The token may be expired or invalid.');
-            }
-            throw err;
-        }
     }
 
     async updateCookieJarFromResponse(response: AxiosResponse, url: string) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2025 Open Text.
+ * Copyright 2020-2026 Open Text.
  *
  * The only warranties for products and services of Open Text and
  * its affiliates and licensors (“Open Text”) are as may be set forth
@@ -38,9 +38,8 @@ export interface Params {
   server: string;
   sharedSpace: number;
   workspace: number;
-  user?: string;
-  password?: string;
-  token?: string;
+  user: string;
+  password: string;
   proxy?: string;
   proxyUsername?: string;
   proxyPassword?: string;

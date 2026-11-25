@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2025 Open Text.
+ * Copyright 2020-2026 Open Text.
  *
  * The only warranties for products and services of Open Text and
  * its affiliates and licensors (“Open Text”) are as may be set forth
@@ -37,7 +37,6 @@ const testServerUrl = 'http://localhost';
 const uri = '/some/uri';
 const user = 'MyUser';
 const password = 'MyPassword';
-const token = 'TestToken123';
 
 const UNAUTHORIZED_ERROR = {
   name: 'Error',
@@ -162,63 +161,6 @@ export class BuildServerResponses {
     return this;
   }
 
-  withTokenGetRequest(uri: string, token: string, statusCode: number, replyData?: any) {
-    this.scope
-        .onGet(uri)
-        .reply(function(config) {
-          // Verify the Authorization header contains the token
-          if (config.headers?.Authorization === `Bearer ${token}`) {
-            return [statusCode, replyData];
-          }
-          return [401, { error: 'Invalid token' }];
-        });
-    return this;
-  }
-
-  withUnauthorizedTokenGetRequest(uri: string, token: string) {
-    return this.withTokenGetRequest(uri, token, 401);
-  }
-
-  withTokenDeleteRequest(uri: string, token: string, statusCode: number) {
-    this.scope
-        .onDelete(uri)
-        .reply(function(config) {
-          if (config.headers?.Authorization === `Bearer ${token}`) {
-            return [statusCode];
-          }
-          return [401, { error: 'Invalid token' }];
-        });
-    return this;
-  }
-
-  withUnauthorizedTokenDeleteRequest(uri: string, token: string) {
-    return this.withTokenDeleteRequest(uri, token, 401);
-  }
-
-  withTokenUpdateRequest(uri: string, token: string, statusCode: number, body?: object, replyData?: any) {
-    this.scope
-        .onPut(uri, body)
-        .reply(function(config) {
-          if (config.headers?.Authorization === `Bearer ${token}`) {
-            return [statusCode, replyData];
-          }
-          return [401, { error: 'Invalid token' }];
-        });
-    return this;
-  }
-
-  withTokenCreateRequest(uri: string, token: string, statusCode: number, body?: object, replyData?: any) {
-    this.scope
-        .onPost(uri, body)
-        .reply(function(config) {
-          if (config.headers?.Authorization === `Bearer ${token}`) {
-            return [statusCode, replyData];
-          }
-          return [401, { error: 'Invalid token' }];
-        });
-    return this;
-  }
-
   build() {
     return this.scope;
   }
@@ -263,6 +205,19 @@ describe('requestHandler', function () {
       }
     }
   }
+
+  describe('#constructor', () => {
+    it('throws an error if user or password is missing', () => {
+      const baseParams = { server: testServerUrl, sharedSpace: 1001, workspace: 1002 };
+      const expectedError = /User and password must be provided/;
+      // @ts-ignore
+      assert.throws(() => new RequestHandler({ ...baseParams }), expectedError);
+      // @ts-ignore
+      assert.throws(() => new RequestHandler({ ...baseParams, user: user }), expectedError);
+      // @ts-ignore
+      assert.throws(() => new RequestHandler({ ...baseParams, password: password }), expectedError);
+    });
+  });
 
   describe('#authenticate', () => {
     it('makes a successful authentication request with the given username and password', async () => {
@@ -581,147 +536,4 @@ describe('requestHandler', function () {
       scope.reset();
     });
   });
-});
-
-describe('requestHandler with token authentication', function () {
-  let requestHandlerWithToken: RequestHandler;
-
-  beforeEach(() => {
-    requestHandlerWithToken = new RequestHandler({
-      token: token,
-      server: testServerUrl,
-      sharedSpace: 1001,
-      workspace: 1002,
-    });
-  });
-
-  describe('#get with token', () => {
-    it('makes a successful get request using token authentication', async function () {
-      const objectToGet = 'Request was successful with token';
-      // @ts-ignore
-      const scope = new BuildServerResponses(requestHandlerWithToken._requestor)
-          .withTokenGetRequest(uri, token, 200, objectToGet)
-          .build();
-
-      const objectGot = await requestHandlerWithToken.get(uri);
-      assert.strictEqual(objectGot.data, objectToGet);
-      scope.reset();
-    });
-
-    it('throws an error if token authentication fails', async function () {
-      // @ts-ignore
-      const scope = new BuildServerResponses(requestHandlerWithToken._requestor)
-          .withUnauthorizedTokenGetRequest(uri, token)
-          .build();
-
-      try {
-        await requestHandlerWithToken.get(uri);
-        assert.fail('Expected an error to be thrown');
-      } catch (err: any) {
-        assert.ok(
-            err.message.includes('Token authentication failed'),
-            `Expected error message about token failure, but got: ${err.message}`
-        );
-      }
-      scope.reset();
-    });
-  });
-
-  describe('#delete with token', () => {
-    it('makes a successful delete request using token authentication', async function () {
-      // @ts-ignore
-      const scope = new BuildServerResponses(requestHandlerWithToken._requestor)
-          .withTokenDeleteRequest(uri, token, 200)
-          .build();
-
-      const shouldBeUndefined = await requestHandlerWithToken.delete(uri);
-      assert.strictEqual(shouldBeUndefined.data, undefined);
-      scope.reset();
-    });
-
-    it('throws an error if token authentication fails', async function () {
-      // @ts-ignore
-      const scope = new BuildServerResponses(requestHandlerWithToken._requestor)
-          .withUnauthorizedTokenDeleteRequest(uri, token)
-          .build();
-
-      try {
-        await requestHandlerWithToken.delete(uri);
-        assert.fail('Expected an error to be thrown');
-      } catch (err: any) {
-        assert.ok(
-            err.message.includes('Token authentication failed'),
-            `Expected error message about token failure, but got: ${err.message}`
-        );
-      }
-      scope.reset();
-    });
-  });
-
-  describe('#update with token', () => {
-    it('makes a successful update request using token authentication', async function () {
-      const updatedObject = 'Success';
-      const updateBody = {
-        parameter1: 'parameter1',
-        parameter2: 2,
-      };
-      // @ts-ignore
-      const scope = new BuildServerResponses(requestHandlerWithToken._requestor)
-          .withTokenUpdateRequest(uri, token, 200, updateBody, updatedObject)
-          .build();
-
-      const responseObject = await requestHandlerWithToken.update(uri, updateBody);
-      assert.strictEqual(responseObject.data, updatedObject);
-      scope.reset();
-    });
-  });
-
-  describe('#create with token', () => {
-    it('makes a successful create request using token authentication', async function () {
-      const createObject = { data: 'Success' };
-      const createBody = {
-        parameter1: 'parameter1',
-        parameter2: 2,
-      };
-      // @ts-ignore
-      const scope = new BuildServerResponses(requestHandlerWithToken._requestor)
-          .withTokenCreateRequest(uri, token, 200, createBody, createObject)
-          .build();
-
-      const responseObject = await requestHandlerWithToken.create(uri, createBody);
-      assert.strictEqual(
-          JSON.stringify(responseObject.data),
-          JSON.stringify(createObject)
-      );
-      scope.reset();
-    });
-  });
-});
-
-// Test the hybrid flow (credentials + token)
-describe('requestHandler with credentials and token (hybrid)', function () {
-  let requestHandlerHybrid: RequestHandler;
-
-  beforeEach(() => {
-    requestHandlerHybrid = new RequestHandler({
-      user: user,
-      password: password,
-      token: token,
-      server: testServerUrl,
-      sharedSpace: 1001,
-      workspace: 1002,
-    });
-  });
-
-    it('check if credentials were specifically used when having hybrid setup', async function () {
-      const objectToGet = 'Request was successful';
-      // @ts-ignore
-      const scope = new BuildServerResponses(requestHandlerHybrid._requestor)
-          .withSuccessfulAuthentication()
-          .withGetRequest(uri, 200, objectToGet)
-          .build();
-      const objectGot = await requestHandlerHybrid.get(uri);
-      assert.strictEqual(objectGot.data, objectToGet);
-      scope.reset();
-    });
 });

@@ -414,7 +414,7 @@ $ npm test test/query.js
 ```
 
 ## What's new :newspaper: <a name="whats-new"></a>
-* 26.3.0
+* 27.1.0
   * Removed token-based authentication (`token` parameter). Authentication is now done only through `user`/`password`.
 * 26.2.1
   * Fixed the problem with spaces in folder name when packaging extensions based on js-sdk

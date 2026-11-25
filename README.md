@@ -21,7 +21,6 @@ A Node.js wrapper for the Open Text Core Software Delivery Platform (SDP) and So
         * [signOut](#signOut)
     * [Octane.entityTypes](#octane-entity-types)
     * [Octane.operationTypes](#octane-operation-types)
-    * [Token-Based Authentication](#token-based-authentication)
 1. [Usage examples](#usage-examples)
     * [Get metadata](#get-metadata)
     * [Get entities](#get-entities)
@@ -69,6 +68,8 @@ Mandatory parameters:
 - ```user``` - Can be either an existing user's email or an existing API Access key. 
 
 - ```password``` - Can be either an existing user's password or an existing API Access secret.
+
+Authentication is performed by signing in with the `user` and `password` values above. Using an API Access key and secret is recommended. Token-based authentication is no longer supported.
 
 Optional parameters:
 
@@ -245,31 +246,6 @@ to access SDP entities.
 The Octane.operationTypes JSON contains all the operations that can be executed via the public API of SDP. This can be used in order
 to generate custom requests.
 
-#### Token-Based Authentication
-
-The SDK supports token-based authentication as an alternative to the original cookie-based authentication relying on credentials. When using a token, the SDK will automatically add the `Authorization` header with the bearer token to all requests.
-
-If both credentials (user/password) and token are provided, the SDK will attempt cookie-based authentication first. If that fails with a 401 error, it will automatically fall back to token-based authentication.
-
-Example using token authentication:
-
-```javascript
-const octane = new Octane({
-  server: 'https://myOctane:8080',
-  sharedSpace: 1001,
-  workspace: 1002,
-  token: 'your-api-token-here',
-  headers: {
-    ALM_OCTANE_TECH_PREVIEW: true
-  },
-  proxy: 'http://myProxy:8080'
-})
-
-// Use the SDK normally - authentication happens automatically
-const defects = await octane.get(Octane.entityTypes.defects).execute()
-````
-
-
 ## Usage examples
 
 #### Get metadata
@@ -438,6 +414,8 @@ $ npm test test/query.js
 ```
 
 ## What's new :newspaper: <a name="whats-new"></a>
+* 26.3.0
+  * Removed token-based authentication (`token` parameter). Authentication is now done only through `user`/`password`.
 * 26.2.1
   * Fixed the problem with spaces in folder name when packaging extensions based on js-sdk
 * 26.2.0
